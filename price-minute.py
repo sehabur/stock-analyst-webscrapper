@@ -1,8 +1,6 @@
-from bdshare import *
-import certifi
 from pytz import timezone
 import pandas as pd
-import requests, datetime, pymongo
+import requests, datetime, pymongo, certifi
 from bs4 import BeautifulSoup
 from variables import mongo_string
 
@@ -20,7 +18,7 @@ def get_current_trade_data(symbol=None, retry_count=1, pause=0.001):
         except Exception as e:
             print(e)
         else:
-            soup = BeautifulSoup(r.content, 'html5lib')
+            soup = BeautifulSoup(r.content, 'html.parser')
             quotes = []  # a list to store quotes
             table = soup.find('table', attrs={
                                 'class': 'table table-bordered background-white shares-table fixedHeader'})
