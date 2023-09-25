@@ -35,6 +35,7 @@ data = mydb.latest_prices.aggregate([
       '$project': {
         "_id": 0, 
         'date': todayDate,
+        'time': todayDate,
         'sector': '$_id',
         'ltp': { '$round': ['$ltp', 2] },
         'ycp': { '$round': ['$ycp', 2] },

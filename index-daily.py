@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from variables import mongo_string
 
 stock_url  = 'https://www.dsebd.org'
-
+today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 response = requests.get(stock_url)
 
 soup = BeautifulSoup(response.text, 'html.parser')
@@ -21,9 +21,7 @@ data = {'dsex' : {
     'index' : float(page_data_array[21]),
     'change' : float(page_data_array[23]),
     'percentChange' : float(page_data_array[25].strip().replace('%',''))
-}, "date": datetime.datetime.now().replace(
-    hour=0, minute=0, second=0, microsecond=0
-)}
+}, "date": today_date, "time": today_date}
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]

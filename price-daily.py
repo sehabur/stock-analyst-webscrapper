@@ -47,11 +47,13 @@ df = get_current_trade_data()
 
 share_data_array = []
 
+todayDate = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
 for x in range(df.shape[0]):
   
   share_data_array.append({
-    'time': datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0), 
-    'date': datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0), 
+    'time': todayDate, 
+    'date': todayDate, 
     'tradingCode': df.loc[x]['symbol'],
     'ltp': (float(df.loc[x]['ltp'])),
     'high': (float(df.loc[x]['high'])),

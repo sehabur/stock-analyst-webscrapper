@@ -5,7 +5,7 @@ import pymongo, datetime, certifi
 from zoneinfo import ZoneInfo
 from variables import mongo_string
 
-stocks = ['RAKCERAMIC','STANCERAM', 'MONNOCERA','FUWANGCER', "ACFL",
+stocks_dummy = ['RAKCERAMIC','STANCERAM', 'MONNOCERA','FUWANGCER', "ACFL",
     "ACI",
     "ACIFORMULA",
     "ACMELAB", 
@@ -17,7 +17,7 @@ stocks = ['RAKCERAMIC','STANCERAM', 'MONNOCERA','FUWANGCER', "ACFL",
     "ARAMIT"
     ]
 
-stocks_dummy = [
+stocks = [
     "1JANATAMF",
     "1STPRIMFMF",
     "AAMRANET",
@@ -76,7 +76,7 @@ stocks_dummy = [
     "BDSERVICE",
     "BDTHAI",
     "BDTHAIFOOD",
-    # "BDWELDING",
+    "BDWELDING",
     "BEACHHATCH",
     "BEACONPHAR",
     "BENGALWTL",
@@ -110,7 +110,7 @@ stocks_dummy = [
     "CVOPRL",
     "DACCADYE",
     "DAFODILCOM",
-    # "DBH",
+    "DBH",
     "DBH1STMF",
     "DELTALIFE",
     "DELTASPINN",
@@ -126,7 +126,7 @@ stocks_dummy = [
     "DULAMIACOT",
     "DUTCHBANGL",
     "EASTERNINS",
-    # "EASTLAND",
+    "EASTLAND",
     "EASTRNLUB",
     "EBL",
     "EBL1STMF",
@@ -142,7 +142,7 @@ stocks_dummy = [
     "ETL",
     "EXIM1STMF",
     "EXIMBANK",
-    # "FAMILYTEX",
+    "FAMILYTEX",
     "FARCHEM",
     "FAREASTFIN",
     "FAREASTLIF",
@@ -196,7 +196,7 @@ stocks_dummy = [
     "ILFSL",
     "IMAMBUTTON",
     "INDEXAGRO",
-    # "INTECH",
+    "INTECH",
     "INTRACO",
     "IPDC",
     "ISLAMIBANK",
@@ -258,7 +258,7 @@ stocks_dummy = [
     "NATLIFEINS",
     "NAVANACNG",
     "NAVANAPHAR",
-    # "NBL",
+    "NBL",
     "NCCBANK",
     "NCCBLMF1",
     "NEWLINE",
@@ -271,7 +271,7 @@ stocks_dummy = [
     "NRBCBANK",
     "NTC",
     "NTLTUBES",
-    # "NURANI",
+    "NURANI",
     "OAL",
     "OIMEX",
     "OLYMPIC",
@@ -387,7 +387,7 @@ stocks_dummy = [
     "TOSRIFA",
     "TRUSTB1MF",
     "TRUSTBANK",
-    # "TUNGHAI",
+    "TUNGHAI",
     "UCB",
     "UNILEVERCL",
     "UNIONBANK",
@@ -462,12 +462,12 @@ def basic_data(stock_code):
     #     x=x+2
 
     # data['cashDividend'] = cashDivData
-
-    data['stockDividend'] = table_data[1]
-    data['rightIssue'] = table_data[2]
-    data['yearEnd'] = table_data[3]
-    data['reserveSurplusWithoutOci'] = float(table_data[4].replace(",", ''))
-    data['oci'] = float(table_data[5].replace(",", ''))
+    # data['stockDividend'] = table_data[1]
+    # data['rightIssue'] = table_data[2]
+    # data['yearEnd'] = table_data[3]
+    # data['reserveSurplusWithoutOci'] = float(table_data[4].replace(",", ''))
+    # data['oci'] = float(table_data[5].replace(",", ''))
+    
 
     table_data = []
     financialYear = soup.find('h2', attrs={'class': "BodyHead topBodyHead page-break"}).find('i').text.strip()
@@ -485,67 +485,71 @@ def basic_data(stock_code):
         }]
     
 
-    table_data = []
-    for row in page_data_array[6].find_all('td')[0:]:
-        table_data.append(row.text)
+    # table_data = []
+    # for row in page_data_array[6].find_all('td')[0:]:
+    #     table_data.append(row.text)
 
-    for i in range (len(table_data)):
-        if 'Diluted\n' == table_data[i]:
-            n = i
-    del table_data [0:n+1]
-    yearlyNAV = []
-    yearlyEPS = []
-    yearlyPCO = []
-    yearlyProfit = []
-    yearlyTCI = []
-    p=0
-    for y in range (int(len(table_data)/13)):
-        yearlyNAV.append({
-            'year': table_data[p],
-            'value' : 0 if table_data[p+7] == '-' else float(table_data[p+7].replace(",", ''))
-        })
-        yearlyEPS.append({
-            'year': table_data[p],
-            'value' : 0 if table_data[p+4] == '-' else float(table_data[p+4].replace(",", ''))
-        })
-        yearlyPCO.append({
-            'year': table_data[p],
-            'value' : 0 if table_data[p+10] == '-' else float(table_data[p+10].replace(",", ''))
-        })
-        yearlyProfit.append({
-            'year': table_data[p],
-            'value' : 0 if table_data[p+11] == '-' else float(table_data[p+11].replace(",", ''))
-        })
-        yearlyTCI.append({
-            'year': table_data[p],
-            'value' : 0 if table_data[p+12] == '-' else float(table_data[p+12].replace(",", ''))
-        })
-        p=p+13
+    # for i in range (len(table_data)):
+    #     if 'Diluted\n' == table_data[i]:
+    #         n = i
+    # del table_data [0:n+1]
+    # yearlyNAV = []
+    # yearlyEPS = []
+    # yearlyPCO = []
+    # yearlyProfit = []
+    # yearlyTCI = []
+    # p=0
+    # for y in range (int(len(table_data)/13)):
+    #     yearlyNAV.append({
+    #         'year': table_data[p],
+    #         'value' : 0 if table_data[p+7] == '-' else float(table_data[p+7].replace(",", ''))
+    #     })
+    #     yearlyEPS.append({
+    #         'year': table_data[p],
+    #         'value' : 0 if table_data[p+4] == '-' else float(table_data[p+4].replace(",", ''))
+    #     })
+    #     yearlyPCO.append({
+    #         'year': table_data[p],
+    #         'value' : 0 if table_data[p+10] == '-' else float(table_data[p+10].replace(",", ''))
+    #     })
+    #     yearlyProfit.append({
+    #         'year': table_data[p],
+    #         'value' : 0 if table_data[p+11] == '-' else float(table_data[p+11].replace(",", ''))
+    #     })
+    #     yearlyTCI.append({
+    #         'year': table_data[p],
+    #         'value' : 0 if table_data[p+12] == '-' else float(table_data[p+12].replace(",", ''))
+    #     })
+    #     p=p+13
     
-    data['navYearly'] = yearlyNAV
-    data['epsYearly'] = yearlyEPS
-    data['pcoYearly'] = yearlyPCO
-    data['profitYearly'] = yearlyProfit
-    data['tciYearly'] = yearlyTCI
+    # data['navYearly'] = yearlyNAV
+    # data['epsYearly'] = yearlyEPS
+    # data['pcoYearly'] = yearlyPCO
+    # data['profitYearly'] = yearlyProfit
+    # data['tciYearly'] = yearlyTCI
 
-    table_data = []
-    for row in page_data_array[7].find_all('td')[0:]:
-        table_data.append(row.text)
 
-    for i in range (len(table_data)):
-        if 'Restated\n' == table_data[i]:
-            n = i
-    del table_data [0:n+1]
-    DividendYield = []
-    p=0
-    for y in range (int(len(table_data)/9)):
-        DividendYield.append({
-            'year': table_data[p],
-            'value' : 0 if table_data[p+8] == '-' else float(table_data[p+8])
-        })
-        p=p+9
 
-    data['dividendYield'] = DividendYield
+    # table_data = []
+    # for row in page_data_array[7].find_all('td')[0:]:
+    #     table_data.append(row.text)
+
+    # for i in range (len(table_data)):
+    #     if 'Restated\n' == table_data[i]:
+    #         n = i
+    # del table_data [0:n+1]
+    # DividendYield = []
+    # p=0
+    # for y in range (int(len(table_data)/9)):
+    #     DividendYield.append({
+    #         'year': table_data[p],
+    #         'value' : 0 if table_data[p+8] == '-' else float(table_data[p+8])
+    #     })
+    #     p=p+9
+
+    # data['dividendYield'] = DividendYield
+
+
 
     table_data = []
     for row in page_data_array[9].find_all('td')[0:]:
@@ -589,8 +593,8 @@ final_data = []
 for stock in stocks:
     final_data.append(basic_data(stock))
 
-# myclient = pymongo.MongoClient(mongo_string, , tlsCAFile=certifi.where())
-# mydb = myclient["stockanalyst"]
-# mycol = mydb["fundamentals"]
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
+mycol = mydb["fundamentals"]
 
-# mycol.insert_many(final_data)
+mycol.insert_many(final_data)
