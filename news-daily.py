@@ -1,13 +1,10 @@
-import requests
+import pymongo, datetime, certifi, requests
 from bs4 import BeautifulSoup
-import pymongo, datetime
 from pytz import timezone
 from variables import mongo_string
 
 date = datetime.date.today().strftime("%Y-%m-%d")
 stock_url  = 'https://www.dsebd.org/old_news.php?startDate='+date+'&endDate='+date+'&criteria=4&archive=news'
-
-# time = datetime.datetime.now(timezone('Asia/Dhaka'))
 
 response = requests.get(stock_url)
 soup = BeautifulSoup(response.text, 'html.parser')
@@ -29,8 +26,7 @@ for y in range (int(len(table_data)/4)):
     })
   x=x+4
 
-myclient = pymongo.MongoClient(mongo_string)
-mydb = myclient["stockAnalyst"]
-mycol = mydb["news"]
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
 
-mycol.insert_many(data)
+mydb.news.insert_many(data)

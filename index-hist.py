@@ -1,10 +1,10 @@
-import requests, datetime, pymongo
+import requests, datetime, pymongo, certifi
 from bs4 import BeautifulSoup
 from variables import mongo_string
 
-# startDate = '2021-09-06'
-startDate = '2023-09-09'
-endDate = '2023-09-11'
+startDate = '2021-09-06'
+# startDate = '2023-01-01'
+endDate = '2022-12-31'
 
 stock_url  = 'https://www.dsebd.org/market_summary.php?startDate='+startDate+'&endDate='+endDate+'&archive=data'
 response = requests.get(stock_url)
@@ -23,9 +23,8 @@ for x in range(len(data_array)):
       'dse30': { 'index': float(table_data[10].replace(",", '')) } ,
     })
 
-myclient = pymongo.MongoClient(mongo_string)
-mydb = myclient["stockAnalyst"]
-mycol = mydb["index_daily_values"]
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
 
-mycol.insert_many(data)
+mydb.index_daily_values.insert_many(data)
   

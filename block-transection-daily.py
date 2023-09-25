@@ -1,4 +1,4 @@
-import requests, datetime, pymongo
+import requests, datetime, pymongo, certifi
 from bs4 import BeautifulSoup
 from variables import mongo_string
 
@@ -33,8 +33,7 @@ for y in range (int(len(page_data_array)/6)):
       'value' : float(page_data_array[x+5])})
   x=x+6
 
-myclient = pymongo.MongoClient(mongo_string)
-mydb = myclient["stockAnalyst"]
-mycol = mydb["block_transections"]
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
 
-mycol.insert_many(data)
+mydb.block_transections.insert_many(data)

@@ -1,6 +1,5 @@
 from bdshare import *
-import pymongo, datetime
-from zoneinfo import ZoneInfo
+import pymongo, datetime, certifi
 from variables import mongo_string
 
 df = get_hist_data('2023-08-11','2023-09-18')
@@ -27,9 +26,9 @@ for x in range(df.shape[0]):
     'volume': (float(df.iloc[x]['volume'])),
   })
 
-myclient = pymongo.MongoClient(mongo_string)
-mydb = myclient["stockAnalyst"]
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
 # mycol = mydb["daily_prices"]
-mycol = mydb["dps"]
+# mycol = mydb["dps"]
 mycol.insert_many(share_data_array)
 

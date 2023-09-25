@@ -1,7 +1,7 @@
 import requests, re
 from bs4 import BeautifulSoup
 import pandas as pd
-import pymongo, datetime
+import pymongo, datetime, certifi
 from zoneinfo import ZoneInfo
 from variables import mongo_string
 
@@ -589,8 +589,8 @@ final_data = []
 for stock in stocks:
     final_data.append(basic_data(stock))
 
-# myclient = pymongo.MongoClient(mongo_string)
-# mydb = myclient["stockAnalyst"]
+# myclient = pymongo.MongoClient(mongo_string, , tlsCAFile=certifi.where())
+# mydb = myclient["stockanalyst"]
 # mycol = mydb["fundamentals"]
 
 # mycol.insert_many(final_data)

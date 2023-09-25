@@ -1,11 +1,11 @@
-import pymongo, datetime
+import pymongo, datetime, certifi
 from variables import mongo_string
 
 todayDate = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 # todayDate = datetime.datetime.now().replace(year=2023, month=8, day=3, hour=0, minute=0, second=0, microsecond=0)
 
-myclient = pymongo.MongoClient(mongo_string)
-mydb = myclient["stockAnalyst"]
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
 
 data = mydb.latest_prices.aggregate([
     {

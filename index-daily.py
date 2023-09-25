@@ -1,4 +1,4 @@
-import requests, datetime, pymongo
+import requests, datetime, pymongo, certifi
 from bs4 import BeautifulSoup
 from variables import mongo_string
 
@@ -25,8 +25,7 @@ data = {'dsex' : {
     hour=0, minute=0, second=0, microsecond=0
 )}
 
-myclient = pymongo.MongoClient(mongo_string)
-mydb = myclient["stockAnalyst"]
-mycol = mydb["index_daily_values"]
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
 
-mycol.insert_one(data)
+mydb.index_daily_values.insert_one(data)

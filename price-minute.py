@@ -1,5 +1,5 @@
 from bdshare import *
-import pymongo, datetime
+import certifi
 from pytz import timezone
 import pandas as pd
 import requests, datetime, pymongo
@@ -53,7 +53,7 @@ share_data_array = []
 for x in range(df.shape[0]):
 
   share_data_array.append({
-    'date': datetime.datetime.now(timezone('Asia/Dhaka')).replace(hour=0, minute=0, second=0, microsecond=0), 
+    'date': datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0), 
     'time': datetime.datetime.now(timezone('Asia/Dhaka')),
     'tradingCode': df.loc[x]['symbol'],
     'ltp': (float(df.loc[x]['ltp'])),
@@ -68,8 +68,8 @@ for x in range(df.shape[0]):
     'volume': (float(df.loc[x]['volume'])),
   })
 
-myclient = pymongo.MongoClient(mongo_string)
-mydb = myclient["stockAnalyst"]
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
 
 mydb.minute_prices.insert_many(share_data_array)
 

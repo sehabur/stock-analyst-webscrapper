@@ -1,8 +1,5 @@
-from bdshare import *
-import pymongo, datetime
-from pytz import timezone
+import pymongo, datetime, certifi, requests
 import pandas as pd
-import requests, datetime, pymongo
 from bs4 import BeautifulSoup
 from variables import mongo_string
 
@@ -68,8 +65,7 @@ for x in range(df.shape[0]):
     'volume': (float(df.loc[x]['volume'])),
   })
 
-myclient = pymongo.MongoClient(mongo_string)
-mydb = myclient["stockAnalyst"]
-mycol = mydb["daily_prices"]
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
 
-mycol.insert_many(share_data_array)
+mydb.daily_prices.insert_many(share_data_array)

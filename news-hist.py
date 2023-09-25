@@ -1,12 +1,10 @@
-import requests
 from bs4 import BeautifulSoup
-import pymongo, datetime
-from pytz import timezone
+import pymongo, datetime, certifi, requests
 from variables import mongo_string
 
-# startDate = '2021-09-15'
-startDate = '2023-07-10'
-endDate = '2023-07-13'
+# startDate = '2021-09-01'
+startDate = '2023-09-01'
+endDate = '2023-09-24'
 
 stock_url = 'https://www.dsebd.org/old_news.php?startDate='+startDate+'&endDate='+endDate+'&criteria=4&archive=news'
 
@@ -30,8 +28,8 @@ for y in range (int(len(table_data)/4)):
     })
   x=x+4
 
-myclient = pymongo.MongoClient(mongo_string)
-mydb = myclient["stockAnalyst"]
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
 mycol = mydb["news"]
 
 mycol.insert_many(data)
