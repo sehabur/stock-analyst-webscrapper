@@ -19,7 +19,7 @@ page_data_array = soup.find(attrs={'class': 'col-md-6 col-xs-12 col-sm-12 LeftCo
 currentVolume = float(page_data_array[38])
 
 if (currentVolume == data_setting['lastVolume']):
-    print('exiting script')
+    print('exiting script as market does not change')
     exit()
 
 updateDate = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
