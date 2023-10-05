@@ -43,17 +43,26 @@ def get_current_trade_data(symbol=None, retry_count=1, pause=0.001):
             else:
                 return df
 
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
+
+data_setting = mydb.settings.find_one()
+
+if data_setting['dataInsertionEnable'] == 0:
+    print('exiting script')
+    exit()
+
 df = get_current_trade_data()
 
 share_data_array = []
 
-todayDate = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 for x in range(df.shape[0]):
   
   share_data_array.append({
-    'time': todayDate, 
-    'date': todayDate, 
+    'time': today_date, 
+    'date': today_date, 
     'tradingCode': df.loc[x]['symbol'],
     'ltp': (float(df.loc[x]['ltp'])),
     'high': (float(df.loc[x]['high'])),
@@ -67,7 +76,9 @@ for x in range(df.shape[0]):
     'volume': (float(df.loc[x]['volume'])),
   })
 
-myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
-
 mydb.daily_prices.insert_many(share_data_array)
+
+myquery = {}
+newvalues = { "$set": { "dailyPriceUpdateDate": today_date } }
+
+mydb.settings.update_one(myquery, newvalues)

@@ -3,6 +3,15 @@ from bs4 import BeautifulSoup
 from pytz import timezone
 from variables import mongo_string
 
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
+
+data_setting = mydb.settings.find_one()
+
+if data_setting['dataInsertionEnable'] == 0:
+    print('exiting script')
+    exit()
+
 stock_url  = 'https://www.dsebd.org'
 
 response = requests.get(stock_url)
@@ -22,12 +31,15 @@ data = {'dsex' : {
     'index' : float(page_data_array[21]),
     'change' : float(page_data_array[23]),
     'percentChange' : float(page_data_array[25].strip().replace('%',''))
-}, "time": datetime.datetime.now(timezone('Asia/Dhaka')),
+}, 'totalTrade' : float(page_data_array[36]),
+   'totalVolume' : float(page_data_array[38]),
+   'totalValue' : float(page_data_array[40]),
+    'issuesAdvanced' : float(page_data_array[48]),
+    'issuesDeclined' : float(page_data_array[49]),
+    'issuesUnchanged' : float(page_data_array[50]),
+    "time": datetime.datetime.now(timezone('Asia/Dhaka')),
 "date": datetime.datetime.now().replace(
     hour=0, minute=0, second=0, microsecond=0
 )}
-
-myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
 
 mydb.index_minute_values.insert_one(data)

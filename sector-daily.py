@@ -1,11 +1,17 @@
 import pymongo, datetime, certifi
 from variables import mongo_string
 
-todayDate = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-# todayDate = datetime.datetime.now().replace(year=2023, month=8, day=3, hour=0, minute=0, second=0, microsecond=0)
+today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+# today_date = datetime.datetime.now().replace(year=2023, month=8, day=3, hour=0, minute=0, second=0, microsecond=0)
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
+
+data_setting = mydb.settings.find_one()
+
+if data_setting['dataInsertionEnable'] == 0:
+    print('exiting script')
+    exit()
 
 data = mydb.latest_prices.aggregate([
     {
@@ -16,7 +22,7 @@ data = mydb.latest_prices.aggregate([
         'as': 'fundamentals',
       },
     },
-    { '$addFields': { 'fundamentals': { '$first': '$fundamentals' } } },
+    { '$unwind': '$fundamentals' },
     {
         '$group': {
             '_id': '$fundamentals.sector',
@@ -34,8 +40,8 @@ data = mydb.latest_prices.aggregate([
     {
       '$project': {
         "_id": 0, 
-        'date': todayDate,
-        'time': todayDate,
+        'date': today_date,
+        'time': today_date,
         'sector': '$_id',
         'ltp': { '$round': ['$ltp', 2] },
         'ycp': { '$round': ['$ycp', 2] },
@@ -51,3 +57,8 @@ data = mydb.latest_prices.aggregate([
 ])
 
 mydb.daily_sectors.insert_many(data)
+
+myquery = {}
+newvalues = { "$set": { "dailySectorUpdateDate": today_date } }
+
+mydb.settings.update_one(myquery, newvalues)

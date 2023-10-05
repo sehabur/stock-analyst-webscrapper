@@ -2,6 +2,15 @@ import requests, datetime, pymongo, certifi
 from bs4 import BeautifulSoup
 from variables import mongo_string
 
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
+
+data_setting = mydb.settings.find_one()
+
+if data_setting['dataInsertionEnable'] == 0:
+    print('exiting script')
+    exit()
+
 stock_url  = 'https://www.dsebd.org'
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 response = requests.get(stock_url)
@@ -21,9 +30,19 @@ data = {'dsex' : {
     'index' : float(page_data_array[21]),
     'change' : float(page_data_array[23]),
     'percentChange' : float(page_data_array[25].strip().replace('%',''))
-}, "date": today_date, "time": today_date}
-
-myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+}, 'totalTrade' : float(page_data_array[36]),
+   'totalVolume' : float(page_data_array[38]),
+   'totalValue' : float(page_data_array[40]),
+    'issuesAdvanced' : float(page_data_array[48]),
+    'issuesDeclined' : float(page_data_array[49]),
+    'issuesUnchanged' : float(page_data_array[50]),
+    "date": today_date, 
+    "time": today_date
+}
 
 mydb.index_daily_values.insert_one(data)
+
+myquery = {}
+newvalues = { "$set": { "dailyIndexUpdateDate": today_date } }
+
+mydb.settings.update_one(myquery, newvalues)

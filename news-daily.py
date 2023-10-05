@@ -3,6 +3,15 @@ from bs4 import BeautifulSoup
 from pytz import timezone
 from variables import mongo_string
 
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
+
+data_setting = mydb.settings.find_one()
+
+if data_setting['dataInsertionEnable'] == 0:
+    print('exiting script')
+    exit()
+
 date = datetime.date.today().strftime("%Y-%m-%d")
 stock_url  = 'https://www.dsebd.org/old_news.php?startDate='+date+'&endDate='+date+'&criteria=4&archive=news'
 
@@ -25,8 +34,5 @@ for y in range (int(len(table_data)/4)):
     'date': datetime.datetime.strptime(table_data[x+3], '%Y-%m-%d'),
     })
   x=x+4
-
-myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
 
 mydb.news.insert_many(data)

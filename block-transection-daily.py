@@ -2,6 +2,15 @@ import requests, datetime, pymongo, certifi
 from bs4 import BeautifulSoup
 from variables import mongo_string
 
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
+
+data_setting = mydb.settings.find_one()
+
+if data_setting['dataInsertionEnable'] == 0:
+    print('exiting script')
+    exit()
+
 date = datetime.datetime.now().replace(
     hour=0, minute=0, second=0, microsecond=0
 )
@@ -32,8 +41,5 @@ for y in range (int(len(page_data_array)/6)):
       'quantity' : float(page_data_array[x+4]),
       'value' : float(page_data_array[x+5])})
   x=x+6
-
-myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
 
 mydb.block_transections.insert_many(data)

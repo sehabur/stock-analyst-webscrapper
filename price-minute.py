@@ -44,6 +44,15 @@ def get_current_trade_data(symbol=None, retry_count=1, pause=0.001):
             else:
                 return df
 
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
+
+data_setting = mydb.settings.find_one()
+
+if data_setting['dataInsertionEnable'] == 0:
+    print('exiting script')
+    exit()
+
 df = get_current_trade_data()
 
 share_data_array = []
@@ -65,9 +74,6 @@ for x in range(df.shape[0]):
     'value': (float(df.loc[x]['value'])),
     'volume': (float(df.loc[x]['volume'])),
   })
-
-myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
 
 mydb.minute_prices.insert_many(share_data_array)
 
