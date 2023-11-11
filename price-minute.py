@@ -59,9 +59,14 @@ share_data_array = []
 
 for x in range(df.shape[0]):
 
+  if (float(df.loc[x]['ycp']) == 0):
+    percent_change = 0
+  else: 
+    percent_change = round((float(df.loc[x]['ltp'])-float(df.loc[x]['ycp']))/float(df.loc[x]['ycp'])*100, 2)
+    
   share_data_array.append({
     'date': datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0), 
-    'time': datetime.datetime.now(timezone('Asia/Dhaka')),
+    'time': datetime.datetime.now(timezone('Asia/Dhaka')).replace(second=0, microsecond=0), 
     'tradingCode': df.loc[x]['symbol'],
     'ltp': (float(df.loc[x]['ltp'])),
     'high': (float(df.loc[x]['high'])),
@@ -69,7 +74,7 @@ for x in range(df.shape[0]):
     'close': (float(df.loc[x]['close'])),
     'ycp': (float(df.loc[x]['ycp'])),
     'change': (float(df.loc[x]['change'])),
-    'percentChange': round((float(df.loc[x]['ltp'])-float(df.loc[x]['ycp']))/float(df.loc[x]['ycp'])*100, 2),
+    'percentChange': percent_change,
     'trade': (float(df.loc[x]['trade'])),
     'value': (float(df.loc[x]['value'])),
     'volume': (float(df.loc[x]['volume'])),

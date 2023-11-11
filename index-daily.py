@@ -37,7 +37,6 @@ data = {'dsex' : {
     'issuesDeclined' : float(page_data_array[49]),
     'issuesUnchanged' : float(page_data_array[50]),
     "date": today_date, 
-    "time": today_date
 }
 
 mydb.index_daily_values.insert_one(data)

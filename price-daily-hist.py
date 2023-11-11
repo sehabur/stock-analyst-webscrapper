@@ -2,19 +2,16 @@ from bdshare import *
 import pymongo, datetime, certifi
 from variables import mongo_string
 
-df = get_hist_data('2023-08-11','2023-09-18')
+df = get_hist_data('2023-09-15','2023-10-16')
   
 share_data_array = []
 
-for x in range(df.shape[0]):  
-  print(datetime.datetime.strptime(df.index[x] , '%Y-%m-%d'))
-
+for x in range(df.shape[0]): 
+  print(datetime.datetime.strptime(df.index[x] , '%Y-%m-%d')) 
   share_data_array.append({
-    'time': datetime.datetime.strptime(df.index[x] , '%Y-%m-%d'),
     'date': datetime.datetime.strptime(df.index[x] , '%Y-%m-%d'),
     'tradingCode': df.iloc[x]['symbol'],
     'ltp': (float(df.iloc[x]['ltp'])),
-    # 'open': (float(df.iloc[x]['open'])),
     'high': (float(df.iloc[x]['high'])),
     'low': (float(df.iloc[x]['low'])),
     'close': (float(df.iloc[x]['close'])),
@@ -28,7 +25,7 @@ for x in range(df.shape[0]):
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
-# mycol = mydb["daily_prices"]
+mycol = mydb["daily_prices"]
 # mycol = mydb["dps"]
 mycol.insert_many(share_data_array)
 

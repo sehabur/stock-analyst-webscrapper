@@ -7,9 +7,9 @@ mydb = myclient["stockanalyst"]
 
 data_setting = mydb.settings.find_one()
 
-if data_setting['dataInsertionEnable'] == 0:
-    print('exiting script')
-    exit()
+# if data_setting['dataInsertionEnable'] == 0:
+#     print('exiting script')
+#     exit()
 
 date = datetime.datetime.now().replace(
     hour=0, minute=0, second=0, microsecond=0

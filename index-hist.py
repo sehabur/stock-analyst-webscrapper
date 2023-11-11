@@ -19,7 +19,6 @@ for x in range(len(data_array)):
         table_data.append(row.text)
     data.append({
       'date': datetime.datetime.strptime(table_data[0].replace("Market Summary of ", ''), '%b %d, %Y'),
-      'time': datetime.datetime.strptime(table_data[0].replace("Market Summary of ", ''), '%b %d, %Y'),
       'dsex': { 'index': float(table_data[2].replace(",", '')) },
       'dse30': { 'index': float(table_data[10].replace(",", '')) } ,
     })

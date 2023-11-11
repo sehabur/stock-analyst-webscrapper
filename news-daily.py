@@ -1,6 +1,5 @@
 import pymongo, datetime, certifi, requests
 from bs4 import BeautifulSoup
-from pytz import timezone
 from variables import mongo_string
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())

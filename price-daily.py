@@ -48,9 +48,103 @@ mydb = myclient["stockanalyst"]
 
 data_setting = mydb.settings.find_one()
 
-if data_setting['dataInsertionEnable'] == 0:
-    print('exiting script')
-    exit()
+# if data_setting['dataInsertionEnable'] == 0:
+#     print('exiting script')
+#     exit()
+
+data = mydb.daily_prices.aggregate([
+    {
+        '$match': {
+            'tradingCode': 'APEXFOOT',
+        },
+    },
+    {
+        '$sort': {
+            'date': -1,
+        }
+    },
+    {
+        '$facet': {
+            'rawData': [],
+            'alltimeHigh': [
+                {
+                    '$group': {
+                        '_id': None,
+                        'value': { '$max': '$high'}
+                    }
+                }
+            ],
+            '5yearHigh': [
+                {
+                    '$limit': 1250
+                },
+                {
+                    '$group': {
+                        '_id': None,
+                        'value': { '$max': '$high'}
+                    }
+                }
+            ],
+            '1yearHigh': [
+                {
+                    '$limit': 250
+                },
+                {
+                    '$group': {
+                        '_id': None,
+                        'value': { '$max': '$high'}
+                    }
+                }
+            ],
+            '6monthHigh': [
+                {
+                    '$limit': 130
+                },
+                {
+                    '$group': {
+                        '_id': None,
+                        'value': { '$max': '$high'}
+                    }
+                }
+            ],
+            '1monthHigh': [
+                {
+                    '$limit': 22
+                },
+                {
+                    '$group': {
+                        '_id': None,
+                        'value': { '$max': '$high'}
+                    }
+                }
+            ],
+            '1weekHigh': [
+                {
+                    '$limit': 5
+                },
+                {
+                    '$group': {
+                        '_id': None,
+                        'value': { '$max': '$high'}
+                    }
+                }
+            ]
+        }
+    }
+]) 
+
+data = list(data)[0]['rawData']
+
+fiveYearBeforeData = data[1250]['ltp'] if len(data) > 1250 else "-"
+oneYearBeforeData = data[250]['ltp'] if len(data) > 250 else "-"
+sixMonthBeforeData = data[130]['ltp'] if len(data) > 130 else "-"
+oneMonthBeforeData = data[22]['ltp'] if len(data) > 22 else "-"
+oneWeekBeforeData = data[5]['ltp'] if len(data) > 5 else "-"
+
+print(len(data))
+
+print(fiveYearBeforeData, oneYearBeforeData, sixMonthBeforeData, oneMonthBeforeData)
+exit()
 
 df = get_current_trade_data()
 
@@ -60,8 +154,12 @@ today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microse
 
 for x in range(df.shape[0]):
   
+  if (float(df.loc[x]['ycp']) == 0):
+    percent_change = 0
+  else: 
+    percent_change = round((float(df.loc[x]['ltp'])-float(df.loc[x]['ycp']))/float(df.loc[x]['ycp'])*100, 2)
+  
   share_data_array.append({
-    'time': today_date, 
     'date': today_date, 
     'tradingCode': df.loc[x]['symbol'],
     'ltp': (float(df.loc[x]['ltp'])),
@@ -70,7 +168,7 @@ for x in range(df.shape[0]):
     'close': (float(df.loc[x]['close'])),
     'ycp': (float(df.loc[x]['ycp'])),
     'change': (float(df.loc[x]['change'])),
-    'percentChange': round((float(df.loc[x]['ltp'])-float(df.loc[x]['ycp']))/float(df.loc[x]['ycp'])*100, 2),
+    'percentChange': percent_change,
     'trade': (float(df.loc[x]['trade'])),
     'value': (float(df.loc[x]['value'])),
     'volume': (float(df.loc[x]['volume'])),
@@ -82,3 +180,5 @@ myquery = {}
 newvalues = { "$set": { "dailyPriceUpdateDate": today_date } }
 
 mydb.settings.update_one(myquery, newvalues)
+
+myclient.close()

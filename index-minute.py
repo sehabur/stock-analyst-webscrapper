@@ -37,8 +37,8 @@ data = {'dsex' : {
     'issuesAdvanced' : float(page_data_array[48]),
     'issuesDeclined' : float(page_data_array[49]),
     'issuesUnchanged' : float(page_data_array[50]),
-    "time": datetime.datetime.now(timezone('Asia/Dhaka')),
-"date": datetime.datetime.now().replace(
+    'time': datetime.datetime.now(timezone('Asia/Dhaka')).replace(second=0, microsecond=0),
+    'date': datetime.datetime.now().replace(
     hour=0, minute=0, second=0, microsecond=0
 )}
 
