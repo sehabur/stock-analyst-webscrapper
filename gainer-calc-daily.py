@@ -2,7 +2,7 @@ import pymongo, certifi
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ["GP", 'APEXFOOT', 'BSRMSTEEL']
+# stocks_list = ['ACMEPL']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -145,6 +145,9 @@ def basic_data_update(trading_code):
     ]) 
 
     data = list(initialdata)[0]
+
+    # print(data['oneWeek'])
+    # exit()
     rawdata = data['rawData']
 
     fiveYearBeforeData = rawdata[1250]['close'] if len(rawdata) > 1250 else "-"
@@ -153,19 +156,19 @@ def basic_data_update(trading_code):
     oneMonthBeforeData = rawdata[22]['close'] if len(rawdata) > 22 else "-"
     oneWeekBeforeData = rawdata[5]['close'] if len(rawdata) > 5 else "-"
 
-    alltimeHigh = data['alltime'][0]['high']
-    fiveYearHigh = data['fiveYear'][0]['high']
-    oneYearHigh = data['oneYear'][0]['high']
-    sixMonthHigh = data['sixMonth'][0]['high']
-    oneMonthHigh = data['oneMonth'][0]['high']
-    oneWeekHigh = data['oneWeek'][0]['high']
+    alltimeHigh = data['alltime'][0]['high'] if len(data['alltime']) > 0 else "-"
+    fiveYearHigh = data['fiveYear'][0]['high']  if len(data['fiveYear']) > 0 else "-"
+    oneYearHigh = data['oneYear'][0]['high']  if len(data['oneYear']) > 0 else "-"
+    sixMonthHigh = data['sixMonth'][0]['high'] if len(data['sixMonth']) > 0 else "-"
+    oneMonthHigh = data['oneMonth'][0]['high'] if len(data['oneMonth']) > 0 else "-"
+    oneWeekHigh = data['oneWeek'][0]['high'] if len(data['oneWeek']) > 0 else "-"
 
-    alltimeLow = data['alltime'][0]['low']
-    fiveYearLow = data['fiveYear'][0]['low']
-    oneYearLow = data['oneYear'][0]['low']
-    sixMonthLow = data['sixMonth'][0]['low']
-    oneMonthLow = data['oneMonth'][0]['low']
-    oneWeekLow = data['oneWeek'][0]['low']
+    alltimeLow = data['alltime'][0]['low']  if len(data['alltime']) > 0 else "-"
+    fiveYearLow = data['fiveYear'][0]['low']  if len(data['fiveYear']) > 0 else "-"
+    oneYearLow = data['oneYear'][0]['low']  if len(data['oneYear']) > 0 else "-"
+    sixMonthLow = data['sixMonth'][0]['low'] if len(data['sixMonth']) > 0 else "-"
+    oneMonthLow = data['oneMonth'][0]['low'] if len(data['oneMonth']) > 0 else "-"
+    oneWeekLow = data['oneWeek'][0]['low'] if len(data['oneWeek']) > 0 else "-"
     
     myquery = { 'tradingCode': trading_code, 'date': data_setting['dailyPriceUpdateDate'] }
 

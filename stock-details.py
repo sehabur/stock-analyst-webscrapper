@@ -572,7 +572,6 @@ def basic_data(stock_code):
     data['dividendYield'] = DividendYield
 
 
-
     table_data = []
     for row in page_data_array[9].find_all('td')[0:]:
         table_data.append(row.text.strip())
@@ -587,13 +586,13 @@ def basic_data(stock_code):
         'public': float(table_data[26].split("\r\n")[1].strip()),
     }
 
+
     table_data = []
     for row in page_data_array[10].find_all('td')[0:]:
         table_data.append(row.text.strip())
-
+  
     data['shortTermLoan'] = float(table_data[5].replace(",", '')) 
     data['longTermLoan'] = float(table_data[7].replace(",", ''))
-
 
     table_data = []
     for row in page_data_array[11].find_all('td')[0:]:
