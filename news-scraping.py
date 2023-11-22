@@ -1,7 +1,9 @@
 import pymongo, certifi, datetime, re
 from data import stocks_list_details
+from variables import mongo_string
 
-myclient = pymongo.MongoClient("mongodb+srv://stockanalystbd:NWhkmfGgr3H7laOk@cluster0.y8qftwa.mongodb.net", tlsCAFile=certifi.where())
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+
 mydb = myclient["stockanalyst"]
 
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
