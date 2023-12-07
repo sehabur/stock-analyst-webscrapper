@@ -2,12 +2,12 @@ from bdshare import *
 import pymongo, datetime, certifi
 from variables import mongo_string
 
-df = get_hist_data('2023-09-15','2023-10-16')
+df = get_hist_data('2023-11-29','2023-11-30')
   
 share_data_array = []
 
 for x in range(df.shape[0]): 
-  print(datetime.datetime.strptime(df.index[x] , '%Y-%m-%d')) 
+  # print(datetime.datetime.strptime(df.index[x] , '%Y-%m-%d')) 
   share_data_array.append({
     'date': datetime.datetime.strptime(df.index[x] , '%Y-%m-%d'),
     'tradingCode': df.iloc[x]['symbol'],

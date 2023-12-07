@@ -197,4 +197,4 @@ def basic_data_update(trading_code):
 
 for stock in stocks_list:
     basic_data_update(stock)
-    # print(stock, 'success')
+    print(stock, 'success')

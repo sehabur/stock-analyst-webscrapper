@@ -2,9 +2,9 @@ from bs4 import BeautifulSoup
 import pymongo, datetime, certifi, requests
 from variables import mongo_string
 
-# startDate = '2021-09-01'
-startDate = '2023-09-01'
-endDate = '2023-09-24'
+startDate = '2023-01-01'
+# startDate = '2023-11-29'
+endDate = '2023-11-30'
 
 stock_url = 'https://www.dsebd.org/old_news.php?startDate='+startDate+'&endDate='+endDate+'&criteria=4&archive=news'
 
