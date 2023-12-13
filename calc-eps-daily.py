@@ -2,15 +2,17 @@ import pymongo, datetime, certifi, requests
 from bs4 import BeautifulSoup
 from variables import mongo_string
 from data import stocks_list
+
 # stocks_list = ['ANWARGALV', 'BSRMSTEEL']
+
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
 data_setting = mydb.settings.find_one()
 
-# if data_setting['dataInsertionEnable'] == 0:
-#   print('exiting script')
-#   exit()
+if data_setting['dataInsertionEnable'] == 0:
+  print('exiting script')
+  exit()
 
 for stock in stocks_list:
   stock_data = mydb.fundamentals.find_one({
@@ -18,7 +20,7 @@ for stock in stocks_list:
   })
 
   if 'epsQuaterly' in stock_data :
-    eps_data = sorted(stock_data['epsQuaterly'], key=lambda d: d['year'], reverse=True)[0] 
+    eps_data = sorted(stock_data['epsQuaterly'], key=lambda d: str(d['year']), reverse=True)[0] 
 
     count = 0
 
@@ -38,7 +40,7 @@ for stock in stocks_list:
       
       eps = round((total / count) * 4, 3)
 
-    print(stock, eps)
+    # print(stock, eps)
 
     myquery = { 'tradingCode': stock }
 
@@ -49,5 +51,5 @@ for stock in stocks_list:
     mydb.fundamentals.update_one(myquery, newvalues)
 
   else:
-    print(stock, 'error')
+    print(stock, 'error occured!')
   

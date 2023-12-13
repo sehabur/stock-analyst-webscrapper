@@ -2,7 +2,7 @@ from bdshare import *
 import pymongo, datetime, certifi
 from variables import mongo_string
 
-df = get_hist_data('2023-11-29','2023-11-30')
+df = get_hist_data('2023-10-19','2023-10-31')
   
 share_data_array = []
 

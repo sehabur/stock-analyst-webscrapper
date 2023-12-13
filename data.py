@@ -75,7 +75,7 @@ stocks_list = [
     "BSRMSTEEL",
     "BXPHARMA",
     # "BXSYNTH",
-    'CAPITECGBF',
+    # 'CAPITECGBF',
     "CAPMBDBLMF",
     "CAPMIBBLMF",
     "CENTRALINS",

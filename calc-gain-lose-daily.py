@@ -1,20 +1,98 @@
-import pymongo, certifi
+import pymongo, certifi, datetime
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ['ACMEPL']
+# stocks_list = ['PDL']
 
-myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+"""
+This script will run everyday regardless of share opening or close day
+"""
 
-data_setting = mydb.settings.find_one()
+def calculate_query_date(type, today):
+    query_date = {}
+    if type == 'monthly':
+        month_temp = today.month - 1
 
-if data_setting['dataInsertionEnable'] == 0:
-    print('exiting script as data insertion disabled')
-    exit()
+        if month_temp == 0:
+            query_date = {
+                'year': today.year - 1,
+                'month': month_temp + 12,
+                'day': today.day
+            }
+        else:
+            query_date = {
+                'year': today.year,
+                'month': month_temp,
+                'day': today.day
+            }
+
+    elif type == 'yearly':
+        query_date = {
+            'year': today.year - 1,
+            'month': today.month,
+            'day': today.day
+        }
+
+    elif type == 'fiveYearly':
+        query_date = {
+            'year': today.year - 5,
+            'month': today.month,
+            'day': today.day
+        }
+
+    elif type == 'sixMonthly':
+        month_temp = today.month - 6
+
+        if month_temp < 1:
+            query_date = {
+                'year': today.year - 1,
+                'month': month_temp + 12,
+                'day': today.day
+            }
+        else:
+            query_date = {
+                'year': today.year,
+                'month': month_temp,
+                'day': today.day
+            }
+
+    elif type == 'fiveYearly':
+        query_date = {
+            'year': today.year - 5,
+            'month': today.month,
+            'day': today.day
+        }
+
+    elif type == 'weekly':
+        month_day_map = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+        day_temp = today.day - 7
+
+        if day_temp < 1:
+            day_final = month_day_map[today.month-2] + day_temp
+            month_temp = today.month - 1
+
+            if month_temp == 0:
+                month_final = month_temp + 12
+                year_final = today.year - 1
+            else:
+                month_final = month_temp
+                year_final = today.year
+        else:
+            day_final = day_temp
+            month_final = today.month
+            year_final = today.year
+
+        query_date = {
+            'year': year_final,
+            'month': month_final,
+            'day': day_final
+        }   
+ 
+    return datetime.datetime(query_date['year'], query_date['month'], query_date['day'], 0, 0)
 
 def basic_data_update(trading_code):
-
+    
     initialdata = mydb.daily_prices.aggregate([
         {
             '$match': {
@@ -28,7 +106,19 @@ def basic_data_update(trading_code):
         },
         {
             '$facet': {
-                'rawData': [],
+                'rawData': [
+                    # {
+                    #     '$limit': 25
+                    # },
+                    {
+                        '$project': {
+                            '_id': 0,
+                            'date': 1,
+                            'ltp': 1,
+                            'close': 1
+                        }
+                    }
+                ],
                 'alltime': [
                     {
                         '$match': {
@@ -146,15 +236,39 @@ def basic_data_update(trading_code):
 
     data = list(initialdata)[0]
 
-    # print(data['oneWeek'])
-    # exit()
     rawdata = data['rawData']
 
-    fiveYearBeforeData = rawdata[1250]['close'] if len(rawdata) > 1250 else "-"
-    oneYearBeforeData = rawdata[250]['close'] if len(rawdata) > 250 else "-"
-    sixMonthBeforeData = rawdata[130]['close'] if len(rawdata) > 130 else "-"
-    oneMonthBeforeData = rawdata[22]['close'] if len(rawdata) > 22 else "-"
-    oneWeekBeforeData = rawdata[5]['close'] if len(rawdata) > 5 else "-"
+    # today = datetime.datetime.fromisoformat('2023-11-06')
+    today = datetime.date.today()
+
+    query_date = {
+        'weekly': calculate_query_date('weekly', today),
+        'monthly': calculate_query_date('monthly', today),
+        'sixMonthly': calculate_query_date('sixMonthly', today),
+        'yearly': calculate_query_date('yearly', today),
+        'fiveYearly': calculate_query_date('fiveYearly', today),
+    }
+    check_element = [
+        'weekly',
+        'monthly',
+        'sixMonthly',
+        'yearly',
+        'fiveYearly',
+    ]
+    before_data = {}
+
+    for item in rawdata:
+        if len(check_element) > 0:
+            if item['date'] <= query_date[check_element[0]]:
+                before_data[check_element[0]] = item['close']
+                # before_data[check_element[0]] = item
+                check_element.pop(0)
+
+    fiveYearBeforeData = before_data['fiveYearly'] if 'fiveYearly' in before_data  else "-"
+    oneYearBeforeData = before_data['yearly'] if 'yearly' in before_data  else "-"
+    sixMonthBeforeData = before_data['sixMonthly'] if 'sixMonthly' in before_data  else "-"
+    oneMonthBeforeData = before_data['monthly'] if 'monthly' in before_data  else "-"
+    oneWeekBeforeData = before_data['weekly'] if 'weekly' in before_data  else "-"
 
     alltimeHigh = data['alltime'][0]['high'] if len(data['alltime']) > 0 else "-"
     fiveYearHigh = data['fiveYear'][0]['high']  if len(data['fiveYear']) > 0 else "-"
@@ -170,6 +284,11 @@ def basic_data_update(trading_code):
     oneMonthLow = data['oneMonth'][0]['low'] if len(data['oneMonth']) > 0 else "-"
     oneWeekLow = data['oneWeek'][0]['low'] if len(data['oneWeek']) > 0 else "-"
     
+    myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+    mydb = myclient["stockanalyst"]
+
+    data_setting = mydb.settings.find_one()
+
     myquery = { 'tradingCode': trading_code, 'date': data_setting['dailyPriceUpdateDate'] }
 
     newvalues = { "$set": { 
@@ -195,6 +314,7 @@ def basic_data_update(trading_code):
 
     mydb.daily_prices.update_one(myquery, newvalues)
 
+
 for stock in stocks_list:
     basic_data_update(stock)
-    print(stock, 'success')
+    # print(stock, 'success')

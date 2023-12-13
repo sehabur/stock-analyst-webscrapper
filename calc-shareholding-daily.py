@@ -1,18 +1,18 @@
 import pymongo, datetime, certifi, requests
 from bs4 import BeautifulSoup
 from variables import mongo_string
-# from data import stocks_list
+from data import stocks_list
 
-stocks_list = ['MARICO']
+# stocks_list = ['MARICO']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
 data_setting = mydb.settings.find_one()
 
-# if data_setting['dataInsertionEnable'] == 0:
-#     print('exiting script')
-#     exit()
+if data_setting['dataInsertionEnable'] == 0:
+    print('exiting script')
+    exit()
 
 def shareholding_data(stock_code):
     stock_url  = 'https://www.dsebd.org/displayCompany.php?name='+ stock_code
