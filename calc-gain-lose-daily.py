@@ -5,7 +5,8 @@ from data import stocks_list
 # stocks_list = ['PDL']
 
 """
-This script will run everyday regardless of share opening or close day
+    This script will run everyday regardless 
+    of share opening or close day
 """
 
 def calculate_query_date(type, today):
@@ -92,7 +93,10 @@ def calculate_query_date(type, today):
     return datetime.datetime(query_date['year'], query_date['month'], query_date['day'], 0, 0)
 
 def basic_data_update(trading_code):
-    
+
+    myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+    mydb = myclient["stockanalyst"]
+
     initialdata = mydb.daily_prices.aggregate([
         {
             '$match': {
@@ -107,9 +111,6 @@ def basic_data_update(trading_code):
         {
             '$facet': {
                 'rawData': [
-                    # {
-                    #     '$limit': 25
-                    # },
                     {
                         '$project': {
                             '_id': 0,
@@ -284,8 +285,6 @@ def basic_data_update(trading_code):
     oneMonthLow = data['oneMonth'][0]['low'] if len(data['oneMonth']) > 0 else "-"
     oneWeekLow = data['oneWeek'][0]['low'] if len(data['oneWeek']) > 0 else "-"
     
-    myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-    mydb = myclient["stockanalyst"]
 
     data_setting = mydb.settings.find_one()
 
@@ -317,4 +316,4 @@ def basic_data_update(trading_code):
 
 for stock in stocks_list:
     basic_data_update(stock)
-    # print(stock, 'success')
+    print(stock, 'success')

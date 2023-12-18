@@ -2,6 +2,9 @@ import pymongo, certifi, requests
 from bs4 import BeautifulSoup
 from variables import mongo_string
 
+# myclient = pymongo.MongoClient(mongo_string)
+# mydb = myclient["stockAnalyst"]
+
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 

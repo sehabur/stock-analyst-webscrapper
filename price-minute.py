@@ -59,9 +59,9 @@ share_data_array = []
 
 for x in range(df.shape[0]):
 
-  if (float(df.loc[x]['ycp']) == 0):
+  if (float(df.loc[x]['ycp']) == 0 or float(df.loc[x]['ltp']) == 0):
     percent_change = 0
-  else: 
+  else:
     percent_change = round((float(df.loc[x]['ltp'])-float(df.loc[x]['ycp']))/float(df.loc[x]['ycp'])*100, 2)
     
   share_data_array.append({
