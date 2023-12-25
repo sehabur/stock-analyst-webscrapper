@@ -74,8 +74,10 @@ stocks_list = [
     "BSRMLTD",
     "BSRMSTEEL",
     "BXPHARMA",
+
     # "BXSYNTH",
     # 'CAPITECGBF',
+
     "CAPMBDBLMF",
     "CAPMIBBLMF",
     "CENTRALINS",
@@ -257,7 +259,9 @@ stocks_list = [
     "OAL",
     "OIMEX",
     "OLYMPIC",
-    "ONEBANKLTD",
+
+    # "ONEBANKLTD",
+
     "ORIONINFU",
     "ORIONPHARM",
     "PADMALIFE",

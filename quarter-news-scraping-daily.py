@@ -14,6 +14,7 @@ if data_setting['dataInsertionEnable'] == 0:
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 news_list = mydb.news.find({
+    # 'date':   { '$gt':  datetime.datetime(2022, 7, 1, 0, 0) },
     'date': today_date,
     'title': { '$regex': 'Financials', '$options': 'i' } ,
     'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS) was', '$options': 'i' } 
