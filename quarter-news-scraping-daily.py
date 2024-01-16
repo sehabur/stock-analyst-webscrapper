@@ -119,7 +119,7 @@ for news in news_list:
   
   index = -1
   for i in range (len(eps_data)):
-    if eps_data[i]['year'] == year:
+    if str(eps_data[i]['year']) == year:
       index = i
       break  
   

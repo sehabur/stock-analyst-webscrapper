@@ -80,9 +80,11 @@ for x in range(df.shape[0]):
     'volume': (float(df.loc[x]['volume'])),
   })
 
-mydb.minute_prices.insert_many(share_data_array)
-
 mydb.latest_prices.delete_many({})
 mydb.latest_prices.insert_many(share_data_array)
+
+mydb.day_minute_prices.insert_many(share_data_array)
+
+mydb.minute_prices.insert_many(share_data_array)
 
 myclient.close()

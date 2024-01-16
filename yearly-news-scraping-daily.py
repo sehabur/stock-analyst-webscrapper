@@ -227,7 +227,7 @@ for news in temp_data.values():
         if eps != 'n/a':
             index = -1
             for i in range (len(eps_q_data)):
-                if eps_q_data[i]['year'] == year:
+                if str(eps_q_data[i]['year']) == year:
                     index = i
                     break  
             
@@ -237,7 +237,7 @@ for news in temp_data.values():
 
             index = -1
             for i in range (len(eps_y_data)):
-                if eps_y_data[i]['year'] == year:
+                if str(eps_y_data[i]['year']) == year:
                     index = i
                     break  
             if index != -1:

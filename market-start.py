@@ -28,3 +28,5 @@ myquery = {}
 newvalues = { "$set": { "minuteDataUpdateDate": updateDate, "dataInsertionEnable": 1 } }
 
 mydb.settings.update_one(myquery, newvalues)
+
+mydb.day_minute_prices.delete_many({})
