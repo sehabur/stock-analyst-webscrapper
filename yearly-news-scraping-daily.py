@@ -358,14 +358,14 @@ for news in temp_data.values():
                 daily_price = daily_prices_list[0]
                 
                 ltp = daily_price['ltp'] if daily_price['ltp'] != 0 else daily_price['ycp'] 
-                dividend_yield = round(cash_dividend*10/ltp, 2)
+                dividend_yield = round(cash_dividend * 100 / (data['faceValue'] * ltp), 2)
                             
                 for i in range (len(dividend_yield_y_data)):
                     if dividend_yield_y_data[i]['year'] == year or dividend_yield_y_data[i]['year'] == int(year):
                         index = i
                         break  
                 if index != -1:
-                    dividend_yield_y_data[index]['value'] = dividend_yield
+                    dividend_yield_y_data[index]['value'] = dividend_yield 
                 else:
                     dividend_yield_y_data.append({
                         'year': year,

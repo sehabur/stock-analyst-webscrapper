@@ -2,88 +2,21 @@ import pymongo, datetime, certifi
 from variables import mongo_string
 import math
 
-# stocks_list = [
-#   "APOLOISPAT",
-#   "AFTABAUTO",
-#   "ANWARGALV",
-#   "ATLASBANG",
-#   "AZIZPIPES",
-#   "BSRMSTEEL",
-#   "BDAUTOCA",
-#   "BDLAMPS",
-#   "BDTHAI",
-#   "DESHBANDHU",
-#   "ECABLES",
-#   "GOLDENSON",
-#   "BBS",
-#   "NAVANACNG",
-#   "NPOLYMER",
-#   "NTLTUBES",
-#   "QUASEMIND",
-#   "RANFOUNDRY",
-#   "RENWICKJA",
-#   "SINGERBD",
-#   "GPHISPAT",
-#   "BENGALWTL",
-#   "APOLOISPAT",
-#   "SHURWID",
-#   "RSRMSTEEL",
-#   "WMSHIPYARD",
-#   "IFADAUTOS",
-#   "BSRMLTD",
-#   "OAL",
-#   "OIMEX",
-#   "NAHEEACP",
-#   "SSSTEEL",
-#   "RUNNERAUTO",
-#   "COPPERTECH",
-#   "WALTONHIL",
-#   "DOMINAGE",
-#   "MIRAKHTER",
-#   "KDSALTD",
-#   "SALAMCRST",
-#   "YPL",
-#   "APEXFOOT",
-#   "APEXTANRY",
-#   "BATASHOE",
-#   "LEGACYFOOT",
-#   "SAMATALETH",
-#   "FORTUNE",
-#   "UNIQUEHRL",
-#   "PENINSULA",
-#   "SEAPEARL",
-#   "BBS",
-#   "NAVANACNG",
-#   "NPOLYMER",
-#   "NTLTUBES",
-#   "QUASEMIND",
-#   "RANFOUNDRY",
-#   "RENWICKJA",
-#   "SINGERBD",
-#   "GPHISPAT",
-#   "BENGALWTL",
-#   "APOLOISPAT",
-#   "SHURWID",
-#   "RSRMSTEEL",
-#   "WMSHIPYARD",
-#   "IFADAUTOS",
-#   "BSRMLTD",
-#   "OAL",
-#   "OIMEX",
-#   "NAHEEACP",
-#   "SSSTEEL",
-#   "RUNNERAUTO",
-#   "COPPERTECH",
-#   "WALTONHIL",
-#   "DOMINAGE",
-# ]
-
-stocks_list = ['BBS', 'BSRMSTEEL', 'APOLOISPAT', 'BDTHAI',  'AZIZPIPES', 'NPOLYMER', 'AFTABAUTO', 'OAL']
+colors = ['#00A25B', '#2962ff', '#f23645']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
-colors = ['#00A25B', '#2962ff', '#f23645']
+stocks_list = mydb.fundamentals.find({}, { "tradingCode": 1 })
+
+stocks_list = [{
+  "tradingCode": "BSCCL"
+}]
+
+# print(stocks_list)
+# for items in stocks_list:
+#   print(items['tradingCode'])
+# exit()
 
 # data_setting = mydb.settings.find_one()
 # if data_setting['dataInsertionEnable'] == 0:
@@ -107,10 +40,21 @@ def calc_year_growth(data, year_count):
   yearly_growth = round(((((curr_year_value / prev_year_value) ** (1 / year_count)).real - 1) * 100), 2)
   return yearly_growth  
 
-def format_yearly_data(init_data, title, unit=''):
+def format_yearly_data(init_data, title, unit='', percentChangeReverse=False):
+
   data_temp = sorted(init_data, key=lambda x: x['year'], reverse=True)
   
   data = list(filter(lambda x: x['value'] != None, data_temp))
+
+  if len(data) == 0 : return None
+
+  if len(data) == 1 : 
+    return {
+      'period': data[0]['year'],
+      'value': data[0]['value'],
+      'percentChange': None,
+      'percentChangeFiveYear': None,
+    }
   
   unit = ' ' + unit if unit != '' else '' 
   
@@ -130,14 +74,16 @@ def format_yearly_data(init_data, title, unit=''):
   if percent_change > 0:
     comment = percent_change_abs_value + '%' + ' incr over last year'
     overview += ' increased by ' + percent_change_abs_value + '%' + ' over last year (' + data[1]['year'] + ').'
-    color = colors[0]
+    color = colors[0] if percentChangeReverse == False else colors[2]
   elif percent_change < 0:
     comment = percent_change_abs_value + '%' + ' decr from last year' 
     overview += ' decreased by ' + percent_change_abs_value + '%' + ' from last year (' + data[1]['year'] + ').'
-    color = colors[2]
+    color = colors[2] if percentChangeReverse == False else colors[0]
   elif percent_change == 0:
     comment = 'No change from last year'
     overview += ' remains same as last year (' + data[1]['year'] + ').'
+    color = colors[1]
+  else:
     color = colors[1]
     
   five_year_growth = calc_year_growth(data, 5)
@@ -153,11 +99,20 @@ def format_yearly_data(init_data, title, unit=''):
   }
 
 def format_yearly_data_basic(init_data):
+
   data_temp = sorted(init_data, key=lambda x: x['year'], reverse=True)
   
   data = list(filter(lambda x: x['value'] != None, data_temp))
-  # print(data)
-  # exit()
+
+  if len(data) == 0 : return None
+
+  if len(data) == 1 : 
+    return {
+      'period': data[0]['year'],
+      'value': data[0]['value'],
+      'percentChange': None,
+      'percentChangeFiveYear': None,
+    }
   
   if data[1]['value'] == 0:
     if data[0]['value'] == 0:
@@ -185,10 +140,14 @@ def format_quarterly_data(init_data, title, unit=''):
   quarter_name = q_quarter.upper() + ' ' + str(q_year)
   
   q_value_this = q_current[1][1]
+
   q_value_last = data[1][q_quarter] if q_quarter in data[1] else None
   
   if q_value_last == None:
-    percent_change = None  
+    percent_change = None
+  if q_value_last == 0:
+    percent_change = 100
+    percent_change_abs_value = str(abs(percent_change))
   else:
     percent_change = round(((q_value_this - q_value_last) / q_value_last * 100), 2)
     percent_change_abs_value = str(abs(percent_change))
@@ -342,14 +301,15 @@ def format_dividend_payout_ratio(cash_div_raw_data, eps_yearly_raw_data, face_va
     if cash_div_value == 0:
       dividend_payout_ratio = 0
     else:
-      dividend_payout_ratio = round((cash_div_value * 100 / (face_value * eps_value)), 3)  
+      dividend_payout_ratio = round((cash_div_value * 100 / (face_value * eps_value)), 3) if eps_value != 0 else None 
       
     data.append({
       'year': year,
       'value': dividend_payout_ratio
       })  
+
+  if len(data) < 2: return None  
   
-    
   if data[-2]['value'] == 0:
     if data[-1]['value'] == 0:
       percent_change = 0
@@ -387,14 +347,14 @@ def format_dividend_payout_ratio(cash_div_raw_data, eps_yearly_raw_data, face_va
   }  
 
 def format_ps_data(trading_code, sector, revenue_init_data, market_cap):
-  
+
   revenue_data = sorted(revenue_init_data, key=lambda x: x['year'])
-  
+
   data = []
   for i in range(len(revenue_data)):
     year = revenue_data[i]['year']
-    ps_value = round((market_cap * 1000000 / revenue_data[i]['value']), 3)
-    
+
+    ps_value = round((market_cap * 1000000 / revenue_data[i]['value']), 3) if revenue_data[i]['value'] != None else None
     data.append({
       'year': year,
       'value': ps_value
@@ -426,11 +386,10 @@ def format_ps_data(trading_code, sector, revenue_init_data, market_cap):
   sector_data_list = []
   
   for item in ps_sector_data:
-    if item['ps'] != None:
-      sector_data_list.append(item['ps'])
-      if item['tradingCode'] == trading_code:
-        index_matched = index + 1
-      index += 1  
+    sector_data_list.append(item['ps'])
+    if item['tradingCode'] == trading_code:
+      index_matched = index + 1
+    index += 1  
   
   # print(sector_data_list)
   median = math.floor(index / 2)   
@@ -444,7 +403,7 @@ def format_ps_data(trading_code, sector, revenue_init_data, market_cap):
     textColor = colors[1]
   if index_matched > median:
     textColor = colors[2]
- 
+
   if index_matched == 1:
     position = '1st'  
   elif index_matched == 2:
@@ -457,7 +416,6 @@ def format_ps_data(trading_code, sector, revenue_init_data, market_cap):
   comment = position + ' in sector(out of ' + str(index)  + ')'   
   overview = 'P/S ratio of ' + trading_code + ' is at ' + position + ' position in sector where total number of stocks in sector is ' + str(index)
   
-
   return {
     'period': data[-1]['year'],
     'value': data[-1]['value'],
@@ -468,7 +426,7 @@ def format_ps_data(trading_code, sector, revenue_init_data, market_cap):
     'max': sector_data_list[-1],
     'data': data,
   } 
-
+  
 def format_shareholding(shareholding):
   
   if shareholding[-2]['institute'] == 0:
@@ -496,48 +454,61 @@ def format_shareholding(shareholding):
   }
 
 def data_calc(trading_code):
-  print(trading_code)
+  # print(trading_code)
   rawdata = mydb.fundamentals.find_one({ 'tradingCode': trading_code })
   data = {}
   
-  data['ps'] = format_ps_data(trading_code, rawdata['sector'], rawdata['revenue'], rawdata['marketCap'])
+  data['ps'] = format_ps_data(trading_code, rawdata['sector'], rawdata['revenue'], rawdata['marketCap']) if 'revenue' in rawdata else None
        
-  data['shareholding'] = format_shareholding(rawdata['shareHoldingPercentage']) 
+  data['shareholding'] = format_shareholding(rawdata['shareHoldingPercentage']) if 'shareHoldingPercentage' in rawdata else None
       
-  data['epsYearly'] = format_yearly_data_basic(rawdata['epsYearly'])  
-  data['navYearly'] = format_yearly_data_basic(rawdata['navYearly'])  
-  # data['nocfpsYearly'] = format_yearly_data_basic(rawdata['nocfpsYearly'])  
-  data['bookValue'] = format_yearly_data_basic(rawdata['bookValue'])  
-  data['roa'] = format_yearly_data_basic(rawdata['roa']) 
-  data['totalLiabilities'] = format_yearly_data_basic(rawdata['totalLiabilities']) 
-  data['ebit'] = format_yearly_data_basic(rawdata['ebit']) 
-  data['roa'] = format_yearly_data_basic(rawdata['roa']) 
+  data['epsYearly'] = format_yearly_data_basic(rawdata['epsYearly']) if 'epsYearly' in rawdata and len(rawdata['epsYearly']) > 0 else None 
+  data['navYearly'] = format_yearly_data_basic(rawdata['navYearly']) if 'navYearly' in rawdata and len(rawdata['navYearly']) > 0 else None 
+  data['nocfpsYearly'] = format_yearly_data_basic(rawdata['nocfpsYearly']) if 'nocfpsYearly' in rawdata and len(rawdata['nocfpsYearly']) > 0 else None 
+  data['bookValue'] = format_yearly_data_basic(rawdata['bookValue']) if 'bookValue' in rawdata else None 
+  data['totalLiabilities'] = format_yearly_data_basic(rawdata['totalLiabilities']) if 'totalLiabilities' in rawdata else None
+  data['ebit'] = format_yearly_data_basic(rawdata['ebit']) if 'ebit' in rawdata else None
   
-  data['revenue'] = format_yearly_data(rawdata['revenue'], 'Revenue', 'BDT')  
-  data['roe'] = format_yearly_data(rawdata['roe'], 'ROE')
-  data['roce'] = format_yearly_data(rawdata['roce'], 'ROCE')   
-  data['currentRatio'] = format_yearly_data(rawdata['currentRatio'], 'Current Ratio')  
-  data['netIncomeRatio'] = format_yearly_data(rawdata['netIncomeRatio'], 'Net Income Ratio')  
-  data['netIncome'] = format_yearly_data(rawdata['netIncome'], 'Net Income')  
-  data['operatingProfit'] = format_yearly_data(rawdata['operatingProfit'], 'Operating Profit')  
-  data['de'] = format_yearly_data(rawdata['de'], 'D/E ratio')  
-  data['profitMargin'] = format_yearly_data(rawdata['profitMargin'], 'Profit Margin')  
-  data['totalAsset'] = format_yearly_data(rawdata['totalAsset'], 'Total Asset')  
-  data['dividendYield'] = format_yearly_data(rawdata['dividendYield'], 'Dividend Yield')  
+  data['revenue'] = format_yearly_data(rawdata['revenue'], 'Revenue', 'BDT') if 'revenue' in rawdata else None
+  data['roe'] = format_yearly_data(rawdata['roe'], 'ROE') if 'roe' in rawdata else None
+  data['roce'] = format_yearly_data(rawdata['roce'], 'ROCE') if 'roce' in rawdata else None 
+  data['roa'] = format_yearly_data(rawdata['roa'], 'ROA') if 'roa' in rawdata else None    
+  data['currentRatio'] = format_yearly_data(rawdata['currentRatio'], 'Current Ratio') if 'currentRatio' in rawdata else None 
+  data['netIncomeRatio'] = format_yearly_data(rawdata['netIncomeRatio'], 'Net Income Ratio') if 'netIncomeRatio' in rawdata else None 
+  data['netIncome'] = format_yearly_data(rawdata['netIncome'], 'Net Income') if 'netIncome' in rawdata else None 
+  data['operatingProfit'] = format_yearly_data(rawdata['operatingProfit'], 'Operating Profit') if 'operatingProfit' in rawdata else None 
+  data['de'] = format_yearly_data(rawdata['de'], 'D/E ratio', '', True) if 'de' in rawdata else None 
+  data['profitMargin'] = format_yearly_data(rawdata['profitMargin'], 'Profit Margin') if 'profitMargin' in rawdata else None 
+  data['totalAsset'] = format_yearly_data(rawdata['totalAsset'], 'Total Asset') if 'totalAsset' in rawdata else None 
+  data['dividendYield'] = format_yearly_data(rawdata['dividendYield'], 'Dividend Yield') if 'dividendYield' in rawdata else None 
   
-  data['navQuarterly'] = format_quarterly_data(rawdata['navQuaterly'], 'NAV') if 'navQuaterly' in rawdata else {} 
-  data['nocfpsQuarterly'] = format_quarterly_data(rawdata['nocfpsQuaterly'], 'NPCFPS') if 'nocfpsQuaterly' in rawdata else {} 
+  data['navQuarterly'] = format_quarterly_data(rawdata['navQuaterly'], 'NAV') if 'navQuaterly' in rawdata and len(rawdata['navQuaterly']) > 0 else None
+  data['nocfpsQuarterly'] = format_quarterly_data(rawdata['nocfpsQuaterly'], 'NOCFPS') if 'nocfpsQuaterly' in rawdata and len(rawdata['nocfpsQuaterly']) > 0 else None
   
-  data['epsQuarterly'] = format_eps_quarterly_data(rawdata['epsQuaterly'], rawdata['epsCurrent'])  
+  data['epsQuarterly'] = format_eps_quarterly_data(rawdata['epsQuaterly'], rawdata['epsCurrent']) if 'epsQuaterly' in rawdata and len(rawdata['epsQuaterly']) > 0 else None
   
   data['dividend'] = format_dividend_data(rawdata['cashDividend'], rawdata['stockDividend'])
   
-  data['dividendPayoutRatio'] = format_dividend_payout_ratio(rawdata['cashDividend'], rawdata['epsYearly'], rawdata['faceValue'], 'Dividend payout ratio')
-  { 'tradingCode': trading_code }
+  data['dividendPayoutRatio'] = format_dividend_payout_ratio(rawdata['cashDividend'], rawdata['epsYearly'], rawdata['faceValue'], 'Dividend payout ratio') if 'epsYearly' in rawdata and len(rawdata['epsYearly']) > 0 else None 
   
-  print(data)
+  # print(data)
   
   mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { "$set": { "screener": data } })
     
-for trading_code in stocks_list:
+success_items = []
+error_items = []    
+
+for items in stocks_list:
+  trading_code = items['tradingCode']
+  # try:
   data_calc(trading_code)
+  print(trading_code, "Success")
+  success_items.append(trading_code)
+  # except:
+  #   print(trading_code, "Error")
+  #   error_items.append(trading_code)
+
+# print("Success: ", success_items)
+# print("Error: ", error_items)
+
+  

@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ['ANWARGALV', 'BSRMSTEEL']
+# stocks_list = ['BBS']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -20,7 +20,12 @@ for stock in stocks_list:
   })
 
   if 'epsQuaterly' in stock_data :
-    eps_data = sorted(stock_data['epsQuaterly'], key=lambda d: str(d['year']), reverse=True)[0] 
+    eps_quarterly_data = sorted(stock_data['epsQuaterly'], key=lambda d: str(d['year']), reverse=True)
+
+    if len(eps_quarterly_data) < 1:
+      continue
+
+    eps_data = eps_quarterly_data[0] 
 
     count = 0
 
@@ -36,17 +41,22 @@ for stock in stocks_list:
     if count == 0:
       eps = 0
     else:
-      total = eps_data['q1'] if 'q1' in eps_data else 0 + eps_data['q2'] if 'q2' in eps_data else 0 + eps_data['q3'] if 'q3' in eps_data else 0 + eps_data['q4'] if 'q4' in eps_data else 0
-      
-      eps = round((total / count) * 4, 3)
+      eps_q1 = eps_data['q1'] if 'q1' in eps_data else 0
+      eps_q2 = eps_data['q2'] if 'q2' in eps_data else 0
+      eps_q3 = eps_data['q3'] if 'q3' in eps_data else 0
+      eps_q4 = eps_data['q4'] if 'q4' in eps_data else 0
 
-    # print(stock, eps)
+      total = eps_q1 + eps_q2 + eps_q3 + eps_q4
+
+      eps = round((total / count) * 4, 3)
 
     myquery = { 'tradingCode': stock }
 
     newvalues = { "$set": { 
         "epsCurrent": eps,
     } }
+
+    # print(stock, eps)
 
     mydb.fundamentals.update_one(myquery, newvalues)
 
