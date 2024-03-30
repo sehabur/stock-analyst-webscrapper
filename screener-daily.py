@@ -1,27 +1,22 @@
 import pymongo, datetime, certifi
 from variables import mongo_string
 import math
+from data import stocks_list
 
-colors = ['#00A25B', '#2962ff', '#f23645']
+# stocks_list = ['BESTHLDNG', 'ROBI']
+
+# error_share = ['BATBC', 'CLICL', 'DELTALIFE', 'FAREASTLIF', 'GIB', 'ICICL', 'IDLC', 'IMAMBUTTON', 'KTL', 'MEGHNALIFE', 'MIDLANDBNK', 'MIRACLEIND', 'NATLIFEINS', 'NEWLINE', 'NPOLYMER', 'ONEBANKPLC', 'PADMALIFE', 'POPULARLIF', 'PRAGATILIF', 'PRIMEFIN', 'RUPALILIFE', 'SINGERBD', 'SONALILIFE', 'TILIL']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
-stocks_list = mydb.fundamentals.find({}, { "tradingCode": 1 })
+data_setting = mydb.settings.find_one()
 
-stocks_list = [{
-  "tradingCode": "BSCCL"
-}]
+if data_setting['dataInsertionEnable'] == 0:
+    print('exiting script')
+    exit()
 
-# print(stocks_list)
-# for items in stocks_list:
-#   print(items['tradingCode'])
-# exit()
-
-# data_setting = mydb.settings.find_one()
-# if data_setting['dataInsertionEnable'] == 0:
-#     print('exiting script')
-#     exit()
+colors = ['#00A25B', '#2962ff', '#f23645']
 
 def calc_year_growth(data, year_count):
   curr_year = data[0]['year']
@@ -235,6 +230,7 @@ def format_eps_quarterly_data(init_data, ttmValue):
   }
   
 def format_dividend_data(cash_div_raw_data, stock_div_raw_data):
+
   cash_div_data = sorted(cash_div_raw_data, key=lambda x: x['year'], reverse=True)
   stock_div_data = sorted(stock_div_raw_data, key=lambda x: x['year'], reverse=True)
     
@@ -370,7 +366,19 @@ def format_ps_data(trading_code, sector, revenue_init_data, market_cap):
       '$project': {
         '_id': 0,
         'tradingCode': 1,
-        'ps': { '$round': [ { '$divide': [ { '$multiply': [ '$marketCap', 1000000 ] }, { '$last': '$revenue.value' } ] }, 3 ]  },
+        'ps': { 
+          '$round': [ 
+            { 
+              '$divide': [ 
+                { 
+                  '$multiply': [ '$marketCap', 1000000 ] 
+                }, 
+                { '$last': '$revenue.value' } 
+              ] 
+            }, 
+            3 
+          ]  
+        },
         'year': { '$last': '$revenue.year' }
       }
     },
@@ -391,7 +399,6 @@ def format_ps_data(trading_code, sector, revenue_init_data, market_cap):
       index_matched = index + 1
     index += 1  
   
-  # print(sector_data_list)
   median = math.floor(index / 2)   
         
   position = ''
@@ -428,7 +435,7 @@ def format_ps_data(trading_code, sector, revenue_init_data, market_cap):
   } 
   
 def format_shareholding(shareholding):
-  
+
   if shareholding[-2]['institute'] == 0:
     if shareholding[-1]['institute'] == 0:
       percent_change_inst = 0
@@ -453,14 +460,74 @@ def format_shareholding(shareholding):
     }
   }
 
+def format_reserve(reserve):
+  data_length = len(reserve)
+
+  if data_length == 0:
+    return None
+  elif data_length == 1:
+    return {
+      'period': reserve[0]['date'][-4:],
+      'value': reserve[0]['value'],
+      'percentChange': None,
+      'comment': "--",
+      'overview': 'Reserve and Surplus for the year ' +  reserve[0]['date'][-4:] + ' was ' + str(round(reserve[0]['value']/10, 2)) + ' crore BDT',
+      'color': colors[1],
+    } 
+  elif data_length >= 2:
+
+    if reserve[-2]['value'] == 0:
+      if reserve[-1]['value'] == 0:
+        percent_change = 0
+      else :
+        percent_change = 100  
+    else:  
+      percent_change = round(((reserve[-1]['value'] - reserve[-2]['value'] ) / reserve[-2]['value'] * 100), 2)
+      
+    percent_change_abs_value = str(abs(percent_change))
+
+    reserve_year = reserve[-1]['date'][-4:]
+    reserve_value = round((reserve[-1]['value']/10), 2)
+
+    comment = ''
+    overview = 'Reserve and Surplus for the year ' +  reserve_year + ' was ' + str(reserve_value) + ' crore BDT'
+
+    if percent_change > 0:
+      comment = percent_change_abs_value + '%' + ' incr over last year'
+      overview += 'Reserve and Surplus increased by ' + percent_change_abs_value + '%' + ' over last year (' + reserve_year + ').'
+      color = colors[0] 
+    elif percent_change < 0:
+      comment = percent_change_abs_value + '%' + ' decr from last year' 
+      overview += 'Reserve and Surplus decreased by ' + percent_change_abs_value + '%' + ' from last year (' + reserve_year + ').'
+      color = colors[2]
+    elif percent_change == 0:
+      comment = 'No change from last year'
+      overview += ' remains same as last year (' + reserve_year + ').'
+      color = colors[1]
+    else:
+      color = colors[1]
+
+    return {
+      'period': reserve_year,
+      'value': reserve_value,
+      'percentChange': percent_change,
+      'comment': comment,
+      'overview': overview,
+      'color': color,
+    }
+
 def data_calc(trading_code):
-  # print(trading_code)
+  print(trading_code)
+
   rawdata = mydb.fundamentals.find_one({ 'tradingCode': trading_code })
+
   data = {}
   
   data['ps'] = format_ps_data(trading_code, rawdata['sector'], rawdata['revenue'], rawdata['marketCap']) if 'revenue' in rawdata else None
        
   data['shareholding'] = format_shareholding(rawdata['shareHoldingPercentage']) if 'shareHoldingPercentage' in rawdata else None
+
+  data['reserveSurplus'] = format_reserve(rawdata['reserveSurplus']) if 'reserveSurplus' in rawdata else None
       
   data['epsYearly'] = format_yearly_data_basic(rawdata['epsYearly']) if 'epsYearly' in rawdata and len(rawdata['epsYearly']) > 0 else None 
   data['navYearly'] = format_yearly_data_basic(rawdata['navYearly']) if 'navYearly' in rawdata and len(rawdata['navYearly']) > 0 else None 
@@ -487,26 +554,23 @@ def data_calc(trading_code):
   
   data['epsQuarterly'] = format_eps_quarterly_data(rawdata['epsQuaterly'], rawdata['epsCurrent']) if 'epsQuaterly' in rawdata and len(rawdata['epsQuaterly']) > 0 else None
   
-  data['dividend'] = format_dividend_data(rawdata['cashDividend'], rawdata['stockDividend'])
+  data['dividend'] = format_dividend_data(rawdata['cashDividend'], rawdata['stockDividend']) if ('cashDividend' in rawdata and 'stockDividend' in rawdata) else None
   
   data['dividendPayoutRatio'] = format_dividend_payout_ratio(rawdata['cashDividend'], rawdata['epsYearly'], rawdata['faceValue'], 'Dividend payout ratio') if 'epsYearly' in rawdata and len(rawdata['epsYearly']) > 0 else None 
-  
-  # print(data)
-  
+    
   mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { "$set": { "screener": data } })
     
 success_items = []
 error_items = []    
 
-for items in stocks_list:
-  trading_code = items['tradingCode']
-  # try:
-  data_calc(trading_code)
-  print(trading_code, "Success")
-  success_items.append(trading_code)
-  # except:
-  #   print(trading_code, "Error")
-  #   error_items.append(trading_code)
+for stock_code in stocks_list:
+  try:
+    data_calc(stock_code)
+    # print(stock_code, "Success")
+    success_items.append(stock_code)
+  except:
+    # print(stock_code, "Error")
+    error_items.append(stock_code)
 
 # print("Success: ", success_items)
 # print("Error: ", error_items)

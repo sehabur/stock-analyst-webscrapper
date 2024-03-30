@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ['BBS']
+# stocks_list = ['BESTHLDNG', 'NRBBANK', 'SICL', 'GP']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -56,10 +56,10 @@ for stock in stocks_list:
         "epsCurrent": eps,
     } }
 
-    # print(stock, eps)
-
     mydb.fundamentals.update_one(myquery, newvalues)
 
+    print(stock, eps, 'Success')
+
   else:
-    print(stock, 'error occured!')
+    print(stock, 'error occured. epsQuaterly not found')
   

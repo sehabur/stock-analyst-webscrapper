@@ -13,6 +13,8 @@ if data_setting['dataInsertionEnable'] == 0:
 
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
+tomorrow_date = today_date + datetime.timedelta(days=1)
+
 news_list = mydb.news.find({
     # 'date':   { '$gte':  datetime.datetime(2023, 11, 19, 0, 0) } ,
     'date': today_date,
@@ -384,10 +386,10 @@ for news in temp_data.values():
         'dividendYield': dividend_yield_y_data,
         'lastAgm': agm_date,
         'recordDate': record_date,
+        'declarationDate': tomorrow_date,
     }
 
     # print(newvalues)
     # exit()
-
     mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { '$set': newvalues })
     

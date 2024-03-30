@@ -1,4 +1,5 @@
 import requests, re
+import requests, re
 from bs4 import BeautifulSoup
 import pandas as pd
 import pymongo, datetime, certifi
@@ -10,24 +11,13 @@ stocks_list_test = [
     'RAKCERAMIC',
     'STANCERAM', 
     'MONNOCERA',
-    # 'FUWANGCER', 
     "ACFL",
-    # "ACI",
-    # "ACIFORMULA",
     "ACMELAB", 
-    # "APEXFOODS",
-    # "APEXFOOT",
-    # "APEXSPINN",
-    # "APEXTANRY",
-    # "APOLOISPAT",
-    # "ARAMIT"
     ]
-
 stocks_issue_cash = [
      "DBH",
      "MEGHNACEM", 
 ]
-
 stocks_issue_nav = [
      "BDWELDING",
      "FAMILYTEX",
@@ -68,11 +58,8 @@ def basic_data(stock_code):
                 'value' : float(stock_div_text[x])
             })
         x=x+2
-    return stockDividend
-    
-    
-    '''
-    
+
+        
 
     table_data = []
     for row in page_data_array[1].find_all('td')[0:8]:
@@ -225,7 +212,7 @@ def basic_data(stock_code):
     data['lastUpdate'] = datetime.datetime.now(ZoneInfo('Asia/Dhaka'))
 
     return data
-'''
+
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]

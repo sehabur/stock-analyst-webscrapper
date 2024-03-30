@@ -13,7 +13,34 @@ if data_setting['dataInsertionEnable'] == 0:
     print('exiting script')
     exit()
 
-data = mydb.latest_prices.aggregate([
+data = mydb.daily_prices.aggregate([
+    {
+      '$match': {
+        'date': today_date
+      }
+    },
+    {
+      '$unionWith': {
+        'coll': "inactive_stocks",
+        'pipeline': [
+          {
+            "$addFields": {
+              "date": today_date,
+              'ltp':  '$price',
+              'ycp':  '$price',
+              'high':  '$price',
+              'low':  '$price',
+              'close':  '$price',
+              'open':  '$price',
+              'change':  0,
+              'trade':  0,
+              'value':  0,
+              'volume':  0,
+            },
+          }
+        ]
+      },
+    },
     {
       '$lookup': {
         'from': 'fundamentals',
@@ -31,6 +58,7 @@ data = mydb.latest_prices.aggregate([
             'high': { '$avg': '$high' },
             'low': { '$avg': '$low' },
             'close': { '$avg': '$close' },
+            'open': { '$avg': '$open' },
             'change': { '$avg': '$change' },
             'trade': { '$sum': '$trade' },
             'value': { '$sum': '$value' },
@@ -47,6 +75,7 @@ data = mydb.latest_prices.aggregate([
         'high': { '$round': ['$high', 2] },
         'low': { '$round': ['$low', 2] },
         'close': { '$round': ['$close', 2] },
+        'open': { '$round': ['$open', 2] },
         'change': { '$round': ['$change', 2] },
         'trade': { '$round': ['$trade', 2] },
         'value': { '$round': ['$value', 2] },

@@ -2,7 +2,7 @@ import pymongo, certifi, datetime
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ['PDL']
+# stocks_list = ['BESTHLDNG', 'NRBBANK', 'SICL', 'GP']
 
 """
     This script will run everyday regardless 
@@ -313,7 +313,6 @@ def basic_data_update(trading_code):
 
     mydb.daily_prices.update_one(myquery, newvalues)
 
-
 for stock in stocks_list:
     basic_data_update(stock)
-    print(stock, 'success')
+    # print(stock, 'success')

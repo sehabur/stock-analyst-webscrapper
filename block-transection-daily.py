@@ -2,9 +2,6 @@ import requests, datetime, pymongo, certifi
 from bs4 import BeautifulSoup
 from variables import mongo_string
 
-# myclient = pymongo.MongoClient(mongo_string)
-# mydb = myclient["stockAnalyst"]
-
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
@@ -46,3 +43,10 @@ for y in range (int(len(page_data_array)/6)):
   x=x+6
 
 mydb.block_transections.insert_many(data)
+
+myquery = {}
+newvalues = { "$set": { "dailyBlockTrUpdateDate": date } }
+
+mydb.settings.update_one(myquery, newvalues)
+
+myclient.close()
