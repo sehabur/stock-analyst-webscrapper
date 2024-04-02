@@ -21,15 +21,20 @@ def shareholding_data(stock_code):
 
     page_data_array = soup.find_all('table', attrs={'class': 'table table-bordered background-white'})
 
+    for item in page_data_array[0]:
+        item = str(item)
+        x = item.find("Market Capitalization (mn)")
+        if x != -1:
+            market_cap = float(item.split('<td>')[2].split('</td>')[0].replace(",", ''))
+
     table_data = []
     for row in page_data_array[9].find_all('td')[0:]:
         table_data.append(row.text.strip())
 
+    category = table_data[3] 
 
-    # SET CATEGORY #
-    category = table_data[3]    
-    
-    mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'category': category } })
+    # SET CATEGORY & MARKET_CAP #   
+    mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'category': category, 'marketCap': market_cap } })
 
     # SET SHAREHOLDING #
     if 'Share Holding Percentage' in table_data[20].split("\r\n")[0]: 

@@ -73,6 +73,14 @@ df = get_hist_data(formatted_date, formatted_date)
 share_data_array = []
 
 for x in range(df.shape[0]): 
+
+  if (float(df.iloc[x]['ycp']) == 0 or float(df.iloc[x]['ltp']) == 0):
+    change = 0
+    percent_change = 0
+  else:
+    change = round((float(df.iloc[x]['ltp'])) - (float(df.iloc[x]['ycp'])), 2)
+    percent_change = round((float(df.iloc[x]['ltp'])-float(df.iloc[x]['ycp']))/float(df.iloc[x]['ycp'])*100, 2)
+
   share_data_array.append({
     'date': datetime.datetime.strptime(df.index[x] , '%Y-%m-%d'),
     'tradingCode': df.iloc[x]['symbol'],
@@ -82,12 +90,15 @@ for x in range(df.shape[0]):
     'open': (float(df.iloc[x]['open'])),
     'close': (float(df.iloc[x]['close'])),
     'ycp': (float(df.iloc[x]['ycp'])),
-    'change': round((float(df.iloc[x]['ltp'])) - (float(df.iloc[x]['ycp'])), 2),
-    'percentChange': 0 if float(df.iloc[x]['ycp']) == 0 else round((float(df.iloc[x]['ltp'])-float(df.iloc[x]['ycp']))/float(df.iloc[x]['ycp'])*100, 2),
+    'change': change,
+    'percentChange': percent_change,
     'trade': (float(df.iloc[x]['trade'])),
     'value': (float(df.iloc[x]['value'])),
     'volume': (float(df.iloc[x]['volume'])),
   })
+
+# print(share_data_array)  
+# exit()
 
 mydb.daily_prices.insert_many(share_data_array)
 

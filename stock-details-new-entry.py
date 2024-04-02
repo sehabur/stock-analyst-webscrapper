@@ -2,7 +2,7 @@ import requests, pymongo, certifi
 from bs4 import BeautifulSoup
 from variables import mongo_string
 
-stocks_list = ['BESTHLDNG']
+stocks_list = ['ASIATICLAB']
 
 def basic_data(stock_code):
     print(stock_code, 'start')
@@ -101,6 +101,7 @@ def basic_data(stock_code):
         "email": table_data[10],
         "website": table_data[12]
     }
+    data['isActive'] = True
 
     return data
 

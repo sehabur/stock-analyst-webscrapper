@@ -5,16 +5,16 @@ from data import stocks_list
 
 # stocks_list = ['BESTHLDNG', 'ROBI']
 
-# error_share = ['BATBC', 'CLICL', 'DELTALIFE', 'FAREASTLIF', 'GIB', 'ICICL', 'IDLC', 'IMAMBUTTON', 'KTL', 'MEGHNALIFE', 'MIDLANDBNK', 'MIRACLEIND', 'NATLIFEINS', 'NEWLINE', 'NPOLYMER', 'ONEBANKPLC', 'PADMALIFE', 'POPULARLIF', 'PRAGATILIF', 'PRIMEFIN', 'RUPALILIFE', 'SINGERBD', 'SONALILIFE', 'TILIL']
+# stocks_list = ['BATBC', 'CLICL', 'DELTALIFE', 'FAREASTLIF', 'GIB', 'ICICL', 'IDLC', 'IMAMBUTTON', 'KTL', 'MEGHNALIFE', 'MIDLANDBNK', 'MIRACLEIND', 'NATLIFEINS', 'NEWLINE', 'NPOLYMER', 'ONEBANKPLC', 'PADMALIFE', 'POPULARLIF', 'PRAGATILIF', 'PRIMEFIN', 'RUPALILIFE', 'SINGERBD', 'SONALILIFE', 'TILIL']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
 data_setting = mydb.settings.find_one()
 
-if data_setting['dataInsertionEnable'] == 0:
-    print('exiting script')
-    exit()
+# if data_setting['dataInsertionEnable'] == 0:
+#     print('exiting script')
+#     exit()
 
 colors = ['#00A25B', '#2962ff', '#f23645']
 
@@ -49,6 +49,9 @@ def format_yearly_data(init_data, title, unit='', percentChangeReverse=False):
       'value': data[0]['value'],
       'percentChange': None,
       'percentChangeFiveYear': None,
+      'comment': None,
+      'overview': None,
+      'color': None,
     }
   
   unit = ' ' + unit if unit != '' else '' 
@@ -127,6 +130,9 @@ def format_yearly_data_basic(init_data):
   
 def format_quarterly_data(init_data, title, unit=''):
   data = sorted(init_data, key=lambda x: x['year'], reverse=True)
+
+  if len(data) == 0 : return None
+
   q_current = sorted(data[0].items(), reverse=True)
   
   q_year = q_current[0][1]
@@ -136,11 +142,21 @@ def format_quarterly_data(init_data, title, unit=''):
   
   q_value_this = q_current[1][1]
 
+  if len(data) == 1 : 
+    return {
+    'period': quarter_name,
+    'value': q_value_this,
+    'percentChange': None,
+    'comment': None,
+    'overview': None,
+    'color': None,
+    }
+
   q_value_last = data[1][q_quarter] if q_quarter in data[1] else None
   
   if q_value_last == None:
     percent_change = None
-  if q_value_last == 0:
+  elif q_value_last == 0:
     percent_change = 100
     percent_change_abs_value = str(abs(percent_change))
   else:
@@ -297,7 +313,7 @@ def format_dividend_payout_ratio(cash_div_raw_data, eps_yearly_raw_data, face_va
     if cash_div_value == 0:
       dividend_payout_ratio = 0
     else:
-      dividend_payout_ratio = round((cash_div_value * 100 / (face_value * eps_value)), 3) if eps_value != 0 else None 
+      dividend_payout_ratio = round((cash_div_value * 100 / (face_value * eps_value)), 3) if eps_value != 0 else 0 
       
     data.append({
       'year': year,
@@ -564,13 +580,15 @@ success_items = []
 error_items = []    
 
 for stock_code in stocks_list:
-  try:
-    data_calc(stock_code)
-    # print(stock_code, "Success")
-    success_items.append(stock_code)
-  except:
-    # print(stock_code, "Error")
-    error_items.append(stock_code)
+  data_calc(stock_code)
+  # try:
+  #   data_calc(stock_code)
+  #   # print(stock_code, "Success")
+  #   success_items.append(stock_code)
+  # except:
+  #   # print(stock_code, "Error")
+  #   error_items.append(stock_code)
+
 
 # print("Success: ", success_items)
 # print("Error: ", error_items)

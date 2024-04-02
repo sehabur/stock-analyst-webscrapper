@@ -59,10 +59,16 @@ share_data_array = []
 
 for x in range(df.shape[0]):
 
-  if (float(df.loc[x]['ycp']) == 0 or float(df.loc[x]['ltp']) == 0):
+  if (float(df.iloc[x]['ycp']) == 0 or float(df.iloc[x]['ltp']) == 0):
     percent_change = 0
   else:
-    percent_change = round((float(df.loc[x]['ltp'])-float(df.loc[x]['ycp']))/float(df.loc[x]['ycp'])*100, 2)
+    percent_change = round(float(df.loc[x]['ltp']-float(df.loc[x]['ycp']))/float(df.loc[x]['ycp'])*100, 2)
+
+  # close_price = float(df.loc[x]['close']) if float(df.loc[x]['close']) != 0 else float(df.loc[x]['ltp'])
+  # if (float(df.loc[x]['ycp']) == 0 or close_price == 0):
+  #   percent_change = 0
+  # else:
+  #   percent_change = round((close_price-float(df.loc[x]['ycp']))/float(df.loc[x]['ycp'])*100, 2)
     
   share_data_array.append({
     'date': datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0), 
@@ -79,6 +85,9 @@ for x in range(df.shape[0]):
     'value': (float(df.loc[x]['value'])),
     'volume': (float(df.loc[x]['volume'])),
   })
+
+# print(share_data_array)
+# exit()  
 
 mydb.latest_prices.delete_many({})
 mydb.latest_prices.insert_many(share_data_array)
