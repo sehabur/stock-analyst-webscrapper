@@ -2,7 +2,7 @@ import requests, pymongo, certifi
 from bs4 import BeautifulSoup
 from variables import mongo_string
 
-stocks_list = ['ASIATICLAB']
+stocks_list = ['CAPITECGBF']
 
 def basic_data(stock_code):
     print(stock_code, 'start')

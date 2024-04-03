@@ -78,8 +78,8 @@ for x in range(df.shape[0]):
     change = 0
     percent_change = 0
   else:
-    change = round((float(df.iloc[x]['ltp'])) - (float(df.iloc[x]['ycp'])), 2)
-    percent_change = round((float(df.iloc[x]['ltp'])-float(df.iloc[x]['ycp']))/float(df.iloc[x]['ycp'])*100, 2)
+    change = round(float(df.iloc[x]['ltp']) - float(df.iloc[x]['ycp']), 2)
+    percent_change = round((float(df.iloc[x]['ltp'])-float(df.iloc[x]['ycp']))/ float(df.iloc[x]['ycp']) *100 , 2)
 
   share_data_array.append({
     'date': datetime.datetime.strptime(df.index[x] , '%Y-%m-%d'),
@@ -96,9 +96,6 @@ for x in range(df.shape[0]):
     'value': (float(df.iloc[x]['value'])),
     'volume': (float(df.iloc[x]['volume'])),
   })
-
-# print(share_data_array)  
-# exit()
 
 mydb.daily_prices.insert_many(share_data_array)
 

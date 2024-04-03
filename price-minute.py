@@ -62,8 +62,8 @@ for x in range(df.shape[0]):
   if (float(df.iloc[x]['ycp']) == 0 or float(df.iloc[x]['ltp']) == 0):
     percent_change = 0
   else:
-    percent_change = round(float(df.loc[x]['ltp']-float(df.loc[x]['ycp']))/float(df.loc[x]['ycp'])*100, 2)
-
+    percent_change = round((float(df.loc[x]['ltp'])-float(df.loc[x]['ycp']))/ float(df.loc[x]['ycp']) *100 , 2)
+  
   # close_price = float(df.loc[x]['close']) if float(df.loc[x]['close']) != 0 else float(df.loc[x]['ltp'])
   # if (float(df.loc[x]['ycp']) == 0 or close_price == 0):
   #   percent_change = 0
