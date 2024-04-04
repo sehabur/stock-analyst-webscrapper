@@ -1,4 +1,3 @@
-from bdshare import *
 import pymongo, datetime, certifi
 from variables import mongo_string
 import requests
