@@ -22,6 +22,19 @@ page_data_array = soup.find(attrs={'class': 'col-md-6 col-xs-12 col-sm-12 LeftCo
 last_document = mydb.index_minute_values.find_one(sort=[('_id', -1)])
 
 newvalues = { 
+    'dsex' : {
+    'index' : float(page_data_array[3]),
+    'change' : float(page_data_array[5]),
+    'percentChange' : float(page_data_array[7].strip().replace('%',''))
+}, 'dses' : {
+    'index' : float(page_data_array[12]),
+    'change' : float(page_data_array[14]),
+    'percentChange' : float(page_data_array[16].strip().replace('%',''))
+}, 'dse30' : {
+    'index' : float(page_data_array[21]),
+    'change' : float(page_data_array[23]),
+    'percentChange' : float(page_data_array[25].strip().replace('%',''))
+},
    'totalTrade' : float(page_data_array[36]),
    'totalVolume' : float(page_data_array[38]),
    'totalValue' : float(page_data_array[40]), 
