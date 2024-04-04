@@ -96,8 +96,8 @@ for x in range(df.shape[0]):
     'volume': (float(df.iloc[x]['volume'])),
   })
 
-print(share_data_array)
-exit()
+# print(share_data_array)
+# exit()
 
 mydb.daily_prices.insert_many(share_data_array)
 
