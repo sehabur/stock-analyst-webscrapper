@@ -25,8 +25,8 @@ def get_hist_data(start=None, end=None, code='All Instrument'):
 
     r = requests.get("https://www.dsebd.org/day_end_archive.php", params=data)
 
-    #soup = BeautifulSoup(r.text, 'html.parser')
-    soup = BeautifulSoup(r.content, 'html5lib')
+    soup = BeautifulSoup(r.text, 'html.parser')
+    # soup = BeautifulSoup(r.content, 'html5lib')
 
     quotes = []
 
@@ -95,6 +95,9 @@ for x in range(df.shape[0]):
     'value': (float(df.iloc[x]['value'])),
     'volume': (float(df.iloc[x]['volume'])),
   })
+
+print(share_data_array)
+exit()
 
 mydb.daily_prices.insert_many(share_data_array)
 
