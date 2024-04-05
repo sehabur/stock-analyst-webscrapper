@@ -5,6 +5,9 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
+
 def get_hist_data(start=None, end=None, code='All Instrument'):
     """
         get historical stock price.
@@ -27,13 +30,15 @@ def get_hist_data(start=None, end=None, code='All Instrument'):
 
     r = requests.get("https://www.dsebd.org/day_end_archive.php", params=data)
 
-    #soup = BeautifulSoup(r.text, 'html.parser')
-    soup = BeautifulSoup(r.content, 'html5lib')
+    soup = BeautifulSoup(r.text, 'html.parser')
+    # soup = BeautifulSoup(r.content, 'html5lib')
 
     quotes = []  # a list to store quotes
 
     table = soup.find('table', attrs={
                       'class': 'table table-bordered background-white shares-table fixedHeader'})
+    
+    print(table)
     for row in table.find_all('tr')[1:]:
         cols = row.find_all('td')
         quotes.append({'date': cols[1].text.strip().replace(",", ""),
@@ -55,31 +60,43 @@ def get_hist_data(start=None, end=None, code='All Instrument'):
     else:
         print('No data found')
     return df
-
-df = get_hist_data('2024-03-20','2024-03-20', "TRUSTBANK")
  
-share_data_array = []
+def insert_data(df): 
+  share_data_array = []
 
-for x in range(df.shape[0]): 
-  # print(datetime.datetime.strptime(df.index[x] , '%Y-%m-%d')) 
-  share_data_array.append({
-    'date': datetime.datetime.strptime(df.index[x] , '%Y-%m-%d'),
-    'tradingCode': df.iloc[x]['symbol'],
-    'ltp': (float(df.iloc[x]['ltp'])),
-    'high': (float(df.iloc[x]['high'])),
-    'low': (float(df.iloc[x]['low'])),
-    'open': (float(df.iloc[x]['open'])),
-    'close': (float(df.iloc[x]['close'])),
-    'ycp': (float(df.iloc[x]['ycp'])),
-    'change': round((float(df.iloc[x]['ltp'])) - (float(df.iloc[x]['ycp'])), 2),
-    'percentChange': 0 if float(df.iloc[x]['ycp']) == 0 else round((float(df.iloc[x]['ltp'])-float(df.iloc[x]['ycp']))/float(df.iloc[x]['ycp'])*100, 2),
-    'trade': (float(df.iloc[x]['trade'])),
-    'value': (float(df.iloc[x]['value'])),
-    'volume': (float(df.iloc[x]['volume'])),
-  })
+  for x in range(df.shape[0]): 
+    
+    if (float(df.iloc[x]['ycp']) == 0 or float(df.iloc[x]['ltp']) == 0):
+      change = 0
+      percent_change = 0
+    else:
+      change = round(float(df.iloc[x]['ltp']) - float(df.iloc[x]['ycp']), 2)
+      percent_change = round((float(df.iloc[x]['ltp'])-float(df.iloc[x]['ycp']))/float(df.iloc[x]['ycp'])*100, 2)
 
-myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
-mycol = mydb["daily_prices"]
-mycol.insert_many(share_data_array)
+    share_data_array.append({
+      'date': datetime.datetime.strptime(df.index[x] , '%Y-%m-%d'),
+      'tradingCode': df.iloc[x]['symbol'],
+      'ltp': (float(df.iloc[x]['ltp'])),
+      'high': (float(df.iloc[x]['high'])),
+      'low': (float(df.iloc[x]['low'])),
+      'open': (float(df.iloc[x]['open'])),
+      'close': (float(df.iloc[x]['close'])),
+      'ycp': (float(df.iloc[x]['ycp'])),
+      'change': change,
+      'percentChange': percent_change,
+      'trade': (float(df.iloc[x]['trade'])),
+      'value': (float(df.iloc[x]['value'])),
+      'volume': (float(df.iloc[x]['volume'])),
+    })
 
+  mydb.daily_prices_new.insert_many(share_data_array)
+
+for x in range(1, 2):
+  print(f'2022-{x}-01', " : start")
+  df = get_hist_data(f'2022-{x}-01', f'2022-{x}-31',)
+  # print(df)
+  insert_data(df)
+  print(f'2022-{x}-01', " : complete")
+
+
+  
