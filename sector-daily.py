@@ -7,11 +7,11 @@ today_date = datetime.datetime.now().replace(year=2024, month=3, day=17, hour=0,
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
-# data_setting = mydb.settings.find_one()
+data_setting = mydb.settings.find_one()
 
-# if data_setting['dataInsertionEnable'] == 0:
-#     print('exiting script')
-#     exit()
+if data_setting['dataInsertionEnable'] == 0:
+    print('exiting script')
+    exit()
 
 data = mydb.daily_prices.aggregate([
     {

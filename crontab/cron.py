@@ -6,6 +6,7 @@
 
 * 4-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-minute.py
 0-30 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-minute.py
+31-35 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-minute-end.py
 
 * 4-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-minute.py
 0-30 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-minute.py

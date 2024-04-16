@@ -47,9 +47,11 @@ def get_current_trade_data(symbol=None, retry_count=1, pause=0.001):
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
+doc_count = mydb.latest_prices.count_documents({})
+
 data_setting = mydb.settings.find_one()
 
-if data_setting['dataInsertionEnable'] == 0:
+if data_setting['dataInsertionEnable'] == 0 or doc_count != 0:
     print('exiting script')
     exit()
 
@@ -63,13 +65,7 @@ for x in range(df.shape[0]):
     percent_change = 0
   else:
     percent_change = round((float(df.loc[x]['ltp'])-float(df.loc[x]['ycp']))/ float(df.loc[x]['ycp']) *100 , 2)
-  
-  # close_price = float(df.loc[x]['close']) if float(df.loc[x]['close']) != 0 else float(df.loc[x]['ltp'])
-  # if (float(df.loc[x]['ycp']) == 0 or close_price == 0):
-  #   percent_change = 0  
-  # else:
-  #   percent_change = round((close_price-float(df.loc[x]['ycp']))/float(df.loc[x]['ycp'])*100, 2)
-    
+      
   share_data_array.append({
     'date': datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0), 
     'time': datetime.datetime.now(timezone('Asia/Dhaka')).replace(second=0, microsecond=0), 
@@ -86,15 +82,6 @@ for x in range(df.shape[0]):
     'volume': (float(df.loc[x]['volume'])),
   })
 
-# print(share_data_array)
-# exit()  
-
-mydb.latest_prices.delete_many({})
-
 mydb.latest_prices.insert_many(share_data_array)
-
-mydb.day_minute_prices.insert_many(share_data_array)
-
-mydb.minute_prices.insert_many(share_data_array)
 
 myclient.close()
