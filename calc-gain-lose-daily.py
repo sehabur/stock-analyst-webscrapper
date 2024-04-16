@@ -2,7 +2,7 @@ import pymongo, certifi, datetime
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ['BESTHLDNG', 'NRBBANK', 'SICL', 'GP']
+# stocks_list = ['DBH', 'SUMITPOWER']
 
 """
     This script will run everyday regardless 
@@ -120,13 +120,14 @@ def basic_data_update(trading_code):
                             'value': 1,
                             'volume': 1,
                             'trade': 1,
+                            'ycp': 1
                         }
                     }
                 ],
                 'alltime': [
                     {
                         '$match': {
-                            'low' : {
+                            'ltp' : {
                                 '$gt': 0
                             }
                         }
@@ -145,7 +146,7 @@ def basic_data_update(trading_code):
                     },
                     {
                         '$match': {
-                            'low' : {
+                            'ltp' : {
                                 '$gt': 0
                             }
                         }
@@ -164,7 +165,7 @@ def basic_data_update(trading_code):
                     },
                     {
                         '$match': {
-                            'low' : {
+                            'ltp' : {
                                 '$gt': 0
                             }
                         }
@@ -183,7 +184,7 @@ def basic_data_update(trading_code):
                     },
                     {
                         '$match': {
-                            'low' : {
+                            'ltp' : {
                                 '$gt': 0
                             }
                         }
@@ -202,7 +203,7 @@ def basic_data_update(trading_code):
                     },
                     {
                         '$match': {
-                            'low' : {
+                            'ltp' : {
                                 '$gt': 0
                             }
                         }
@@ -221,7 +222,7 @@ def basic_data_update(trading_code):
                     },
                     {
                         '$match': {
-                            'low' : {
+                            'ltp' : {
                                 '$gt': 0
                             }
                         }
@@ -267,10 +268,10 @@ def basic_data_update(trading_code):
     for item in rawdata:
         if len(check_element) > 0:
             if item['date'] <= query_date[check_element[0]]:
-                before_data[check_element[0]] = item['ltp']
-                before_value[check_element[0]] = item['value']
-                before_volume[check_element[0]] = item['volume']
-                before_trade[check_element[0]] = item['trade']
+                before_data[check_element[0]] = item['ltp'] if item['ltp'] != 0 else item['ycp']
+                before_value[check_element[0]] = item['value'] if item['value'] != 0 else 0.000001
+                before_volume[check_element[0]] = item['volume'] if item['volume'] != 0 else 0.000001
+                before_trade[check_element[0]] = item['trade'] if item['trade'] != 0 else 0.000001
                 check_element.pop(0)
 
     fiveYearBeforeData = before_data['fiveYearly'] if 'fiveYearly' in before_data  else "-"
