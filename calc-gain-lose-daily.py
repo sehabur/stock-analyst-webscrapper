@@ -116,7 +116,10 @@ def basic_data_update(trading_code):
                             '_id': 0,
                             'date': 1,
                             'ltp': 1,
-                            'close': 1
+                            'close': 1,
+                            'value': 1,
+                            'volume': 1,
+                            'trade': 1,
                         }
                     }
                 ],
@@ -257,12 +260,17 @@ def basic_data_update(trading_code):
         'fiveYearly',
     ]
     before_data = {}
+    before_value = {}
+    before_volume = {}
+    before_trade = {}
 
     for item in rawdata:
         if len(check_element) > 0:
             if item['date'] <= query_date[check_element[0]]:
-                before_data[check_element[0]] = item['close']
-                # before_data[check_element[0]] = item
+                before_data[check_element[0]] = item['ltp']
+                before_value[check_element[0]] = item['value']
+                before_volume[check_element[0]] = item['volume']
+                before_trade[check_element[0]] = item['trade']
                 check_element.pop(0)
 
     fiveYearBeforeData = before_data['fiveYearly'] if 'fiveYearly' in before_data  else "-"
@@ -270,6 +278,24 @@ def basic_data_update(trading_code):
     sixMonthBeforeData = before_data['sixMonthly'] if 'sixMonthly' in before_data  else "-"
     oneMonthBeforeData = before_data['monthly'] if 'monthly' in before_data  else "-"
     oneWeekBeforeData = before_data['weekly'] if 'weekly' in before_data  else "-"
+
+    fiveYearBeforeValue = before_value['fiveYearly'] if 'fiveYearly' in before_value  else "-"
+    oneYearBeforeValue = before_value['yearly'] if 'yearly' in before_value  else "-"
+    sixMonthBeforeValue = before_value['sixMonthly'] if 'sixMonthly' in before_value  else "-"
+    oneMonthBeforeValue = before_value['monthly'] if 'monthly' in before_value  else "-"
+    oneWeekBeforeValue = before_value['weekly'] if 'weekly' in before_value  else "-"
+
+    fiveYearBeforeVolume = before_volume['fiveYearly'] if 'fiveYearly' in before_volume  else "-"
+    oneYearBeforeVolume = before_volume['yearly'] if 'yearly' in before_volume  else "-"
+    sixMonthBeforeVolume = before_volume['sixMonthly'] if 'sixMonthly' in before_volume  else "-"
+    oneMonthBeforeVolume = before_volume['monthly'] if 'monthly' in before_volume  else "-"
+    oneWeekBeforeVolume = before_volume['weekly'] if 'weekly' in before_volume  else "-"
+
+    fiveYearBeforeTrade = before_trade['fiveYearly'] if 'fiveYearly' in before_trade  else "-"
+    oneYearBeforeTrade = before_trade['yearly'] if 'yearly' in before_trade  else "-"
+    sixMonthBeforeTrade = before_trade['sixMonthly'] if 'sixMonthly' in before_trade  else "-"
+    oneMonthBeforeTrade = before_trade['monthly'] if 'monthly' in before_trade  else "-"
+    oneWeekBeforeTrade = before_trade['weekly'] if 'weekly' in before_trade  else "-"
 
     alltimeHigh = data['alltime'][0]['high'] if len(data['alltime']) > 0 else "-"
     fiveYearHigh = data['fiveYear'][0]['high']  if len(data['fiveYear']) > 0 else "-"
@@ -285,7 +311,6 @@ def basic_data_update(trading_code):
     oneMonthLow = data['oneMonth'][0]['low'] if len(data['oneMonth']) > 0 else "-"
     oneWeekLow = data['oneWeek'][0]['low'] if len(data['oneWeek']) > 0 else "-"
     
-
     data_setting = mydb.settings.find_one()
 
     myquery = { 'tradingCode': trading_code, 'date': data_setting['dailyPriceUpdateDate'] }
@@ -303,16 +328,34 @@ def basic_data_update(trading_code):
         "sixMonthLow": sixMonthLow,
         "oneMonthLow": oneMonthLow,
         "oneWeekLow": oneWeekLow,
+
         "fiveYearBeforeData": fiveYearBeforeData,
-        "oneYearBeforeData": oneYearBeforeData,
         "oneYearBeforeData": oneYearBeforeData,
         "sixMonthBeforeData": sixMonthBeforeData,
         "oneMonthBeforeData": oneMonthBeforeData,
         "oneWeekBeforeData": oneWeekBeforeData,
+
+        "fiveYearBeforeValue": fiveYearBeforeValue,
+        "oneYearBeforeValue": oneYearBeforeValue,
+        "sixMonthBeforeValue": sixMonthBeforeValue,
+        "oneMonthBeforeValue": oneMonthBeforeValue,
+        "oneWeekBeforeValue": oneWeekBeforeValue,
+
+        "fiveYearBeforeVolume": fiveYearBeforeVolume,
+        "oneYearBeforeVolume": oneYearBeforeVolume,
+        "sixMonthBeforeVolume": sixMonthBeforeVolume,
+        "oneMonthBeforeVolume": oneMonthBeforeVolume,
+        "oneWeekBeforeVolume": oneWeekBeforeVolume,
+
+        "fiveYearBeforeTrade": fiveYearBeforeTrade,
+        "oneYearBeforeTrade": oneYearBeforeTrade,
+        "sixMonthBeforeTrade": sixMonthBeforeTrade,
+        "oneMonthBeforeTrade": oneMonthBeforeTrade,
+        "oneWeekBeforeTrade": oneWeekBeforeTrade,
     } }
 
     mydb.daily_prices.update_one(myquery, newvalues)
 
 for stock in stocks_list:
     basic_data_update(stock)
-    # print(stock, 'success')
+    print(stock, 'success') 

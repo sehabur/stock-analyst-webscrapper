@@ -47,11 +47,11 @@ def get_current_trade_data(symbol=None, retry_count=1, pause=0.001):
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
-data_setting = mydb.settings.find_one()
+# data_setting = mydb.settings.find_one()
 
-if data_setting['dataInsertionEnable'] == 0:
-    print('exiting script')
-    exit()
+# if data_setting['dataInsertionEnable'] == 0:
+#     print('exiting script')
+#     exit()
 
 df = get_current_trade_data()
 
@@ -66,7 +66,7 @@ for x in range(df.shape[0]):
   
   # close_price = float(df.loc[x]['close']) if float(df.loc[x]['close']) != 0 else float(df.loc[x]['ltp'])
   # if (float(df.loc[x]['ycp']) == 0 or close_price == 0):
-  #   percent_change = 0
+  #   percent_change = 0  
   # else:
   #   percent_change = round((close_price-float(df.loc[x]['ycp']))/float(df.loc[x]['ycp'])*100, 2)
     
@@ -94,6 +94,6 @@ mydb.latest_prices.insert_many(share_data_array)
 
 mydb.day_minute_prices.insert_many(share_data_array)
 
-mydb.minute_prices.insert_many(share_data_array)
+# mydb.minute_prices.insert_many(share_data_array)
 
 myclient.close()
