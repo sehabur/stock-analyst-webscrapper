@@ -2,7 +2,9 @@ import pymongo, certifi, datetime
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ['DBH', 'SUMITPOWER']
+print(stocks_list)
+exit()
+# stocks_list = ['GP', 'ROBI']
 
 """
     This script will run everyday regardless 

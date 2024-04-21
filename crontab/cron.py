@@ -23,6 +23,7 @@
 30 11 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-eps-daily.py
 35 11 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-shareholding-daily.py
 40 11 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/reserve-surplus-daily.py
+45 11 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/screener-daily.py
 
 45 11 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/market-end.py
 

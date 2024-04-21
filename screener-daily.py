@@ -12,9 +12,9 @@ mydb = myclient["stockanalyst"]
 
 data_setting = mydb.settings.find_one()
 
-# if data_setting['dataInsertionEnable'] == 0:
-#     print('exiting script')
-#     exit()
+if data_setting['dataInsertionEnable'] == 0:
+    print('exiting script')
+    exit()
 
 colors = ['#00A25B', '#2962ff', '#f23645']
 
@@ -580,14 +580,14 @@ success_items = []
 error_items = []    
 
 for stock_code in stocks_list:
-  data_calc(stock_code)
-  # try:
-  #   data_calc(stock_code)
-  #   # print(stock_code, "Success")
-  #   success_items.append(stock_code)
-  # except:
-  #   # print(stock_code, "Error")
-  #   error_items.append(stock_code)
+  # data_calc(stock_code)
+  try:
+    data_calc(stock_code)
+    # print(stock_code, "Success")
+    success_items.append(stock_code)
+  except:
+    # print(stock_code, "Error")
+    error_items.append(stock_code)
 
 
 # print("Success: ", success_items)
