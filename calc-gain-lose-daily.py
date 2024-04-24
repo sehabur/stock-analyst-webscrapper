@@ -2,8 +2,6 @@ import pymongo, certifi, datetime
 from variables import mongo_string
 from data import stocks_list
 
-print(stocks_list)
-exit()
 # stocks_list = ['GP', 'ROBI']
 
 """
