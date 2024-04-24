@@ -9,6 +9,9 @@ from data import stocks_list
     of share opening or close day
 """
 
+myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
+mydb = myclient["stockanalyst"]
+
 def calculate_query_date(type, today):
     query_date = {}
     if type == 'monthly':
@@ -92,11 +95,7 @@ def calculate_query_date(type, today):
  
     return datetime.datetime(query_date['year'], query_date['month'], query_date['day'], 0, 0)
 
-def basic_data_update(trading_code):
-
-    myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-    mydb = myclient["stockanalyst"]
-
+def basic_data_update(trading_code):    
     initialdata = mydb.daily_prices.aggregate([
         {
             '$match': {
@@ -357,6 +356,15 @@ def basic_data_update(trading_code):
 
     mydb.daily_prices.update_one(myquery, newvalues)
 
-for stock in stocks_list:
-    basic_data_update(stock)
-    print(stock, 'success') 
+try:
+    for stock in stocks_list:
+        basic_data_update(stock)
+        print(stock, 'success') 
+except Exception as excp:
+    print("Error: ", excp)
+    mydb.errors.insert_one({
+        'script': 'calc-gain-lose-daily',
+        'message': str(excp),
+        'createdAt': datetime.datetime.now()
+    })
+   
