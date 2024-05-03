@@ -19,19 +19,31 @@ soup = BeautifulSoup(response.text, 'html.parser')
 
 news_data_array = soup.find('table', attrs={'class':'table-news'})
 
-data = []
 table_data = []
 for row in news_data_array.find_all('td')[0:]:
   table_data.append(row.text.strip())
 
-x=0
+x = 0
+news_data = []
 for y in range (int(len(table_data)/4)):
-  data.append ({
+  news_data.append ({
     'tradingCode': table_data[x] ,
     'title': table_data[x+1],
     'description': table_data[x+2],
     'date': datetime.datetime.strptime(table_data[x+3], '%Y-%m-%d'),
     })
-  x=x+4
+  x = x+4
 
-mydb.news.insert_many(data)
+today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+today_news_temp = mydb.news.find({ "date": today_date }, {'tradingCode': 1, 'title': 1, "_id": 0 })  
+
+today_news_title = []
+for news in today_news_temp:
+  today_news_title.append(news['title'])
+
+for item in news_data:
+  if item['title'] not in today_news_title:
+    mydb.news.insert_one(item)
+    print(item, "Data insertion successful")
+  else:
+    print('news already inserted')  

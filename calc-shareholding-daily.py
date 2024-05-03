@@ -12,7 +12,7 @@ if data_setting['dataInsertionEnable'] == 0:
     print('exiting script')
     exit()
 
-# stocks_list = ['BESTHLDNG', 'NRBBANK', 'SICL']
+# stocks_list = ['MIDASFIN', 'IPDC']
 
 def shareholding_data(stock_code):
     stock_url  = 'https://www.dsebd.org/displayCompany.php?name='+ stock_code
@@ -28,13 +28,22 @@ def shareholding_data(stock_code):
             market_cap = float(item.split('<td>')[2].split('</td>')[0].replace(",", ''))
 
     table_data = []
+    for row in page_data_array[1].find_all('td')[0:8]:
+        table_data.append(row.text.strip())
+
+    total_shares = float(table_data[6].replace(",", ''))     
+
+    table_data = []
     for row in page_data_array[9].find_all('td')[0:]:
         table_data.append(row.text.strip())
 
     category = table_data[3] 
 
-    # SET CATEGORY & MARKET_CAP #   
-    mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'category': category, 'marketCap': market_cap } })
+    # print(stock_code, total_shares, market_cap, category)
+    # exit()
+
+    # SET CATEGORY, TOTAL SHARES & MARKET_CAP #   
+    mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'category': category, 'marketCap': market_cap, "totalShares": total_shares } })
 
     # SET SHAREHOLDING #
     if 'Share Holding Percentage' in table_data[20].split("\r\n")[0]: 
@@ -82,7 +91,7 @@ def shareholding_data(stock_code):
             print(stock_code, 'data already exists')
     else:
         mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'shareHoldingPercentage': [ shareHoldings ] } })
-        print(stock_code, 'success first entry')
+        print(stock_code, 'success: first entry')
 
 for stock in stocks_list:
     shareholding_data(stock)
