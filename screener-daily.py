@@ -1,9 +1,9 @@
 import pymongo, datetime, certifi
 from variables import mongo_string
 import math
-# from data import stocks_list
+from data import stocks_list
 
-stocks_list = ['OIMEX', 'ROBI']
+# stocks_list = ['OIMEX', 'ROBI']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
