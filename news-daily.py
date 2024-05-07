@@ -1,6 +1,7 @@
 import pymongo, datetime, certifi, requests
 from bs4 import BeautifulSoup
 from variables import mongo_string
+from pytz import timezone
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -31,10 +32,12 @@ for y in range (int(len(table_data)/4)):
     'title': table_data[x+1],
     'description': table_data[x+2],
     'date': datetime.datetime.strptime(table_data[x+3], '%Y-%m-%d'),
+    'time': datetime.datetime.now(timezone('Asia/Dhaka')).replace(second=0, microsecond=0), 
     })
   x = x+4
 
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
 today_news_temp = mydb.news.find({ "date": today_date }, {'tradingCode': 1, 'title': 1, "_id": 0 })  
 
 today_news_title = []

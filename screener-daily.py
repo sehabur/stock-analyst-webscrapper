@@ -1,11 +1,9 @@
 import pymongo, datetime, certifi
 from variables import mongo_string
 import math
-from data import stocks_list
+# from data import stocks_list
 
-# stocks_list = ['BESTHLDNG', 'ROBI']
-
-# stocks_list = ['BATBC', 'CLICL', 'DELTALIFE', 'FAREASTLIF', 'GIB', 'ICICL', 'IDLC', 'IMAMBUTTON', 'KTL', 'MEGHNALIFE', 'MIDLANDBNK', 'MIRACLEIND', 'NATLIFEINS', 'NEWLINE', 'NPOLYMER', 'ONEBANKPLC', 'PADMALIFE', 'POPULARLIF', 'PRAGATILIF', 'PRIMEFIN', 'RUPALILIFE', 'SINGERBD', 'SONALILIFE', 'TILIL']
+stocks_list = ['OIMEX', 'ROBI']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -62,7 +60,7 @@ def format_yearly_data(init_data, title, unit='', percentChangeReverse=False):
     else :
       percent_change = 100  
   else:  
-    percent_change = round(((data[0]['value'] - data[1]['value'] ) / data[1]['value'] * 100), 2)
+    percent_change = round(((data[0]['value'] - data[1]['value'] ) / abs(data[1]['value']) * 100), 2)
   
   percent_change_abs_value = str(abs(percent_change))
   
@@ -118,7 +116,7 @@ def format_yearly_data_basic(init_data):
     else :
       percent_change = 100  
   else:  
-    percent_change = round(((data[0]['value'] - data[1]['value'] ) / data[1]['value'] * 100), 2)
+    percent_change = round(((data[0]['value'] - data[1]['value'] ) / abs(data[1]['value']) * 100), 2)
   
   five_year_growth = calc_year_growth(data, 5)
   return {
@@ -158,10 +156,10 @@ def format_quarterly_data(init_data, title, unit=''):
     percent_change = None
   elif q_value_last == 0:
     percent_change = 100
-    percent_change_abs_value = str(abs(percent_change))
   else:
-    percent_change = round(((q_value_this - q_value_last) / q_value_last * 100), 2)
-    percent_change_abs_value = str(abs(percent_change))
+    percent_change = round(((q_value_this - q_value_last) / abs(q_value_last) * 100), 2)
+
+  percent_change_abs_value = str(abs(percent_change)) if percent_change else None
     
   unit = ' ' + unit if unit != '' else ''
   comment = ''
@@ -209,9 +207,10 @@ def format_eps_quarterly_data(init_data, ttmValue):
   if q_value_last == None:
     percent_change = None  
   else:
-    percent_change = round(((q_value_this - q_value_last) / q_value_last * 100), 2)
-    percent_change_abs_value = str(abs(percent_change))
-    
+    percent_change = round(((q_value_this - q_value_last) / abs(q_value_last) * 100), 2)
+
+  percent_change_abs_value = str(abs(percent_change)) if percent_change else None  
+  
   comment = ''
   overview = '12 trailing month EPS is ' + str(ttmValue) + '. EPS for ' +  quarter_name + ' was ' + str(q_value_this) + '. EPS'
   
@@ -498,7 +497,7 @@ def format_reserve(reserve):
       else :
         percent_change = 100  
     else:  
-      percent_change = round(((reserve[-1]['value'] - reserve[-2]['value'] ) / reserve[-2]['value'] * 100), 2)
+      percent_change = round(((reserve[-1]['value'] - reserve[-2]['value'] ) / abs(reserve[-2]['value']) * 100), 2)
       
     percent_change_abs_value = str(abs(percent_change))
 
