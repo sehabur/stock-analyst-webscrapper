@@ -16,10 +16,15 @@ today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microse
 tomorrow_date = today_date + datetime.timedelta(days=1)
 
 news_list = mydb.news.find({
-    # 'date':   { '$gte':  datetime.datetime(2023, 11, 19, 0, 0) } ,
     'date': today_date,
     'title': { '$regex': 'Dividend Declaration$', '$options': 'i' } ,
 }).sort("date", 1)
+
+# news_list = mydb.news.find({
+#     'date':   { '$gte':  datetime.datetime(2024, 5, 5, 0, 0) } ,
+#     # 'date': today_date,
+#     'title': { '$regex': 'ABBANK: Dividend Declaration', '$options': 'i' } ,
+# }).sort("date", 1)
 
 temp_data = {}
 
@@ -372,7 +377,12 @@ for news in temp_data.values():
                     dividend_yield_y_data.append({
                         'year': year,
                         'value': dividend_yield
-                    })                
+                    })    
+        else:
+            dividend_yield_y_data.append({
+                'year': year,
+                'value': 0
+            })  
 
     newvalues = {
         'epsQuaterly': eps_q_data,
@@ -388,7 +398,6 @@ for news in temp_data.values():
         'recordDate': record_date,
         'declarationDate': tomorrow_date,
     }
-
     # print(newvalues)
     # exit()
     mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { '$set': newvalues })

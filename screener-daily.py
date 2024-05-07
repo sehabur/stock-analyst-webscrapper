@@ -3,7 +3,7 @@ from variables import mongo_string
 import math
 from data import stocks_list
 
-# stocks_list = ['OIMEX', 'ROBI']
+# stocks_list = ['DHAKAINS', 'ROBI', 'EHL']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -235,7 +235,7 @@ def format_eps_quarterly_data(init_data, ttmValue):
   return {
     'quarter': quarter_name,
     'quarterValue': q_value_this,
-    'period': 'TTM',
+    'period': 'Audited' if len(q_current) == 5 else 'TTM',
     'value': ttmValue,
     'percentChange': percent_change,
     'comment': comment,
@@ -532,8 +532,6 @@ def format_reserve(reserve):
     }
 
 def data_calc(trading_code):
-  print(trading_code)
-
   rawdata = mydb.fundamentals.find_one({ 'tradingCode': trading_code })
 
   data = {}
@@ -587,7 +585,6 @@ for stock_code in stocks_list:
   except:
     # print(stock_code, "Error")
     error_items.append(stock_code)
-
 
 # print("Success: ", success_items)
 # print("Error: ", error_items)
