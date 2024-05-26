@@ -96,8 +96,57 @@ for x in range(df.shape[0]):
     'volume': (float(df.iloc[x]['volume'])),
   })
 
-# print(share_data_array)
-# exit()
+index_value = mydb.index_daily_values.find_one({ 'date': today_date })
+
+index_data = [
+   {
+    'date': today_date,
+    'tradingCode': '00DSEX',
+    'ltp': index_value['dsex']['index'],
+    'high': index_value['dsex']['high'],
+    'low': index_value['dsex']['low'],
+    'open': index_value['dsex']['open'],
+    'close': index_value['dsex']['close'],
+    'ycp': index_value['dsex']['open'],
+    'change': index_value['dsex']['change'],
+    'percentChange': index_value['dsex']['percentChange'], 
+    'trade': index_value['totalTrade'],
+    'value': index_value['totalValue'],
+    'volume': index_value['totalVolume'],
+   },
+   {
+    'date': today_date,
+    'tradingCode': '00DSES',
+    'ltp': index_value['dses']['index'],
+    'high': index_value['dses']['high'],
+    'low': index_value['dses']['low'],
+    'open': index_value['dses']['open'],
+    'close': index_value['dses']['close'],
+    'ycp': index_value['dses']['open'],
+    'change': index_value['dses']['change'],
+    'percentChange': index_value['dses']['percentChange'], 
+    'trade': index_value['totalTrade'],
+    'value': index_value['totalValue'],
+    'volume': index_value['totalVolume'],
+   },
+   {
+    'date': today_date,
+    'tradingCode': '00DS30',
+    'ltp': index_value['dse30']['index'],
+    'high': index_value['dse30']['high'],
+    'low': index_value['dse30']['low'],
+    'open': index_value['dse30']['open'],
+    'close': index_value['dse30']['close'],
+    'ycp': index_value['dse30']['open'],
+    'change': index_value['dse30']['change'],
+    'percentChange': index_value['dse30']['percentChange'], 
+    'trade': index_value['totalTrade'],
+    'value': index_value['totalValue'],
+    'volume': index_value['totalVolume'],
+   },
+]  
+
+share_data_array.extend(index_data)
 
 mydb.daily_prices.insert_many(share_data_array)
 

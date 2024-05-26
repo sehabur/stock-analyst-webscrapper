@@ -34,7 +34,7 @@
 40 2-14 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/quarter-news-scraping-hourly.py
 45 2-14 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/yearly-news-scraping-hourly.py
 50 2-14 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-eps-hourly.py
-55 11 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/screener-hourly.py
+55 2-14 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/screener-hourly.py
 
 58 14 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/market-end.py
 
