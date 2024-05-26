@@ -1,5 +1,5 @@
 import pymongo, certifi, datetime, re
-from data import stocks_list_details
+from data import stocks_list
 from variables import mongo_string
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
@@ -18,7 +18,7 @@ tomorrow_date = today_date + datetime.timedelta(days=1)
 news_list = mydb.news.find({
     'date': today_date,
     'title': { '$regex': 'Dividend Declaration$', '$options': 'i' } ,
-}).sort("date", 1)
+})
 
 # news_list = mydb.news.find({
 #     'date':   { '$gte':  datetime.datetime(2024, 5, 5, 0, 0) } ,
@@ -29,8 +29,14 @@ news_list = mydb.news.find({
 temp_data = {}
 
 for news in news_list: 
+    trading_code = news['tradingCode']
+
+    if trading_code not in stocks_list:
+        print('trading code not found')
+        continue
+
     title = news['title'].split()
-    id = news['tradingCode'] + news['date'].strftime('%d%m%Y')
+    id = trading_code + news['date'].strftime('%d%m%Y')
 
     if id in temp_data:
         if temp_data[id]['description'].startswith("(Continuation news") or temp_data[id]['description'].startswith("(Cont. news"):
@@ -40,7 +46,7 @@ for news in news_list:
     else:
         temp_data[id] = {
             'title': news['title'] + ' ' + news['date'].strftime('%d%m%Y'),
-            'tradingCode': news['tradingCode'],
+            'tradingCode': trading_code,
             'description': news['description'],
             'date': news['date']
         }

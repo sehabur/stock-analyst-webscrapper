@@ -26,8 +26,6 @@ for news in news_list:
   code = re.split(" ", news['title'])[0].replace(":", "")
   description = re.split(" ", news['description'])
 
-  # print (news['title'], news['description'])
-
   filtered_list = [e for e in stocks_list_details if e['tradingCode'] == code]
 
   if len(filtered_list) < 1:

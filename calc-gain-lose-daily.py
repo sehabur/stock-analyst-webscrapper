@@ -242,7 +242,6 @@ def basic_data_update(trading_code):
 
     rawdata = data['rawData']
 
-    # today = datetime.datetime.fromisoformat('2023-11-06')
     today = datetime.date.today()
 
     query_date = {
@@ -267,11 +266,16 @@ def basic_data_update(trading_code):
     for item in rawdata:
         if len(check_element) > 0:
             if item['date'] <= query_date[check_element[0]]:
-                before_data[check_element[0]] = item['ltp'] if item['ltp'] != 0 else item['ycp']
-                before_value[check_element[0]] = item['value'] if item['value'] != 0 else 0.000001
-                before_volume[check_element[0]] = item['volume'] if item['volume'] != 0 else 0.000001
-                before_trade[check_element[0]] = item['trade'] if item['trade'] != 0 else 0.000001
-                check_element.pop(0)
+                if check_element[0] == 'fiveYearly':
+                    before_data[check_element[0]] = item['ltp'] if item['ltp'] != 0 else item['ycp']
+                    before_volume[check_element[0]] = item['volume'] if item['volume'] != 0 else 0.000001
+                    check_element.pop(0)
+                else:
+                    before_data[check_element[0]] = item['ltp'] if item['ltp'] != 0 else item['ycp']
+                    before_value[check_element[0]] = item['value'] if item['value'] != 0 else 0.000001
+                    before_volume[check_element[0]] = item['volume'] if item['volume'] != 0 else 0.000001
+                    before_trade[check_element[0]] = item['trade'] if item['trade'] != 0 else 0.000001
+                    check_element.pop(0)
 
     fiveYearBeforeData = before_data['fiveYearly'] if 'fiveYearly' in before_data  else "-"
     oneYearBeforeData = before_data['yearly'] if 'yearly' in before_data  else "-"
@@ -279,7 +283,8 @@ def basic_data_update(trading_code):
     oneMonthBeforeData = before_data['monthly'] if 'monthly' in before_data  else "-"
     oneWeekBeforeData = before_data['weekly'] if 'weekly' in before_data  else "-"
 
-    fiveYearBeforeValue = before_value['fiveYearly'] if 'fiveYearly' in before_value  else "-"
+    # fiveYearBeforeValue = before_value['fiveYearly'] if 'fiveYearly' in before_value  else "-"
+    fiveYearBeforeValue =  None
     oneYearBeforeValue = before_value['yearly'] if 'yearly' in before_value  else "-"
     sixMonthBeforeValue = before_value['sixMonthly'] if 'sixMonthly' in before_value  else "-"
     oneMonthBeforeValue = before_value['monthly'] if 'monthly' in before_value  else "-"
@@ -291,7 +296,8 @@ def basic_data_update(trading_code):
     oneMonthBeforeVolume = before_volume['monthly'] if 'monthly' in before_volume  else "-"
     oneWeekBeforeVolume = before_volume['weekly'] if 'weekly' in before_volume  else "-"
 
-    fiveYearBeforeTrade = before_trade['fiveYearly'] if 'fiveYearly' in before_trade  else "-"
+    # fiveYearBeforeTrade = before_trade['fiveYearly'] if 'fiveYearly' in before_trade  else "-"
+    fiveYearBeforeTrade = None
     oneYearBeforeTrade = before_trade['yearly'] if 'yearly' in before_trade  else "-"
     sixMonthBeforeTrade = before_trade['sixMonthly'] if 'sixMonthly' in before_trade  else "-"
     oneMonthBeforeTrade = before_trade['monthly'] if 'monthly' in before_trade  else "-"
@@ -355,6 +361,11 @@ def basic_data_update(trading_code):
     } }
 
     mydb.daily_prices.update_one(myquery, newvalues)
+
+# for stock in stocks_list:
+#     print(stock)
+#     basic_data_update(stock)
+#     print(stock, 'success') 
 
 try:
     for stock in stocks_list:

@@ -12,8 +12,6 @@ if data_setting['dataInsertionEnable'] == 0:
     print('exiting script')
     exit()
 
-# stocks_list = ['MIDASFIN', 'IPDC']
-
 def shareholding_data(stock_code):
     stock_url  = 'https://www.dsebd.org/displayCompany.php?name='+ stock_code
     response = requests.get(stock_url)
@@ -38,9 +36,6 @@ def shareholding_data(stock_code):
         table_data.append(row.text.strip())
 
     category = table_data[3] 
-
-    # print(stock_code, total_shares, market_cap, category)
-    # exit()
 
     # SET CATEGORY, TOTAL SHARES & MARKET_CAP #   
     mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'category': category, 'marketCap': market_cap, "totalShares": total_shares } })
@@ -75,7 +70,7 @@ def shareholding_data(stock_code):
         }  
     else:
         return
-    
+        
     old_data = mydb.fundamentals.find_one({ 'tradingCode': stock_code })
 
     if 'shareHoldingPercentage' in old_data:
@@ -94,4 +89,5 @@ def shareholding_data(stock_code):
         print(stock_code, 'success: first entry')
 
 for stock in stocks_list:
+    # print(stock, "start")
     shareholding_data(stock)

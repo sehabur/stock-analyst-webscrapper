@@ -1,4 +1,4 @@
-import pymongo, datetime, certifi, requests
+import pymongo, datetime, certifi, requests, re
 from bs4 import BeautifulSoup
 from variables import mongo_string
 from pytz import timezone
@@ -26,6 +26,7 @@ for row in news_data_array.find_all('td')[0:]:
 
 x = 0
 news_data = []
+test = []
 for y in range (int(len(table_data)/4)):
   news_data.append ({
     'tradingCode': table_data[x] ,
@@ -34,7 +35,8 @@ for y in range (int(len(table_data)/4)):
     'date': datetime.datetime.strptime(table_data[x+3], '%Y-%m-%d'),
     'time': datetime.datetime.now(timezone('Asia/Dhaka')).replace(second=0, microsecond=0), 
     })
-  x = x+4
+  test.append(table_data[x+1])
+  x = x + 4
 
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
@@ -44,9 +46,36 @@ today_news_title = []
 for news in today_news_temp:
   today_news_title.append(news['title'])
 
+screener_news_script_array = []
+
 for item in news_data:
   if item['title'] not in today_news_title:
+
     mydb.news.insert_one(item)
-    print(item, "Data insertion successful")
+
+    q_items = re.search(r'Financials', item['title'], re.IGNORECASE)
+
+    y_items = re.search(r'Dividend Declaration$', item['title'], re.IGNORECASE)
+
+    if q_items :
+      screener_news_script_array.append({
+        'tradingCode': item['tradingCode'],
+        'date': item['date'],
+        'title': item['title'],
+        'script': 'quarterly',
+
+      })
+    elif y_items :
+      screener_news_script_array.append({
+        'tradingCode': item['tradingCode'],
+        'date': item['date'],
+        'title': item['title'],
+        'script': 'yearly'
+      })
+
+    print("Data insertion successful -> ", item)
   else:
     print('news already inserted')  
+
+if len(screener_news_script_array) > 0:
+  mydb.screener_scripts.insert_many(screener_news_script_array)

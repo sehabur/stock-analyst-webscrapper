@@ -1,9 +1,7 @@
 import pymongo, datetime, certifi
 from variables import mongo_string
 import math
-from data import stocks_list
-
-# stocks_list = ['PHENIXINS', 'YPL', 'GP', 'RSRMSTEEL', 'EHL']
+# from data import stocks_list
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -13,6 +11,16 @@ data_setting = mydb.settings.find_one()
 if data_setting['dataInsertionEnable'] == 0:
     print('exiting script')
     exit()
+
+today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+
+screener_scripts = mydb.screener_scripts.find({ 'date': today_date})
+
+stocks_list = []
+for item in screener_scripts:
+  stocks_list.append(item['tradingCode'])
+
+stocks_list = list(set(stocks_list))
 
 colors = ['#00A25B', '#2962ff', '#f23645']
 
@@ -535,12 +543,10 @@ def format_reserve(reserve):
     }
 
 def data_calc(trading_code):
-  print(trading_code)
-
   rawdata = mydb.fundamentals.find_one({ 'tradingCode': trading_code })
 
   data = {}
-
+  
   data['ps'] = format_ps_data(trading_code, rawdata['sector'], rawdata['revenue'], rawdata['marketCap']) if 'revenue' in rawdata else None
        
   data['shareholding'] = format_shareholding(rawdata['shareHoldingPercentage']) if 'shareHoldingPercentage' in rawdata else None
@@ -575,14 +581,13 @@ def data_calc(trading_code):
   data['dividend'] = format_dividend_data(rawdata['cashDividend'], rawdata['stockDividend']) if ('cashDividend' in rawdata and 'stockDividend' in rawdata) else None
   
   data['dividendPayoutRatio'] = format_dividend_payout_ratio(rawdata['cashDividend'], rawdata['epsYearly'], rawdata['faceValue'], 'Dividend payout ratio') if 'epsYearly' in rawdata and len(rawdata['epsYearly']) > 0 else None 
-                                                        
+    
   mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { "$set": { "screener": data } })
     
 success_items = []
 error_items = []    
 
 for stock_code in stocks_list:
-  # data_calc(stock_code)
   try:
     data_calc(stock_code)
     # print(stock_code, "Success")
@@ -590,6 +595,8 @@ for stock_code in stocks_list:
   except:
     # print(stock_code, "Error")
     error_items.append(stock_code)
+
+mydb.screener_scripts.delete_many({ 'date': today_date, 'tradingCode': { '$in': success_items } })
 
 # print("Success: ", success_items)
 # print("Error: ", error_items)
