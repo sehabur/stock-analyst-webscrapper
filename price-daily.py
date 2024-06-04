@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-def get_hist_data(start=None, end=None, code='All Instrument'):
+def get_daily_data(start=None, end=None, code='All Instrument'):
     """
         get historical stock price.
         :param start: str, Start date e.g.: '2020-03-01'
@@ -67,7 +67,7 @@ today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microse
 
 formatted_date = today_date.strftime("%Y-%m-%d")
 
-df = get_hist_data(formatted_date, formatted_date)
+df = get_daily_data(formatted_date, formatted_date)
  
 share_data_array = []
 

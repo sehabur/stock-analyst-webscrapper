@@ -102,6 +102,7 @@ def basic_data(stock_code):
         "website": table_data[12]
     }
     data['isActive'] = True
+    data['type'] = "stock"
 
     return data
 

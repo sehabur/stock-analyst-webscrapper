@@ -215,7 +215,7 @@ def format_patterns(prices):
     return []
 
 def format_candlestick(one_year_prices):
-  candlestick_period = 7
+  candlestick_period = 3
 
   candle_data = {
     'Date': one_year_prices['dates'][-candlestick_period:],
@@ -240,12 +240,12 @@ def format_candlestick(one_year_prices):
 
 def data_calc(trading_code):
 
+  one_year_prices = get_one_year_prices(trading_code)
+  prices = one_year_prices['prices']
+
   data = {}
 
   data['beta'] = calculate_beta(trading_code)
-
-  one_year_prices = get_one_year_prices(trading_code)
-  prices = one_year_prices['prices']
 
   data['movingAverages'] = format_sma_ema(prices)
 
@@ -257,7 +257,6 @@ def data_calc(trading_code):
                                                             
   mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { "$set": { "technicals": data } })
 
-    
 success_items = []
 error_items = []    
 
@@ -270,7 +269,5 @@ for stock_code in stocks_list:
     # print(stock_code, "Error")
     error_items.append(stock_code)
 
-# print("Success: ", success_items)
-# print("Error: ", error_items)
 
   
