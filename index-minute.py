@@ -59,8 +59,8 @@ data_v2 = [
         'change': data['dsex']['change'],
         'percentChange': data['dsex']['percentChange'], 
         'trade': data['totalTrade'],
-        'value': data['totalValue'],
-        'volume': data['totalVolume'],
+        'value': data['totalVolume'],
+        'volume': data['totalValue'] * 1000000,
     },
     {
         'date': today_date,
@@ -70,8 +70,8 @@ data_v2 = [
         'change': data['dses']['change'],
         'percentChange': data['dses']['percentChange'], 
         'trade': data['totalTrade'],
-        'value': data['totalValue'],
-        'volume': data['totalVolume'],
+        'value': data['totalVolume'],
+        'volume': data['totalValue'] * 1000000,
     },
     {
         'date': today_date,
@@ -81,8 +81,8 @@ data_v2 = [
         'change': data['dse30']['change'],
         'percentChange': data['dse30']['percentChange'], 
         'trade': data['totalTrade'],
-        'value': data['totalValue'],
-        'volume': data['totalVolume'],
+        'value': data['totalVolume'],
+        'volume': data['totalValue'] * 1000000,
     },
 ]
 

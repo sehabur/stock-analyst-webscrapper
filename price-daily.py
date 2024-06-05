@@ -64,6 +64,7 @@ if data_setting['dataInsertionEnable'] == 0:
     exit()
 
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+# today_date = datetime.datetime(2024, 6, 4, 0, 0)
 
 formatted_date = today_date.strftime("%Y-%m-%d")
 
@@ -111,8 +112,8 @@ index_data = [
     'change': index_value['dsex']['change'],
     'percentChange': index_value['dsex']['percentChange'], 
     'trade': index_value['totalTrade'],
-    'value': index_value['totalValue'],
-    'volume': index_value['totalVolume'],
+    'value': index_value['totalVolume'],
+    'volume': index_value['totalValue'] * 1000000,
    },
    {
     'date': today_date,
@@ -126,8 +127,8 @@ index_data = [
     'change': index_value['dses']['change'],
     'percentChange': index_value['dses']['percentChange'], 
     'trade': index_value['totalTrade'],
-    'value': index_value['totalValue'],
-    'volume': index_value['totalVolume'],
+    'value': index_value['totalVolume'],
+    'volume': index_value['totalValue'] * 1000000,
    },
    {
     'date': today_date,
@@ -141,8 +142,8 @@ index_data = [
     'change': index_value['dse30']['change'],
     'percentChange': index_value['dse30']['percentChange'], 
     'trade': index_value['totalTrade'],
-    'value': index_value['totalValue'],
-    'volume': index_value['totalVolume'],
+    'value': index_value['totalVolume'],
+    'volume': index_value['totalValue'] * 1000000,
    },
 ]  
 
