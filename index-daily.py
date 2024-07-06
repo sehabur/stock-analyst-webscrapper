@@ -12,11 +12,15 @@ if data_setting['dataInsertionEnable'] == 0:
     exit()
 
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+today_date = datetime.datetime.now().replace(year=2024, month=7, day=4, hour=0, minute=0, second=0, microsecond=0)
 
 data = mydb.index_minute_values.aggregate([
     {
         '$match': {
-            'date': today_date
+            'date': today_date,
+            'dsex.index': { '$ne': 0 },
+            'dses.index': { '$ne': 0 },
+            'dse30.index': { '$ne': 0 },
         }
     },
     {
@@ -100,10 +104,13 @@ data = mydb.index_minute_values.aggregate([
     }
 ])
 
+# for document in data:
+#     print(document)
+
 for document in data:
-    # print(document)
     mydb.index_daily_values.insert_one(document)
     break
+
 myquery = {}
 newvalues = { "$set": { "dailyIndexUpdateDate": today_date } }
 
