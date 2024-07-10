@@ -1,5 +1,4 @@
-import requests, datetime, pymongo, certifi
-from bs4 import BeautifulSoup
+import datetime, pymongo, certifi
 from variables import mongo_string
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
@@ -11,8 +10,8 @@ if data_setting['dataInsertionEnable'] == 0:
     print('exiting script')
     exit()
 
+# today_date = datetime.datetime(2024, 7, 10, 0, 0)
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-today_date = datetime.datetime.now().replace(year=2024, month=7, day=4, hour=0, minute=0, second=0, microsecond=0)
 
 data = mydb.index_minute_values.aggregate([
     {
@@ -103,9 +102,6 @@ data = mydb.index_minute_values.aggregate([
         }
     }
 ])
-
-# for document in data:
-#     print(document)
 
 for document in data:
     mydb.index_daily_values.insert_one(document)

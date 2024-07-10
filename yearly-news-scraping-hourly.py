@@ -17,14 +17,17 @@ tomorrow_date = today_date + datetime.timedelta(days=1)
 
 news_list = mydb.news.find({
     'date': today_date,
-    'title': { '$regex': 'Dividend Declaration$', '$options': 'i' } ,
+    'title': { '$regex': 'Dividend Declaration', '$options': 'i' } ,
 })
 
 # news_list = mydb.news.find({
-#     'date':   { '$gte':  datetime.datetime(2024, 5, 5, 0, 0) } ,
-#     # 'date': today_date,
-#     'title': { '$regex': 'ABBANK: Dividend Declaration', '$options': 'i' } ,
+#     # 'date':   { '$gte':  datetime.datetime(2024, 5, 5, 0, 0) } ,
+#     'date': datetime.datetime.now().replace(year=2023, month=11, day=6, hour=0, minute=0, second=0, microsecond=0),
+#     'title': { '$regex': 'SONALIANSH: Dividend Declaration', '$options': 'i' } ,
 # }).sort("date", 1)
+
+# for a in news_list:
+#     print(a)
 
 temp_data = {}
 
@@ -74,8 +77,7 @@ for news in temp_data.values():
         year = (description[n]).replace(".", '').replace(";", '').replace(",", '')
     else:
         year = 'n/a'    
-                   
-            
+                    
     # Stock Dividend
     n = -1
     for i in range (len(description)):

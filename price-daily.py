@@ -32,6 +32,7 @@ def get_daily_data(start=None, end=None, code='All Instrument'):
 
     table = soup.find('table', attrs={
                       'class': 'table table-bordered background-white shares-table fixedHeader'})
+    
     for row in table.find_all('tr')[1:]:
         cols = row.find_all('td')
         quotes.append({'date': cols[1].text.strip().replace(",", ""),
@@ -46,6 +47,7 @@ def get_daily_data(start=None, end=None, code='All Instrument'):
                        'value': cols[10].text.strip().replace(",", ""),
                        'volume': cols[11].text.strip().replace(",", "")
                        })
+        
     df = pd.DataFrame(quotes)
     if 'date' in df.columns:
         df = df.set_index('date')
@@ -63,8 +65,8 @@ if data_setting['dataInsertionEnable'] == 0:
     print('exiting script')
     exit()
 
-today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 # today_date = datetime.datetime(2024, 6, 4, 0, 0)
+today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 formatted_date = today_date.strftime("%Y-%m-%d")
 

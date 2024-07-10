@@ -1,8 +1,8 @@
 import pymongo, datetime, certifi
 from variables import mongo_string
-
-# today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-today_date = datetime.datetime.now().replace(year=2024, month=3, day=17, hour=0, minute=0, second=0, microsecond=0)
+   
+# today_date = datetime.datetime.now().replace(year=2024, month=3, day=17, hour=0, minute=0, second=0, microsecond=0)
+today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -84,10 +84,6 @@ data = mydb.daily_prices.aggregate([
       },
     },
 ])
-
-# for x in data:
-#   print(x)
-# exit()
 
 mydb.daily_sectors.insert_many(data)
 
