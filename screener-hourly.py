@@ -41,6 +41,7 @@ def calc_year_growth(data, year_count):
   yearly_growth = round(((((curr_year_value / prev_year_value) ** (1 / year_count)).real - 1) * 100), 2)
   return yearly_growth  
 
+
 def format_yearly_data(init_data, title, unit='', percentChangeReverse=False):
 
   data_temp = sorted(init_data, key=lambda x: x['year'], reverse=True)
@@ -60,6 +61,8 @@ def format_yearly_data(init_data, title, unit='', percentChangeReverse=False):
       'color': None,
     }
   
+  formatted_value = round((data[0]['value'] / 10000000), 3) if unit == 'Crore BDT' else (0 if  data[0]['value'] == 0 else data[0]['value'])
+
   unit = ' ' + unit if unit != '' else '' 
   
   if data[1]['value'] == 0:
@@ -73,7 +76,7 @@ def format_yearly_data(init_data, title, unit='', percentChangeReverse=False):
   percent_change_abs_value = str(abs(percent_change))
   
   comment = ''
-  overview = title + ' for the year ' +  data[0]['year'] + ' was ' + str(data[0]['value']) + unit + '. ' + title
+  overview = title + ' for the year ' +  data[0]['year'] + ' was ' + str(formatted_value) + unit + '. ' + title
   
   if percent_change > 0:
     comment = percent_change_abs_value + '%' + ' incr over last year'
@@ -101,6 +104,7 @@ def format_yearly_data(init_data, title, unit='', percentChangeReverse=False):
     'overview': overview,
     'color': color,
   }
+
 
 def format_yearly_data_basic(init_data):
 
@@ -559,19 +563,20 @@ def data_calc(trading_code):
   data['bookValue'] = format_yearly_data_basic(rawdata['bookValue']) if 'bookValue' in rawdata else None 
   data['totalLiabilities'] = format_yearly_data_basic(rawdata['totalLiabilities']) if 'totalLiabilities' in rawdata else None
   data['ebit'] = format_yearly_data_basic(rawdata['ebit']) if 'ebit' in rawdata else None
-  
-  data['revenue'] = format_yearly_data(rawdata['revenue'], 'Revenue', 'BDT') if 'revenue' in rawdata else None
+
   data['roe'] = format_yearly_data(rawdata['roe'], 'ROE') if 'roe' in rawdata else None
   data['roce'] = format_yearly_data(rawdata['roce'], 'ROCE') if 'roce' in rawdata else None 
   data['roa'] = format_yearly_data(rawdata['roa'], 'ROA') if 'roa' in rawdata else None    
   data['currentRatio'] = format_yearly_data(rawdata['currentRatio'], 'Current Ratio') if 'currentRatio' in rawdata else None 
   data['netIncomeRatio'] = format_yearly_data(rawdata['netIncomeRatio'], 'Net Income Ratio') if 'netIncomeRatio' in rawdata else None 
-  data['netIncome'] = format_yearly_data(rawdata['netIncome'], 'Net Income') if 'netIncome' in rawdata else None 
-  data['operatingProfit'] = format_yearly_data(rawdata['operatingProfit'], 'Operating Profit') if 'operatingProfit' in rawdata else None 
   data['de'] = format_yearly_data(rawdata['de'], 'D/E ratio', '', True) if 'de' in rawdata else None 
   data['profitMargin'] = format_yearly_data(rawdata['profitMargin'], 'Profit Margin') if 'profitMargin' in rawdata else None 
-  data['totalAsset'] = format_yearly_data(rawdata['totalAsset'], 'Total Asset') if 'totalAsset' in rawdata else None 
   data['dividendYield'] = format_yearly_data(rawdata['dividendYield'], 'Dividend Yield') if 'dividendYield' in rawdata else None 
+
+  data['revenue'] = format_yearly_data(rawdata['revenue'], 'Revenue', 'Crore BDT') if 'revenue' in rawdata else None
+  data['netIncome'] = format_yearly_data(rawdata['netIncome'], 'Net Income', 'Crore BDT') if 'netIncome' in rawdata else None 
+  data['operatingProfit'] = format_yearly_data(rawdata['operatingProfit'], 'Operating Profit', 'Crore BDT') if 'operatingProfit' in rawdata else None 
+  data['totalAsset'] = format_yearly_data(rawdata['totalAsset'], 'Total Asset', 'Crore BDT') if 'totalAsset' in rawdata else None 
   
   data['navQuarterly'] = format_quarterly_data(rawdata['navQuaterly'], 'NAV') if 'navQuaterly' in rawdata and len(rawdata['navQuaterly']) > 0 else None
   data['nocfpsQuarterly'] = format_quarterly_data(rawdata['nocfpsQuaterly'], 'NOCFPS') if 'nocfpsQuaterly' in rawdata and len(rawdata['nocfpsQuaterly']) > 0 else None

@@ -3,7 +3,7 @@ from variables import mongo_string
 import math
 from data import stocks_list
 
-# stocks_list = ['AFTABAUTO']
+# stocks_list = ['RENWICKJA']
 # stocks_list = ['PHENIXINS', 'YPL', 'GP', 'RSRMSTEEL', 'EHL']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
@@ -53,7 +53,9 @@ def format_yearly_data(init_data, title, unit='', percentChangeReverse=False):
       'color': None,
     }
   
-  formatted_value = round((data[0]['value'] / 10000000), 3) if unit == 'Crore BDT' else data[0]['value']
+  formatted_value = round((data[0]['value'] / 10000000), 3) if unit == 'Crore BDT' else (0 if  data[0]['value'] == 0 else data[0]['value'])
+
+  # print(title, formatted_value)
 
   unit = ' ' + unit if unit != '' else '' 
   
@@ -577,10 +579,7 @@ def data_calc(trading_code):
   
   data['dividend'] = format_dividend_data(rawdata['cashDividend'], rawdata['stockDividend']) if ('cashDividend' in rawdata and 'stockDividend' in rawdata) else None
   
-  data['dividendPayoutRatio'] = format_dividend_payout_ratio(rawdata['cashDividend'], rawdata['epsYearly'], rawdata['faceValue'], 'Dividend payout ratio') if 'epsYearly' in rawdata and len(rawdata['epsYearly']) > 0 else None 
-
-  # print(data)
-  # exit()                                                      
+  data['dividendPayoutRatio'] = format_dividend_payout_ratio(rawdata['cashDividend'], rawdata['epsYearly'], rawdata['faceValue'], 'Dividend payout ratio') if 'epsYearly' in rawdata and len(rawdata['epsYearly']) > 0 else None                                                   
                                                        
   mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { "$set": { "screener": data } })
     

@@ -382,4 +382,10 @@ for stock in stocks_list:
             'tradingCode': stock,
             'createdAt': datetime.datetime.now()
         })
-   
+
+mydb.errors.insert_one({
+            'script': 'calc-gain-lose-daily',
+            'message': "All trading code script sucess",
+            'tradingCode': "All",
+            'createdAt': datetime.datetime.now()
+        })        
