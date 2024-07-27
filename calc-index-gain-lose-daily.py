@@ -94,6 +94,16 @@ def calculate_query_date(type, today):
  
     return datetime.datetime(query_date['year'], query_date['month'], query_date['day'], 0, 0)
 
+today = datetime.date.today()
+
+query_date = {
+    'weekly': calculate_query_date('weekly', today),
+    'monthly': calculate_query_date('monthly', today),
+    'sixMonthly': calculate_query_date('sixMonthly', today),
+    'yearly': calculate_query_date('yearly', today),
+    'fiveYearly': calculate_query_date('fiveYearly', today),
+}
+
 def basic_data_update(trading_code):    
     initialdata = mydb.daily_prices.aggregate([
         {
@@ -134,7 +144,10 @@ def basic_data_update(trading_code):
                         '$group': {
                             '_id': None,
                             'high': { '$max': '$high' },
-                            'low': { '$min': '$low' }
+                            'low': { '$min': '$low' },
+                            'totalVolume': { '$sum': '$volume' },
+                            'totalValue': { '$sum': '$value' },
+                            'totalTrade': { '$sum': '$trade' },
                         }
                     }
                 ],
@@ -153,7 +166,10 @@ def basic_data_update(trading_code):
                         '$group': {
                             '_id': None,
                             'high': { '$max': '$high' },
-                            'low': { '$min': '$low' }
+                            'low': { '$min': '$low' },
+                            'totalVolume': { '$sum': '$volume' },
+                            'totalValue': { '$sum': '$value' },
+                            'totalTrade': { '$sum': '$trade' },
                         }
                     }
                 ],
@@ -172,7 +188,10 @@ def basic_data_update(trading_code):
                         '$group': {
                             '_id': None,
                             'high': { '$max': '$high' },
-                            'low': { '$min': '$low' }
+                            'low': { '$min': '$low' },
+                            'totalVolume': { '$sum': '$volume' },
+                            'totalValue': { '$sum': '$value' },
+                            'totalTrade': { '$sum': '$trade' },
                         }
                     }
                 ],
@@ -191,7 +210,10 @@ def basic_data_update(trading_code):
                         '$group': {
                             '_id': None,
                             'high': { '$max': '$high' },
-                            'low': { '$min': '$low' }
+                            'low': { '$min': '$low' },                             
+                            'totalVolume': { '$sum': '$volume' },
+                            'totalValue': { '$sum': '$value' },
+                            'totalTrade': { '$sum': '$trade' },
                         }
                     }
                 ],
@@ -210,7 +232,10 @@ def basic_data_update(trading_code):
                         '$group': {
                             '_id': None,
                             'high': { '$max': '$high' },
-                            'low': { '$min': '$low' }
+                            'low': { '$min': '$low' },                            
+                            'totalVolume': { '$sum': '$volume' },
+                            'totalValue': { '$sum': '$value' },
+                            'totalTrade': { '$sum': '$trade' },
                         }
                     }
                 ],
@@ -229,7 +254,10 @@ def basic_data_update(trading_code):
                         '$group': {
                             '_id': None,
                             'high': { '$max': '$high' },
-                            'low': { '$min': '$low' }
+                            'low': { '$min': '$low' },
+                            'totalVolume': { '$sum': '$volume' },
+                            'totalValue': { '$sum': '$value' },
+                            'totalTrade': { '$sum': '$trade' },
                         }
                     }
                 ]
@@ -241,15 +269,6 @@ def basic_data_update(trading_code):
 
     rawdata = data['rawData']
 
-    today = datetime.date.today()
-
-    query_date = {
-        'weekly': calculate_query_date('weekly', today),
-        'monthly': calculate_query_date('monthly', today),
-        'sixMonthly': calculate_query_date('sixMonthly', today),
-        'yearly': calculate_query_date('yearly', today),
-        'fiveYearly': calculate_query_date('fiveYearly', today),
-    }
     check_element = [
         'weekly',
         'monthly',
@@ -258,9 +277,7 @@ def basic_data_update(trading_code):
         'fiveYearly',
     ]
     before_data = {}
-    before_value = {}
     before_volume = {}
-    before_trade = {}
 
     for item in rawdata:
         if len(check_element) > 0:
@@ -294,12 +311,11 @@ def basic_data_update(trading_code):
     sixMonthLow = data['sixMonth'][0]['low'] if len(data['sixMonth']) > 0 else "-"
     oneMonthLow = data['oneMonth'][0]['low'] if len(data['oneMonth']) > 0 else "-"
     oneWeekLow = data['oneWeek'][0]['low'] if len(data['oneWeek']) > 0 else "-"
-    
-    data_setting = mydb.settings.find_one()
 
-    myquery = { 'tradingCode': trading_code, 'date': data_setting['dailyPriceUpdateDate'] }
+    newvalues = {
+        'tradingCode': trading_code, 
+        'date': datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0),
 
-    newvalues = { "$set": { 
         "alltimeHigh": alltimeHigh,
         "fiveYearHigh": fiveYearHigh,
         "oneYearHigh": oneYearHigh,
@@ -324,10 +340,14 @@ def basic_data_update(trading_code):
         "sixMonthBeforeVolume": sixMonthBeforeVolume,
         "oneMonthBeforeVolume": oneMonthBeforeVolume,
         "oneWeekBeforeVolume": oneWeekBeforeVolume,
-    } }
+    }
 
-    mydb.daily_prices.update_one(myquery, newvalues)
+    index_data = mydb.yesterday_prices.find_one({ 'tradingCode': trading_code }, { "tradingCode": 1})
 
+    if index_data:
+        mydb.yesterday_prices.update_one({ 'tradingCode': trading_code }, { "$set": newvalues })
+    else:
+        mydb.yesterday_prices.insert_one(newvalues)
 
 for stock in stocks_list:
     try:

@@ -65,7 +65,7 @@ if data_setting['dataInsertionEnable'] == 0:
     print('exiting script')
     exit()
 
-# today_date = datetime.datetime(2024, 6, 4, 0, 0)
+# today_date = datetime.datetime(2024, 7, 16, 0, 0)
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 formatted_date = today_date.strftime("%Y-%m-%d")
