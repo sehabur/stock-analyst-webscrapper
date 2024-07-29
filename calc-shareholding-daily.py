@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ['BSCCL']
+# stocks_list = ['BSRMLTD']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -38,6 +38,7 @@ def shareholding_data(stock_code):
         table_data.append(row.text.strip())
 
     category = table_data[3] 
+    # print(category, market_cap, total_shares)
 
     # SET CATEGORY, TOTAL SHARES & MARKET_CAP #   
     mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'category': category, 'marketCap': market_cap, "totalShares": total_shares } })
@@ -92,7 +93,21 @@ def shareholding_data(stock_code):
 
 for stock in stocks_list:
     try:
-        print(stock, "start")
+        # print(stock, " -> start")
         shareholding_data(stock)
-    except:
+    except Exception as excp:
         print(stock, "error")
+
+        mydb.errors.insert_one({
+            'script': 'calc-shareholding-daily',
+            'message': str(excp),
+            'tradingCode': stock,
+            'createdAt': datetime.datetime.now()
+        })
+
+mydb.errors.insert_one({
+    'script': 'calc-shareholding-daily',
+    'message': "All trading code script sucess",
+    'tradingCode': "All",
+    'createdAt': datetime.datetime.now()
+})

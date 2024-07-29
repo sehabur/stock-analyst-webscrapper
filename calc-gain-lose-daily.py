@@ -378,23 +378,23 @@ def basic_data_update(trading_code):
         "oneMonthBeforeTrade": oneMonthBeforeTrade,
         "oneWeekBeforeTrade": oneWeekBeforeTrade,
 
-        "fiveYearTotalValue": data['fiveYear'][0]['totalValue'] if len(data['fiveYear']) > 0 else "-",
-        "oneYearTotalValue": data['oneYear'][0]['totalValue'] if len(data['oneYear']) > 0 else "-",
-        "sixMonthTotalValue": data['sixMonth'][0]['totalValue'] if len(data['sixMonth']) > 0 else "-",
-        "oneMonthTotalValue": data['oneMonth'][0]['totalValue'] if len(data['oneMonth']) > 0 else "-",
-        "oneWeekTotalValue": data['oneWeek'][0]['totalValue'] if len(data['oneWeek']) > 0 else "-",
+        "fiveYearTotalValue": data['fiveYear'][0]['totalValue'] if len(data['fiveYear']) > 0 else 0,
+        "oneYearTotalValue": data['oneYear'][0]['totalValue'] if len(data['oneYear']) > 0 else 0,
+        "sixMonthTotalValue": data['sixMonth'][0]['totalValue'] if len(data['sixMonth']) > 0 else 0,
+        "oneMonthTotalValue": data['oneMonth'][0]['totalValue'] if len(data['oneMonth']) > 0 else 0,
+        "oneWeekTotalValue": data['oneWeek'][0]['totalValue'] if len(data['oneWeek']) > 0 else 0,
 
-        "fiveYearTotalVolume": data['fiveYear'][0]['totalVolume'] if len(data['fiveYear']) > 0 else "-",
-        "oneYearTotalVolume": data['oneYear'][0]['totalVolume'] if len(data['oneYear']) > 0 else "-",
-        "sixMonthTotalVolume": data['sixMonth'][0]['totalVolume'] if len(data['sixMonth']) > 0 else "-",
-        "oneMonthTotalVolume": data['oneMonth'][0]['totalVolume'] if len(data['oneMonth']) > 0 else "-",
-        "oneWeekTotalVolume": data['oneWeek'][0]['totalVolume'] if len(data['oneWeek']) > 0 else "-",
+        "fiveYearTotalVolume": data['fiveYear'][0]['totalVolume'] if len(data['fiveYear']) > 0 else 0,
+        "oneYearTotalVolume": data['oneYear'][0]['totalVolume'] if len(data['oneYear']) > 0 else 0,
+        "sixMonthTotalVolume": data['sixMonth'][0]['totalVolume'] if len(data['sixMonth']) > 0 else 0,
+        "oneMonthTotalVolume": data['oneMonth'][0]['totalVolume'] if len(data['oneMonth']) > 0 else 0,
+        "oneWeekTotalVolume": data['oneWeek'][0]['totalVolume'] if len(data['oneWeek']) > 0 else 0,
 
-        "fiveYearTotalTrade": data['fiveYear'][0]['totalTrade'] if len(data['fiveYear']) > 0 else "-",
-        "oneYearTotalTrade": data['oneYear'][0]['totalTrade'] if len(data['oneYear']) > 0 else "-",
-        "sixMonthTotalTrade": data['sixMonth'][0]['totalTrade'] if len(data['sixMonth']) > 0 else "-",
-        "oneMonthTotalTrade": data['oneMonth'][0]['totalTrade'] if len(data['oneMonth']) > 0 else "-",
-        "oneWeekTotalTrade": data['oneWeek'][0]['totalTrade'] if len(data['oneWeek']) > 0 else "-",
+        "fiveYearTotalTrade": data['fiveYear'][0]['totalTrade'] if len(data['fiveYear']) > 0 else 0,
+        "oneYearTotalTrade": data['oneYear'][0]['totalTrade'] if len(data['oneYear']) > 0 else 0,
+        "sixMonthTotalTrade": data['sixMonth'][0]['totalTrade'] if len(data['sixMonth']) > 0 else 0,
+        "oneMonthTotalTrade": data['oneMonth'][0]['totalTrade'] if len(data['oneMonth']) > 0 else 0,
+        "oneWeekTotalTrade": data['oneWeek'][0]['totalTrade'] if len(data['oneWeek']) > 0 else 0,
     }
 
     stock_data = mydb.yesterday_prices.find_one({ 'tradingCode': trading_code }, { "tradingCode": 1})
