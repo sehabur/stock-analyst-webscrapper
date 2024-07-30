@@ -55,6 +55,8 @@
 0 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-minute.py
 15 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-minute-end.py
 
+5,15,25,35,45,55 3-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/halt-status.py
+
 15 1 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-gain-lose-daily.py
 30 1 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-index-gain-lose-daily.py
 35 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-daily.py  

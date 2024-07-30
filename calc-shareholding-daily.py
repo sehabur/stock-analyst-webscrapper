@@ -3,16 +3,16 @@ from bs4 import BeautifulSoup
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ['BSRMLTD']
+# stocks_list = ['1STPRIMFMF']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
-data_setting = mydb.settings.find_one()
+# data_setting = mydb.settings.find_one()
 
-if data_setting['dataInsertionEnable'] == 0:
-    print('exiting script')
-    exit()
+# if data_setting['dataInsertionEnable'] == 0:
+#     print('exiting script')
+#     exit()
 
 def shareholding_data(stock_code):
     stock_url  = 'https://www.dsebd.org/displayCompany.php?name='+ stock_code
@@ -93,7 +93,7 @@ def shareholding_data(stock_code):
 
 for stock in stocks_list:
     try:
-        # print(stock, " -> start")
+        print(stock, " -> start")
         shareholding_data(stock)
     except Exception as excp:
         print(stock, "error")
@@ -107,7 +107,7 @@ for stock in stocks_list:
 
 mydb.errors.insert_one({
     'script': 'calc-shareholding-daily',
-    'message': "All trading code script sucess",
+    'message': "All trading code script success",
     'tradingCode': "All",
     'createdAt': datetime.datetime.now()
 })
