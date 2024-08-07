@@ -65,7 +65,7 @@ if data_setting['dataInsertionEnable'] == 0:
     print('exiting script')
     exit()
 
-# today_date = datetime.datetime(2024, 7, 16, 0, 0)
+# today_date = datetime.datetime(2024, 7, 16, 0, 0)  // debug purpose //
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 formatted_date = today_date.strftime("%Y-%m-%d")
@@ -105,47 +105,47 @@ index_data = [
    {
     'date': today_date,
     'tradingCode': '00DSEX',
-    'ltp': index_value['dsex']['index'],
-    'high': index_value['dsex']['high'],
-    'low': index_value['dsex']['low'],
-    'open': index_value['dsex']['open'],
-    'close': index_value['dsex']['close'],
-    'ycp': index_value['dsex']['open'],
-    'change': index_value['dsex']['change'],
-    'percentChange': index_value['dsex']['percentChange'], 
+    'ltp': round(index_value['dsex']['index'], 2),
+    'high': round(index_value['dsex']['high'], 2),
+    'low': round(index_value['dsex']['low'], 2),
+    'open': round(index_value['dsex']['open'], 2),
+    'close': round(index_value['dsex']['close'], 2),
+    'ycp': round(index_value['dsex']['open'], 2),
+    'change': round(index_value['dsex']['change'], 2),
+    'percentChange': round(index_value['dsex']['percentChange'], 2), 
     'trade': index_value['totalTrade'],
     'value': index_value['totalVolume'],
-    'volume': index_value['totalValue'] * 1000000,
+    'volume': index_value['totalValue'] * 1000000
    },
    {
     'date': today_date,
     'tradingCode': '00DSES',
-    'ltp': index_value['dses']['index'],
-    'high': index_value['dses']['high'],
-    'low': index_value['dses']['low'],
-    'open': index_value['dses']['open'],
-    'close': index_value['dses']['close'],
-    'ycp': index_value['dses']['open'],
-    'change': index_value['dses']['change'],
-    'percentChange': index_value['dses']['percentChange'], 
+    'ltp': round(index_value['dses']['index'], 2),
+    'high': round(index_value['dses']['high'], 2),
+    'low': round(index_value['dses']['low'], 2),
+    'open': round(index_value['dses']['open'], 2),
+    'close': round(index_value['dses']['close'], 2),
+    'ycp': round(index_value['dses']['open'], 2),
+    'change': round(index_value['dses']['change'], 2),
+    'percentChange': round(index_value['dses']['percentChange'], 2), 
     'trade': index_value['totalTrade'],
     'value': index_value['totalVolume'],
-    'volume': index_value['totalValue'] * 1000000,
+    'volume': index_value['totalValue'] * 1000000
    },
    {
     'date': today_date,
     'tradingCode': '00DS30',
-    'ltp': index_value['dse30']['index'],
-    'high': index_value['dse30']['high'],
-    'low': index_value['dse30']['low'],
-    'open': index_value['dse30']['open'],
-    'close': index_value['dse30']['close'],
-    'ycp': index_value['dse30']['open'],
-    'change': index_value['dse30']['change'],
-    'percentChange': index_value['dse30']['percentChange'], 
+    'ltp': round(index_value['dse30']['index'], 2),
+    'high': round(index_value['dse30']['high'], 2),
+    'low': round(index_value['dse30']['low'], 2),
+    'open': round(index_value['dse30']['open'], 2),
+    'close': round(index_value['dse30']['close'], 2),
+    'ycp': round(index_value['dse30']['open'], 2),
+    'change': round(index_value['dse30']['change'], 2),
+    'percentChange': round(index_value['dse30']['percentChange'], 2), 
     'trade': index_value['totalTrade'],
     'value': index_value['totalVolume'],
-    'volume': index_value['totalValue'] * 1000000,
+    'volume': index_value['totalValue'] * 1000000
    },
 ]  
 

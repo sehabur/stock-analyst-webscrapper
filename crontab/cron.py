@@ -3,18 +3,22 @@
         #  python scripts 
         #  Latest Version
 
-0-15 4 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/market-start.py
+* 3-5 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/market-start.py
 
-* 4-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-minute.py
+* 3-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-minute.py
 0-30 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-minute.py
 31-35 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-minute-end.py
 
-* 4-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-minute.py
+* 3-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-minute.py
 0-30 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-minute.py
 45 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-minute-end.py
 
+*/5 3-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/halt-status.py
+0,5,10,15 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/halt-status.py
+
 15 1 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-gain-lose-daily.py
 30 1 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-index-gain-lose-daily.py
+
 35 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-daily.py  
 5 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-daily.py
 10 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/technical-screener-daily.py

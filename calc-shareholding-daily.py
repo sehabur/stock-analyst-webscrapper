@@ -3,16 +3,16 @@ from bs4 import BeautifulSoup
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ['1STPRIMFMF']
+# stocks_list = ['APEXFOOT']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
-# data_setting = mydb.settings.find_one()
+data_setting = mydb.settings.find_one()
 
-# if data_setting['dataInsertionEnable'] == 0:
-#     print('exiting script')
-#     exit()
+if data_setting['dataInsertionEnable'] == 0:
+    print('exiting script')
+    exit()
 
 def shareholding_data(stock_code):
     stock_url  = 'https://www.dsebd.org/displayCompany.php?name='+ stock_code
@@ -38,10 +38,19 @@ def shareholding_data(stock_code):
         table_data.append(row.text.strip())
 
     category = table_data[3] 
-    # print(category, market_cap, total_shares)
+    print(stock_code, category, market_cap, total_shares)
 
-    # SET CATEGORY, TOTAL SHARES & MARKET_CAP #   
-    mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'category': category, 'marketCap': market_cap, "totalShares": total_shares } })
+    if category == '-' or market_cap == 0 or total_shares == 0:
+        # print(stock_code, ' -> Data error')
+        mydb.errors.insert_one({
+            'script': 'calc-shareholding-daily',
+            'message': stock_code + ' -> Data error',
+            'tradingCode': stock_code,
+            'createdAt': datetime.datetime.now()
+        })
+    else:
+        # SET CATEGORY, TOTAL SHARES & MARKET_CAP #   
+        mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'category': category, 'marketCap': market_cap, "totalShares": total_shares } })
 
     # SET SHAREHOLDING #
     if 'Share Holding Percentage' in table_data[20].split("\r\n")[0]: 
@@ -93,7 +102,7 @@ def shareholding_data(stock_code):
 
 for stock in stocks_list:
     try:
-        print(stock, " -> start")
+        # print(stock, " -> start")
         shareholding_data(stock)
     except Exception as excp:
         print(stock, "error")

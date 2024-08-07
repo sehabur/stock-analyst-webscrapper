@@ -20,22 +20,30 @@ data = mydb.daily_prices.aggregate([
       }
     },
     {
+      '$addFields': {
+        'ltp': {
+          '$cond': [{ '$gt': ["$ltp", 0] }, "$ltp", "$ycp"],
+        },
+      },
+    },
+    {
       '$unionWith': {
         'coll': "inactive_stocks",
         'pipeline': [
           {
             "$addFields": {
               "date": today_date,
-              'ltp':  '$price',
-              'ycp':  '$price',
-              'high':  '$price',
-              'low':  '$price',
-              'close':  '$price',
-              'open':  '$price',
-              'change':  0,
-              'trade':  0,
-              'value':  0,
-              'volume':  0,
+              'ltp': '$price',
+              'ycp': '$price',
+              'high': '$price',
+              'low': '$price',
+              'close': '$price',
+              'open': '$price',
+              'change': 0,
+              'percentChange': 0,
+              'trade': 0,
+              'value': 0,
+              'volume': 0,
             },
           }
         ]
@@ -51,33 +59,47 @@ data = mydb.daily_prices.aggregate([
     },
     { '$unwind': '$fundamentals' },
     {
-        '$group': {
-            '_id': '$fundamentals.sector',
-            'ltp': { '$avg': '$ltp' },
-            'ycp': { '$avg': '$ycp' },
-            'high': { '$avg': '$high' },
-            'low': { '$avg': '$low' },
-            'close': { '$avg': '$close' },
-            'open': { '$avg': '$open' },
-            'change': { '$avg': '$change' },
-            'trade': { '$sum': '$trade' },
-            'value': { '$sum': '$value' },
-            'volume': { '$sum': '$volume' },
-            'totalStocks': { "$sum": 1 }
-        }
+      '$group': {
+          '_id': '$fundamentals.sector',
+          'ltp': { '$avg': '$ltp' },
+          'ycp': { '$avg': '$ycp' },
+          'high': { '$avg': '$high' },
+          'low': { '$avg': '$low' },
+          'close': { '$avg': '$close' },
+          'open': { '$avg': '$open' },
+          'trade': { '$sum': '$trade' },
+          'value': { '$sum': '$value' },
+          'volume': { '$sum': '$volume' },
+      }
     },
     {
       '$project': {
         "_id": 0, 
         'date': today_date,
         'sector': '$_id',
+        # 'sectorTag': {
+        #   '$toLower': {
+        #     '$arrayElemAt': [{ '$split': ["$sector", " "] }, 0],
+        #   },
+        # },
         'ltp': { '$round': ['$ltp', 2] },
         'ycp': { '$round': ['$ycp', 2] },
         'high': { '$round': ['$high', 2] },
         'low': { '$round': ['$low', 2] },
         'close': { '$round': ['$close', 2] },
         'open': { '$round': ['$open', 2] },
-        'change': { '$round': ['$change', 2] },
+        'change': { '$round': [{ '$subtract': ["$ltp", "$ycp"] }, 2] },
+        'percentChange': {
+          '$round': [
+            {
+              '$multiply': [
+                { '$divide': [{ '$subtract': ["$ltp", "$ycp"] }, "$ycp"] },
+                100,
+              ],
+            },
+            2,
+          ],
+        },
         'trade': { '$round': ['$trade', 2] },
         'value': { '$round': ['$value', 2] },
         'volume': { '$round': ['$volume', 2] },        
