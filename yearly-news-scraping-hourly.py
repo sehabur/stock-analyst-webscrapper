@@ -22,12 +22,14 @@ news_list = mydb.news.find({
 
 # news_list = mydb.news.find({
 #     # 'date':   { '$gte':  datetime.datetime(2024, 5, 5, 0, 0) } ,
-#     'date': datetime.datetime.now().replace(year=2023, month=11, day=6, hour=0, minute=0, second=0, microsecond=0),
-#     'title': { '$regex': 'SONALIANSH: Dividend Declaration', '$options': 'i' } ,
+#     'date': datetime.datetime(2023, 10, 29, 0, 0),
+#     'tradingCode': 'GENEXIL',
+#     'title': { '$regex': 'Dividend Declaration', '$options': 'i' } ,
 # }).sort("date", 1)
 
 # for a in news_list:
 #     print(a)
+# exit()    
 
 temp_data = {}
 
@@ -60,9 +62,14 @@ for news in news_list:
 
 for news in temp_data.values():
     news_date = news['date']
-    description = re.split(" |,", news['description'])
+
+    text = news['description']
+    cleaned_text = " ".join(text.split())
+    description = re.split(" |,", cleaned_text)
+
     trading_code = news['tradingCode']
-    # print(trading_code, 'start')
+    # print(trading_code, 'start', description)
+    # exit()
     
     # YEAR 
     n = -1

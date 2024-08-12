@@ -465,7 +465,8 @@ def format_shareholding(shareholding):
     else :
       percent_change_inst = 100  
   else:  
-    percent_change_inst = round(((shareholding[-1]['institute'] - shareholding[-2]['institute'] ) / shareholding[-2]['institute'] * 100), 2)
+    # percent_change_inst = round(((shareholding[-1]['institute'] - shareholding[-2]['institute'] ) / shareholding[-2]['institute'] * 100), 2)
+    percent_change_inst = shareholding[-1]['institute'] - shareholding[-2]['institute']
     
   if shareholding[-2]['director'] == 0:
     if shareholding[-1]['director'] == 0:
@@ -473,7 +474,8 @@ def format_shareholding(shareholding):
     else :
       percent_change_dir = 100  
   else:  
-    percent_change_dir = round(((shareholding[-1]['director'] - shareholding[-2]['director'] ) / shareholding[-2]['director'] * 100), 2)
+    # percent_change_dir = round(((shareholding[-1]['director'] - shareholding[-2]['director'] ) / shareholding[-2]['director'] * 100), 2)
+    percent_change_dir = shareholding[-1]['director'] - shareholding[-2]['director']
     
   return {
     'current': shareholding[-1],
@@ -540,7 +542,7 @@ def format_reserve(reserve):
     }
 
 def data_calc(trading_code):
-  print(trading_code)
+  # print(trading_code, ' -> Start')
 
   rawdata = mydb.fundamentals.find_one({ 'tradingCode': trading_code })
 
@@ -589,9 +591,10 @@ error_items = []
 for stock_code in stocks_list:
   try:
     data_calc(stock_code)
-    success_items.append(stock_code)
+    # success_items.append(stock_code)
   except:
-    error_items.append(stock_code)
+    print(stock_code, ' -> Error')
+    # error_items.append(stock_code)
 
 # print("Success: ", success_items)
 # print("Error: ", error_items)

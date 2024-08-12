@@ -20,19 +20,21 @@ news_list = mydb.news.find({
 })
 
 # news_list = mydb.news.find({
-#     # 'date':   { '$gt':  datetime.datetime(2022, 1, 1, 0, 0) },
-#     'date': datetime.datetime.now().replace(year=2024, month=4, day=30, hour=0, minute=0, second=0, microsecond=0),
-#     'title': { '$regex': 'MONNOAGML: Q3 Financials', '$options': 'i' } ,
+#     # 'date': { '$gt':  datetime.datetime(2023, 4, 30, 0, 0) },
+#     'tradingCode': 'TUNGHAI',
+#     'date': datetime.datetime(2023, 4, 30, 0, 0),
+#     'title': { '$regex': 'Financials', '$options': 'i' } ,
 #     'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS) was', '$options': 'i' } 
 # })
 # for a in news_list:
 #     print(a)
+# exit()    
 
 for news in news_list:
 
-  q = re.split(" ", news['title'])[1].lower()
-  code = re.split(" ", news['title'])[0].replace(":", "")
-  description = re.split(" ", news['description'])
+  q = news['title'].split()[1].lower()
+  code = news['title'].split()[0].replace(":", "")
+  description = news['description'].split()
 
   filtered_list = [e for e in stocks_list_details if e['tradingCode'] == code]
 

@@ -6,6 +6,7 @@ from scipy.stats import linregress
 from technical import calculate_sma, calculate_ema, calculate_rsi, detect_double_top, detect_double_bottom, detect_head_and_shoulders, detect_inverse_head_and_shoulders, detect_channel_up, detect_channel_down, detect_ascending_triangle, detect_descending_triangle, detect_candlestick_patterns
 
 # stocks_list = ['PHENIXINS', 'YPL', 'GP', 'RSRMSTEEL', 'EHL']
+# stocks_list = ['EHL']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -97,7 +98,7 @@ def get_one_year_prices(trading_code):
       },
     },
     {
-      '$limit': 260,
+      '$limit': 320,
     },
     {
       '$sort': {
@@ -111,6 +112,7 @@ def get_one_year_prices(trading_code):
         'high': 1,
         'low': 1,
         'ltp': 1,
+        'ycp': 1,
         'volume': 1,
       },
     },
@@ -125,11 +127,11 @@ def get_one_year_prices(trading_code):
 
   for item in daily_price:
     dates.append(item['date'])
-    prices.append(item['ltp'])
-    opens.append(item['open'])
-    lows.append(item['low'])
-    highs.append(item['high'])
-    volumes.append(item['volume'])
+    prices.append(item['ltp'] if item['ltp'] != 0 else item['ycp'])
+    opens.append(item['open'] if item['ltp'] != 0 else item['ycp'])
+    lows.append(item['low'] if item['ltp'] != 0 else item['ycp'])
+    highs.append(item['high'] if item['ltp'] != 0 else item['ycp'])
+    volumes.append(item['volume'] if item['ltp'] != 0 else item['ycp'])
 
   return {
     'dates': dates,
@@ -248,6 +250,8 @@ def data_calc(trading_code):
   data['beta'] = calculate_beta(trading_code)
 
   data['movingAverages'] = format_sma_ema(prices)
+
+  print(data['movingAverages'])
 
   data['oscillators'] = format_oscillators(prices)
 
