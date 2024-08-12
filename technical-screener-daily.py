@@ -128,10 +128,10 @@ def get_one_year_prices(trading_code):
   for item in daily_price:
     dates.append(item['date'])
     prices.append(item['ltp'] if item['ltp'] != 0 else item['ycp'])
-    opens.append(item['open'] if item['ltp'] != 0 else item['ycp'])
-    lows.append(item['low'] if item['ltp'] != 0 else item['ycp'])
-    highs.append(item['high'] if item['ltp'] != 0 else item['ycp'])
-    volumes.append(item['volume'] if item['ltp'] != 0 else item['ycp'])
+    opens.append(item['open'] if item['open'] != 0 else item['ycp'])
+    lows.append(item['low'] if item['low'] != 0 else item['ycp'])
+    highs.append(item['high'] if item['high'] != 0 else item['ycp'])
+    volumes.append(item['volume'])
 
   return {
     'dates': dates,
