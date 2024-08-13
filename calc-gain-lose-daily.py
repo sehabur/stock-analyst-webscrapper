@@ -404,23 +404,24 @@ def basic_data_update(trading_code):
     else:
         mydb.yesterday_prices.insert_one(newvalues)
 
+total_shares = 0
 for stock in stocks_list:
     try:
         basic_data_update(stock)
-        print(stock, 'success') 
+        total_shares += 1
+        # print(stock, 'success') 
 
     except Exception as excp:
         print("Error: ", excp, ' : ', stock)
-        mydb.errors.insert_one({
+        mydb.data_script_errors.insert_one({
             'script': 'calc-gain-lose-daily',
             'message': str(excp),
             'tradingCode': stock,
-            'createdAt': datetime.datetime.now()
+            'time': datetime.datetime.now()
         })
 
-mydb.errors.insert_one({
+mydb.data_script_logs.insert_one({
     'script': 'calc-gain-lose-daily',
-    'message': "All trading code script success",
-    'tradingCode': "All",
-    'createdAt': datetime.datetime.now()
+    'message': f"Total stocks: {total_shares}",
+    'time': datetime.datetime.now()
 })        

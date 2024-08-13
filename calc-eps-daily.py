@@ -58,8 +58,18 @@ for stock in stocks_list:
 
     mydb.fundamentals.update_one(myquery, newvalues)
 
+    status = 'OK'
+
     print(stock, eps, 'Success')
 
   else:
     print(stock, 'error occured. epsQuaterly not found')
+    status = 'epsQuaterly not found'
+
+mydb.data_script_logs.insert_one({
+    'script': 'calc-eps-daily',
+    'message': f"Status: {status}",
+    'time': datetime.datetime.now()
+})
+
   

@@ -52,3 +52,9 @@ def reserve_data(stock_code):
 for stock in stocks_list:
     reserve_data(stock)
 
+mydb.data_script_logs.insert_one({
+    'script': 'reserve-surplus-daily',
+    'message': "Status: OK",
+    'time': datetime.datetime.now()
+})    
+

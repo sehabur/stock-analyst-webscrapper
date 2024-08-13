@@ -111,3 +111,9 @@ myquery = {}
 newvalues = { "$set": { "dailyIndexUpdateDate": today_date } }
 
 mydb.settings.update_one(myquery, newvalues)
+
+mydb.data_script_logs.insert_one({
+    'script': 'index-daily',
+    'message': "Status: OK",
+    'time': datetime.datetime.now()
+})

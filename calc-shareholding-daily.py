@@ -100,23 +100,25 @@ def shareholding_data(stock_code):
         mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'shareHoldingPercentage': [ shareHoldings ] } })
         print(stock_code, 'success: first entry')
 
+total_shares = 0
+
 for stock in stocks_list:
     try:
         # print(stock, " -> start")
         shareholding_data(stock)
-    except Exception as excp:
-        print(stock, "error")
+        total_shares += 1
 
-        mydb.errors.insert_one({
+    except Exception as excp:
+        # print(stock, "error")
+        mydb.data_script_errors.insert_one({
             'script': 'calc-shareholding-daily',
             'message': str(excp),
             'tradingCode': stock,
-            'createdAt': datetime.datetime.now()
+            'time': datetime.datetime.now()
         })
 
-mydb.errors.insert_one({
+mydb.data_script_logs.insert_one({
     'script': 'calc-shareholding-daily',
-    'message': "All trading code script success",
-    'tradingCode': "All",
-    'createdAt': datetime.datetime.now()
+    'message': f"Total stocks: {total_shares}",
+    'time': datetime.datetime.now()
 })

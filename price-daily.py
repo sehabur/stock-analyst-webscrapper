@@ -160,3 +160,9 @@ mydb.settings.update_one(myquery, newvalues)
 
 myclient.close()
 
+mydb.data_script_logs.insert_one({
+    'script': 'price-daily',
+    'message': "Status: OK",
+    'time': datetime.datetime.now()
+})
+

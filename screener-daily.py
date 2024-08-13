@@ -585,18 +585,32 @@ def data_calc(trading_code):
                                                        
   mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { "$set": { "screener": data } })
     
-success_items = []
-error_items = []    
+# success_items = []
+# error_items = []    
+total_shares = 0
 
 for stock_code in stocks_list:
   try:
     data_calc(stock_code)
+    total_shares += 1
     # success_items.append(stock_code)
-  except:
-    print(stock_code, ' -> Error')
+  except Exception as excp:
+    # print(stock_code, ' -> Error')
     # error_items.append(stock_code)
-
+    mydb.data_script_errors.insert_one({
+        'script': 'screener-daily',
+        'message': str(excp),
+        'tradingCode': stock_code,
+        'time': datetime.datetime.now()
+    })  
+    
 # print("Success: ", success_items)
 # print("Error: ", error_items)
+
+mydb.data_script_logs.insert_one({
+    'script': 'screener-daily',
+    'message': f"Total stocks: {total_shares}",
+    'time': datetime.datetime.now()
+})  
 
   

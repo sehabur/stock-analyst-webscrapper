@@ -32,3 +32,9 @@ mydb.settings.update_one(myquery, newvalues)
 mydb.day_minute_prices.delete_many({})
 
 mydb.index_day_minute_values.delete_many({})
+
+mydb.data_script_logs.insert_one({
+    'script': 'market-start',
+    'message': "Status: OK",
+    'time': datetime.datetime.now()
+})  

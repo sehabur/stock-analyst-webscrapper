@@ -356,10 +356,16 @@ for stock in stocks_list:
 
     except Exception as excp:
         print("Error: ", excp, ' : ', stock)
-        mydb.errors.insert_one({
+        mydb.data_script_errors.insert_one({
             'script': 'index-calc-gain-lose-daily',
             'message': str(excp),
             'tradingCode': stock,
-            'createdAt': datetime.datetime.now()
+            'time': datetime.datetime.now()
         })
+
+mydb.data_script_logs.insert_one({
+    'script': 'calc-index-gain-lose-daily',
+    'message': "Status: OK",
+    'time': datetime.datetime.now()
+})   
    
