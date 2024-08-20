@@ -55,6 +55,8 @@ if data_setting['dataInsertionEnable'] == 0:
 
 df = get_current_trade_data()
 
+today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+today_time_now = datetime.datetime.now(timezone('Asia/Dhaka')).replace(second=0, microsecond=0)
 share_data_array = []
 
 for x in range(df.shape[0]):
@@ -65,8 +67,8 @@ for x in range(df.shape[0]):
     percent_change = round((float(df.loc[x]['ltp'])-float(df.loc[x]['ycp']))/ float(df.loc[x]['ycp']) *100 , 2)
       
   share_data_array.append({
-    'date': datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0), 
-    'time': datetime.datetime.now(timezone('Asia/Dhaka')).replace(second=0, microsecond=0), 
+    'date': today_date, 
+    'time': today_time_now, 
     'tradingCode': df.loc[x]['symbol'],
     'ltp': (float(df.loc[x]['ltp'])),
     'high': (float(df.loc[x]['high'])),
@@ -83,9 +85,9 @@ for x in range(df.shape[0]):
 # print(share_data_array)
 # exit()  
 
-mydb.latest_prices.delete_many({})
-
 mydb.latest_prices.insert_many(share_data_array)
+
+mydb.latest_prices.delete_many({ 'time': { '$lt': today_time_now } })
 
 mydb.day_minute_prices.insert_many(share_data_array)
 

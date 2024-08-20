@@ -19,15 +19,15 @@
 15 1 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-gain-lose-daily.py
 30 1 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-index-gain-lose-daily.py
 
-35 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-daily.py  
-5 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-daily.py
-10 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/technical-screener-daily.py
-15 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/sector-daily.py
-5 11 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/block-transection-daily.py
-10 11 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-shareholding-daily.py
-15 11 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/reserve-surplus-daily.py
-20 11 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-eps-daily.py
-25 11 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/screener-daily.py
+5 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-daily.py  
+25 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-daily.py
+30 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/technical-screener-daily.py
+35 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/sector-daily.py
+40 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/block-transection-daily.py
+45 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-shareholding-daily.py
+50 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/reserve-surplus-daily.py
+55 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-eps-daily.py
+5 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/screener-daily.py
 
 5 2-14 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/news-hourly.py
 10 2-14 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/quarter-news-scraping-hourly.py
