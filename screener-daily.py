@@ -3,7 +3,7 @@ from variables import mongo_string
 import math
 from data import stocks_list
 
-# stocks_list = ['RENWICKJA']
+# stocks_list = ['APOLOISPAT']
 # stocks_list = ['PHENIXINS', 'YPL', 'GP', 'RSRMSTEEL', 'EHL']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
@@ -53,7 +53,7 @@ def format_yearly_data(init_data, title, unit='', percentChangeReverse=False):
       'color': None,
     }
   
-  formatted_value = round((data[0]['value'] / 10000000), 3) if unit == 'Crore BDT' else (0 if  data[0]['value'] == 0 else data[0]['value'])
+  formatted_value = round((data[0]['value'] / 10000000), 3) if unit == 'Crore BDT' else (0 if  data[0]['value'] == 0 else round(data[0]['value'], 3))
 
   # print(title, formatted_value)
 
@@ -246,7 +246,6 @@ def format_eps_quarterly_data(init_data, ttmValue):
     'comment': comment,
     'overview': overview,
     'color': color,
-    
   }
   
 def format_dividend_data(cash_div_raw_data, stock_div_raw_data):
@@ -466,7 +465,7 @@ def format_shareholding(shareholding):
       percent_change_inst = 100  
   else:  
     # percent_change_inst = round(((shareholding[-1]['institute'] - shareholding[-2]['institute'] ) / shareholding[-2]['institute'] * 100), 2)
-    percent_change_inst = shareholding[-1]['institute'] - shareholding[-2]['institute']
+    percent_change_inst = round((shareholding[-1]['institute'] - shareholding[-2]['institute']), 2)
     
   if shareholding[-2]['director'] == 0:
     if shareholding[-1]['director'] == 0:
@@ -475,7 +474,7 @@ def format_shareholding(shareholding):
       percent_change_dir = 100  
   else:  
     # percent_change_dir = round(((shareholding[-1]['director'] - shareholding[-2]['director'] ) / shareholding[-2]['director'] * 100), 2)
-    percent_change_dir = shareholding[-1]['director'] - shareholding[-2]['director']
+    percent_change_dir = round((shareholding[-1]['director'] - shareholding[-2]['director']), 2)
     
   return {
     'current': shareholding[-1],
@@ -553,14 +552,15 @@ def data_calc(trading_code):
   data['shareholding'] = format_shareholding(rawdata['shareHoldingPercentage']) if 'shareHoldingPercentage' in rawdata else None
 
   data['reserveSurplus'] = format_reserve(rawdata['reserveSurplus']) if 'reserveSurplus' in rawdata else None
-      
-  data['epsYearly'] = format_yearly_data_basic(rawdata['epsYearly']) if 'epsYearly' in rawdata and len(rawdata['epsYearly']) > 0 else None 
-  data['navYearly'] = format_yearly_data_basic(rawdata['navYearly']) if 'navYearly' in rawdata and len(rawdata['navYearly']) > 0 else None 
-  data['nocfpsYearly'] = format_yearly_data_basic(rawdata['nocfpsYearly']) if 'nocfpsYearly' in rawdata and len(rawdata['nocfpsYearly']) > 0 else None 
+
   data['bookValue'] = format_yearly_data_basic(rawdata['bookValue']) if 'bookValue' in rawdata else None 
   data['totalLiabilities'] = format_yearly_data_basic(rawdata['totalLiabilities']) if 'totalLiabilities' in rawdata else None
   data['ebit'] = format_yearly_data_basic(rawdata['ebit']) if 'ebit' in rawdata else None
   
+  data['epsYearly'] = format_yearly_data(rawdata['epsYearly'], 'EPS') if 'epsYearly' in rawdata and len(rawdata['epsYearly']) > 0 else None 
+  data['navYearly'] = format_yearly_data(rawdata['navYearly'], 'NAV') if 'navYearly' in rawdata and len(rawdata['navYearly']) > 0 else None 
+  data['nocfpsYearly'] = format_yearly_data(rawdata['nocfpsYearly'], 'NOCFPS') if 'nocfpsYearly' in rawdata and len(rawdata['nocfpsYearly']) > 0 else None 
+
   data['roe'] = format_yearly_data(rawdata['roe'], 'ROE') if 'roe' in rawdata else None
   data['roce'] = format_yearly_data(rawdata['roce'], 'ROCE') if 'roce' in rawdata else None 
   data['roa'] = format_yearly_data(rawdata['roa'], 'ROA') if 'roa' in rawdata else None    

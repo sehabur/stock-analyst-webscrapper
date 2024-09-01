@@ -11,9 +11,10 @@ def is_valid_date(year, month, day):
         return True
     except ValueError:
         return False
-    
+
+count = 0   
 year_insert = 2024
-for month_insert in range(1, 13):
+for month_insert in range(1, 9):
     for date_insert in range(1, 32):
 
         print(f'date -> {date_insert}, month -> {month_insert}')
@@ -27,6 +28,7 @@ for month_insert in range(1, 13):
             # 'tradingCode': 'GENEXIL',
             'date': datetime.datetime(year_insert, month_insert, date_insert, 0, 0),
             'title': { '$regex': 'Dividend Declaration', '$options': 'i' } ,
+            'description': { '$regex': 'EPU', '$options': 'i' } ,
         }).sort("date", 1)
 
         # for a in news_list:
@@ -83,7 +85,7 @@ for month_insert in range(1, 13):
                             break
                     break
             if n != -1:
-                year = (description[n]).replace(".", '').replace(";", '').replace(",", '')
+                year = (description[n]).replace(".", '').replace(";", '').replace(",", '')[:4]
             else:
                 year = 'n/a'    
                             
@@ -173,7 +175,7 @@ for month_insert in range(1, 13):
             # EPS
             n=-1
             for i in range (len(description)):
-                if "EPS" == description [i] :
+                if "EPS" == description [i] or "EPU" == description [i] :
                     for j in range (i+2, len(description)):
                         if description [j] == 'Tk.':
                             n=j+1
@@ -192,7 +194,7 @@ for month_insert in range(1, 13):
             # NOCFPS #
             n=-1
             for i in range (len(description)):
-                if "NOCFPS" == description [i] and 'of' == description [i+1] :
+                if ("NOCFPS" == description [i] or "NOCFPU" == description [i]) and 'of' == description [i+1] :
                     for j in range (i+2, len(description)):
                         if description [j] == 'Tk.':
                             n=j+1
@@ -422,4 +424,7 @@ for month_insert in range(1, 13):
             mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { '$set': newvalues })
 
             print('# insert successful')
+
+            count += 1
+            print("Count: ", count)
     

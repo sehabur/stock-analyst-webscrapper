@@ -81,7 +81,7 @@ for news in temp_data.values():
                     break
             break
     if n != -1:
-        year = (description[n]).replace(".", '').replace(";", '').replace(",", '')
+        year = (description[n]).replace(".", '').replace(";", '').replace(",", '')[:4]
     else:
         year = 'n/a'    
                     

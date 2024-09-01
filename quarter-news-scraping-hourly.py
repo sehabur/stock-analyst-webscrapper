@@ -16,7 +16,7 @@ today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microse
 news_list = mydb.news.find({
     'date': today_date,
     'title': { '$regex': 'Financials', '$options': 'i' } ,
-    'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS) was', '$options': 'i' } 
+    'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS|EPU) was', '$options': 'i' } 
 })
 
 # news_list = mydb.news.find({
@@ -24,7 +24,7 @@ news_list = mydb.news.find({
 #     'tradingCode': 'TUNGHAI',
 #     'date': datetime.datetime(2023, 4, 30, 0, 0),
 #     'title': { '$regex': 'Financials', '$options': 'i' } ,
-#     'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS) was', '$options': 'i' } 
+#     'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS|EPU) was', '$options': 'i' } 
 # })
 # for a in news_list:
 #     print(a)
@@ -47,7 +47,7 @@ for news in news_list:
   # EPS #
   n=-1
   for i in range (len(description)):
-    if "EPS" == description [i]:
+    if "EPS" == description [i] or "EPU" == description [i]:
       for j in range (i+2, len(description)):
         if description [j] == 'Tk.':
           n=j+1
@@ -67,7 +67,7 @@ for news in news_list:
   # YEAR #
   for i in range (n+3, len(description)):
     if description[i][:3] == '202': 
-      year_string = (description [i]).replace(".", '').replace(";", '').replace(",", '') 
+      year_string = (description [i]).replace(".", '').replace(";", '').replace(",", '')[:4]
       if (yearEnd == '30-Jun'):
         if (q == 'q1' or q == 'q2'):
           year = str(int(year_string) + 1)
@@ -80,7 +80,7 @@ for news in news_list:
   # NOCFPS # 
   n=-1
   for i in range (len(description)):
-    if "NOCFPS" == description [i]:
+    if "NOCFPS" == description [i] or "NOCFPU" == description [i]:
       for j in range (i+2, len(description)):
         if description [j] == 'Tk.':
           n=j+1
