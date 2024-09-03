@@ -93,7 +93,7 @@ def calculate_query_date(type, today):
             'day': day_final
         }   
  
-    return datetime.datetime(query_date['year'], query_date['month'], query_date['day'], 0, 0)
+    return datetime.datetime(query_date['year'], query_date['month'], query_date['day'], 0, 0) + datetime.timedelta(days = 1)
 
 today = datetime.date.today()
 
@@ -104,6 +104,9 @@ query_date = {
     'yearly': calculate_query_date('yearly', today),
     'fiveYearly': calculate_query_date('fiveYearly', today),
 }
+
+print(query_date)
+exit()
 
 def basic_data_update(trading_code):    
     initialdata = mydb.daily_prices.aggregate([
