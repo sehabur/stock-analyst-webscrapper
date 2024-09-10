@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ['ATLASBANG']
+# stocks_list = ['CLICL']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -19,7 +19,7 @@ for stock in stocks_list:
     'tradingCode': stock
   })
 
-  if 'epsQuaterly' in stock_data :
+  if 'epsQuaterly' in stock_data and len(stock_data['epsQuaterly']) > 0 :
     eps_quarterly_data = sorted(stock_data['epsQuaterly'], key=lambda d: str(d['year']), reverse=True)
 
     if len(eps_quarterly_data) < 1:
@@ -51,24 +51,32 @@ for stock in stocks_list:
       eps = round((total / count) * 4, 3)
 
     myquery = { 'tradingCode': stock }
-
     newvalues = { "$set": { 
         "epsCurrent": eps,
-    } }
+      } 
+    }
 
     mydb.fundamentals.update_one(myquery, newvalues)
 
-    status = 'OK'
+  elif 'epsYearly' in stock_data and len(stock_data['epsYearly']) > 0 :  
+    eps_yearly_data = sorted(stock_data['epsYearly'], key=lambda d: str(d['year']), reverse=True)
 
-    print(stock, eps, 'Success')
+    eps = eps_yearly_data[0]['value']
+
+    myquery = { 'tradingCode': stock }
+    newvalues = { "$set": { 
+        "epsCurrent": eps,
+      } 
+    }
+
+    mydb.fundamentals.update_one(myquery, newvalues)
 
   else:
     print(stock, 'error occured. epsQuaterly not found')
-    status = 'epsQuaterly not found'
 
 mydb.data_script_logs.insert_one({
     'script': 'calc-eps-daily',
-    'message': f"Status: {status}",
+    'message': f"Status: Ok",
     'time': datetime.datetime.now()
 })
 

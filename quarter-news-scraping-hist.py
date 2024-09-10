@@ -13,8 +13,8 @@ def is_valid_date(year, month, day):
         return False
 
 count = 0
-year_insert = 2024
-for month_insert in range(1, 9):
+year_insert = 2023
+for month_insert in range(10, 12):
   for date_insert in range(1, 32):
 
     print(f'date -> {date_insert}, month -> {month_insert}')
@@ -26,7 +26,7 @@ for month_insert in range(1, 9):
     news_list = mydb.news.find({
         'date': datetime.datetime(year_insert, month_insert, date_insert, 0, 0),
         'title': { '$regex': 'Financials', '$options': 'i' } ,
-        # 'tradingCode': 'ESQUIRENIT',
+        'tradingCode': 'BERGERPBL',
         # 'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (EPU) was', '$options': 'i' } 
         'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS|EPU) was', '$options': 'i' } 
     })
@@ -176,7 +176,7 @@ for month_insert in range(1, 9):
         }
 
         mydb.fundamentals.update_one({ 'tradingCode': code }, { '$set': newvalues })
-        print('# insert success')
+        print('# insert success', newvalues)
 
         count += 1
         print("Count: ", count)

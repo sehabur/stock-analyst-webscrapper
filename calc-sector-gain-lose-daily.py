@@ -6,7 +6,28 @@ from variables import mongo_string
     of share opening or close day
 """
 
-stocks_list = ['00DSEX', '00DSES', '00DS30']
+sector_list = [
+  { "name": "Bank", "tag": "bank" },
+  { "name": "Cement", "tag": "cement" },
+  { "name": "Ceramics Sector", "tag": "ceramics" },
+  { "name": "Engineering", "tag": "engineering" },
+  { "name": "Financial Institutions", "tag": "financial" },
+  { "name": "Food & Allied", "tag": "food" },
+  { "name": "Fuel & Power", "tag": "fuel" },
+  { "name": "General Insurance", "tag": "general" },
+  { "name": "Life Insurance", "tag": "life" },
+  { "name": "IT Sector", "tag": "it" },
+  { "name": "Jute", "tag": "jute" },
+  { "name": "Miscellaneous", "tag": "miscellaneous" },
+  { "name": "Mutual Funds", "tag": "mutual" },
+  { "name": "Paper & Printing", "tag": "paper" },
+  { "name": "Pharmaceuticals & Chemicals", "tag": "pharmaceuticals" },
+  { "name": "Services & Real Estate", "tag": "services" },
+  { "name": "Tannery Industries", "tag": "tannery" },
+  { "name": "Telecommunication", "tag": "telecommunication" },
+  { "name": "Textile", "tag": "textile" },
+  { "name": "Travel & Leisure", "tag": "travel" },
+]
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -105,10 +126,10 @@ query_date = {
 }
 
 def basic_data_update(trading_code):    
-    initialdata = mydb.daily_prices.aggregate([
+    initialdata = mydb.daily_sectors.aggregate([
         {
             '$match': {
-                'tradingCode': trading_code,
+                'sector': trading_code,
             },
         },
         {
@@ -255,13 +276,13 @@ def basic_data_update(trading_code):
         'fiveYearly',
     ]
     before_data = {}
-    before_volume = {}
+    # before_volume = {}
 
     for item in rawdata:
         if len(check_element) > 0:
             if item['date'] <= query_date[check_element[0]]:
                 before_data[check_element[0]] = item['ltp'] if item['ltp'] != 0 else item['ycp']
-                before_volume[check_element[0]] = item['volume'] if item['volume'] != 0 else 0.000001
+                # before_volume[check_element[0]] = item['volume'] if item['volume'] != 0 else 0.000001
                 check_element.pop(0)
                 
     fiveYearBeforeData = before_data['fiveYearly'] if 'fiveYearly' in before_data  else 0
@@ -330,7 +351,8 @@ def basic_data_update(trading_code):
 
     mydb.yesterday_prices.insert_one(newvalues)
 
-for stock in stocks_list:
+for sector in sector_list:
+    stock = sector['name']
     try:
         basic_data_update(stock)
         print(stock, 'success') 
@@ -338,14 +360,14 @@ for stock in stocks_list:
     except Exception as excp:
         print("Error: ", excp, ' : ', stock)
         mydb.data_script_errors.insert_one({
-            'script': 'index-calc-gain-lose-daily',
+            'script': 'calc-sector-gain-lose-daily',
             'message': str(excp),
             'tradingCode': stock,
             'time': datetime.datetime.now()
         })
 
 mydb.data_script_logs.insert_one({
-    'script': 'calc-index-gain-lose-daily',
+    'script': 'calc-sector-gain-lose-daily',
     'message': "Status: OK",
     'time': datetime.datetime.now()
 })   
