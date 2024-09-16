@@ -18,6 +18,7 @@
 
 15 1 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-gain-lose-daily.py
 30 1 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-index-gain-lose-daily.py
+40 1 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-sector-gain-lose-daily.py
 
 5 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-daily.py  
 25 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-daily.py
