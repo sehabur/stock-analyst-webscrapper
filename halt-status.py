@@ -1,4 +1,3 @@
-
 import requests, pymongo, certifi
 from variables import backend_url_dev, backend_url_prod, mongo_string
 

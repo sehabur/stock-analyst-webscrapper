@@ -16,6 +16,8 @@
 */5 3-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/halt-status.py
 0,5,10,15 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/halt-status.py
 
+*/10 3-8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-alert-schedule.py
+
 15 1 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-gain-lose-daily.py
 30 1 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-index-gain-lose-daily.py
 40 1 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-sector-gain-lose-daily.py
