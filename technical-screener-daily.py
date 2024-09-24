@@ -347,21 +347,21 @@ def data_calc(trading_code):
 total_shares = 0
 
 for stock_code in stocks_list:
-  data_calc(stock_code)
-  # try:
-  #   data_calc(stock_code)
-  #   total_shares += 1
-  #   # print(stock_code, "Success")
-  #   # success_items.append(stock_code)
-  # except Exception as excp:
-  #   mydb.data_script_errors.insert_one({
-  #     'script': 'technical-screener-daily',
-  #     'message': str(excp),
-  #     'tradingCode': stock_code,
-  #     'time': datetime.datetime.now()
-  #   })
-  #   # print(stock_code, "Error")
-  #   # error_items.append(stock_code)
+  # data_calc(stock_code)
+  try:
+    data_calc(stock_code)
+    total_shares += 1
+    # print(stock_code, "Success")
+    # success_items.append(stock_code)
+  except Exception as excp:
+    mydb.data_script_errors.insert_one({
+      'script': 'technical-screener-daily',
+      'message': str(excp),
+      'tradingCode': stock_code,
+      'time': datetime.datetime.now()
+    })
+    # print(stock_code, "Error")
+    # error_items.append(stock_code)
 
 mydb.data_script_logs.insert_one({
     'script': 'technical-screener-daily',
