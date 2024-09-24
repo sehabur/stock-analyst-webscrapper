@@ -3,8 +3,9 @@ import numpy as np
 def calculate_sma(prices, period):
   if len(prices) < period:
     return None
-
+  
   sma = [None] * (period - 1)
+
   for i in range(period - 1, len(prices)):
       sma.append(sum(prices[i - period + 1:i + 1]) / period)
 
@@ -48,6 +49,183 @@ def calculate_rsi(prices, period=14):
       rsi.append(100 - (100 / (1 + rs)))
 
   return round(rsi[-1], 2)
+
+def calculate_true_range(highs, lows, closes):
+    true_ranges = []
+    for i in range(1, len(highs)):
+        high_low = highs[i] - lows[i]
+        high_close = abs(highs[i] - closes[i - 1])
+        low_close = abs(lows[i] - closes[i - 1])
+        true_ranges.append(max(high_low, high_close, low_close))
+    return true_ranges
+
+def calculate_directional_movement(highs, lows):
+    plus_dm = []
+    minus_dm = []
+    for i in range(1, len(highs)):
+        up_move = highs[i] - highs[i - 1]
+        down_move = lows[i - 1] - lows[i]
+        plus_dm.append(up_move if up_move > down_move and up_move > 0 else 0)
+        minus_dm.append(down_move if down_move > up_move and down_move > 0 else 0)
+    return plus_dm, minus_dm
+
+def calculate_smoothed_values(values, period):
+    smoothed_values = []
+    sum_values = sum(values[:period])
+    smoothed_values.append(sum_values / period)
+    for i in range(period, len(values)):
+        sum_values = smoothed_values[-1] * (period - 1) + values[i]
+        smoothed_values.append(sum_values / period)
+    return smoothed_values
+
+def calculate_adx(highs, lows, closes, period=14):
+    tr = calculate_true_range(highs, lows, closes)
+
+    plus_dm, minus_dm = calculate_directional_movement(highs, lows)
+
+    smoothed_tr = calculate_smoothed_values(tr, period)
+    smoothed_plus_dm = calculate_smoothed_values(plus_dm, period)
+    smoothed_minus_dm = calculate_smoothed_values(minus_dm, period)
+
+    plus_di = [(0 if smoothed_tr[i] == 0 else (val / smoothed_tr[i]) * 100) for i, val in enumerate(smoothed_plus_dm)]
+    minus_di = [(0 if smoothed_tr[i] == 0 else (val / smoothed_tr[i]) * 100) for i, val in enumerate(smoothed_minus_dm)]
+
+    dx = []
+    for i in range(len(plus_di)):
+        di_diff = abs(plus_di[i] - minus_di[i])
+        di_sum = plus_di[i] + minus_di[i]
+        dx.append(0 if di_sum ==0 else (di_diff / di_sum) * 100)
+
+    adx = calculate_smoothed_values(dx, period)
+    return round(adx[-1], 2)
+
+def calculate_stochastic_k(data, period=14, smooth_k=3, smooth_d=3):
+    if len(data) < period:
+        return None
+
+    stoch_k = []    
+    for i in range(period - 1, len(data)):
+        period_prices = data[i - period + 1:i + 1]
+        high = max([d['high'] for d in period_prices])
+        low = min([d['low'] for d in period_prices])
+        current_close = data[i]['close']
+
+        if high - low == 0:
+            k = 0
+        else:    
+            k = ((current_close - low) / (high - low)) * 100
+        stoch_k.append(k)
+
+    slow_k = calculate_sma(stoch_k, smooth_k)
+    return slow_k
+
+def calculate_ema_for_macd(prices, period):
+    ema = []
+    multiplier = 2 / (period + 1)
+    
+    sma = np.mean(prices[:period])
+    ema.append(sma)
+    
+    for price in prices[period:]:
+        ema_value = (price - ema[-1]) * multiplier + ema[-1]
+        ema.append(ema_value)
+    
+    return ema
+
+def calculate_macd(prices, short_period=12, long_period=26, signal_period=9):
+    short_ema = calculate_ema_for_macd(prices, short_period)
+    long_ema = calculate_ema_for_macd(prices, long_period)
+    
+    macd_line = [short - long for short, long in zip(short_ema[long_period - short_period:], long_ema)]
+    
+    valid_macd_line = macd_line[signal_period - 1:]
+    
+    macd_last_value = round(valid_macd_line[-1], 2)
+    
+    return float(macd_last_value)
+
+def calculate_williams_percent_r(highs, lows, closes, period=14):
+    if len(highs) < period or len(lows) < period or len(closes) < period:
+        return None
+
+    williams_r = []
+
+    for i in range(period - 1, len(highs)):
+        highest_high = max(highs[i - period + 1:i + 1])
+        lowest_low = min(lows[i - period + 1:i + 1])
+        current_close = closes[i]
+        percent_r = 0 if highest_high - lowest_low == 0 else (((highest_high - current_close) / (highest_high - lowest_low)) * -100)
+        williams_r.append(percent_r)
+
+    williams_r_last_value = round(williams_r[-1], 2)
+
+    return williams_r_last_value
+
+
+def calculate_typical_price(highs, lows, closes):
+    return [(high + low + close) / 3 for high, low, close in zip(highs, lows, closes)]
+
+def calculate_raw_money_flow(typical_prices, volumes):
+    return [price * volume for price, volume in zip(typical_prices, volumes)]
+
+def calculate_money_flow_index(highs, lows, closes, volumes, period=10):
+    if len(highs) < period or len(lows) < period or len(closes) < period or len(volumes) < period:
+        return None
+
+    typical_prices = calculate_typical_price(highs, lows, closes)
+    raw_money_flow = calculate_raw_money_flow(typical_prices, volumes)
+
+    positive_money_flow = []
+    negative_money_flow = []
+
+    for i in range(1, len(typical_prices)):
+        if typical_prices[i] > typical_prices[i - 1]:
+            positive_money_flow.append(raw_money_flow[i])
+            negative_money_flow.append(0)
+        elif typical_prices[i] < typical_prices[i - 1]:
+            positive_money_flow.append(0)
+            negative_money_flow.append(raw_money_flow[i])
+        else:
+            positive_money_flow.append(0)
+            negative_money_flow.append(0)
+
+    mfi = []
+
+    for i in range(period - 1, len(positive_money_flow)):
+        positive_flow_sum = sum(positive_money_flow[i - period + 1:i + 1])
+        negative_flow_sum = sum(negative_money_flow[i - period + 1:i + 1])
+
+        if negative_flow_sum == 0:
+            money_flow_ratio = float('inf')
+        else:
+            money_flow_ratio = positive_flow_sum / negative_flow_sum
+        
+        money_flow_index = 100 - (100 / (1 + money_flow_ratio))
+        mfi.append(money_flow_index)
+
+    mfi_last_value = round(mfi[-1], 2) if mfi else None
+
+    return mfi_last_value
+
+def calculate_pivot_points(high, low, close):
+    P = (high + low + close) / 3
+
+    S1 = 2 * P - high
+    R1 = 2 * P - low
+    S2 = P - (high - low)
+    R2 = P + (high - low)
+    S3 = low - 2 * (high - P)
+    R3 = high + 2 * (P - low)
+
+    return {
+        'P': round(P, 2),
+        'S1': round(S1, 2),
+        'S2': round(S2, 2),
+        'S3': round(S3, 2),
+        'R1': round(R1, 2),
+        'R2': round(R2, 2),
+        'R3': round(R3, 2),
+    }
 
 def detect_double_top(prices, window=5, tolerance=0.02):
     """

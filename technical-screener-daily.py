@@ -3,10 +3,11 @@ from variables import mongo_string
 from data import stocks_list
 import pandas as pd
 from scipy.stats import linregress
-from technical import calculate_sma, calculate_ema, calculate_rsi, detect_double_top, detect_double_bottom, detect_head_and_shoulders, detect_inverse_head_and_shoulders, detect_channel_up, detect_channel_down, detect_ascending_triangle, detect_descending_triangle, detect_candlestick_patterns
+
+from technical import calculate_sma, calculate_ema, calculate_rsi, detect_double_top, detect_double_bottom, detect_head_and_shoulders, detect_inverse_head_and_shoulders, detect_channel_up, detect_channel_down, detect_ascending_triangle, detect_descending_triangle, detect_candlestick_patterns, calculate_adx, calculate_stochastic_k, calculate_macd, calculate_williams_percent_r, calculate_money_flow_index, calculate_pivot_points
 
 # stocks_list = ['PHENIXINS', 'YPL', 'GP', 'RSRMSTEEL', 'EHL']
-# stocks_list = ['EHL']
+# stocks_list = ['DBH']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -142,29 +143,101 @@ def get_one_year_prices(trading_code):
     'volumes': volumes,
   }  
 
+def get_one_year_candles(trading_code):
+  daily_price = mydb.daily_prices.aggregate([
+    {
+      '$match': {
+        'tradingCode': trading_code,
+      },
+    },
+    {
+      '$sort': {
+        'date': -1,
+      },
+    },
+    {
+      '$limit': 500,
+    },
+    {
+      '$sort': {
+        'date': 1,
+      },
+    },
+    {
+      '$addFields': {
+        'close': {
+          '$cond': [{ '$gt': ['$close', 0] }, '$close', '$ycp']
+        },
+        'high': {
+          '$cond': [{ '$gt': ['$high', 0] }, '$high', '$ycp']
+        },
+        'low': {
+          '$cond': [{ '$gt': ['$low', 0] }, '$low', '$ycp']
+        }
+      }
+    },
+    {
+      '$project': {
+        'date': 1,
+        'open': 1,
+        'high': 1,
+        'low': 1,
+        'ltp': 1,
+        'close': 1,
+        'ycp': 1,
+        'volume': 1,
+      },
+    },
+  ])
+
+  return list(daily_price)
+
 def format_sma_ema(prices):
+  sma10 = calculate_sma(prices, 10)
   sma20 = calculate_sma(prices, 20)
+  sma30 = calculate_sma(prices, 30)
   sma50 = calculate_sma(prices, 50)
+  sma100 = calculate_sma(prices, 100)
   sma200 = calculate_sma(prices, 200)
 
+  ema10 = calculate_ema(prices, 10)
   ema20 = calculate_ema(prices, 20)
+  ema30 = calculate_ema(prices, 30)
   ema50 = calculate_ema(prices, 50)
+  ema100 = calculate_ema(prices, 100)
   ema200 = calculate_ema(prices, 200)
 
   return {
+    'sma10': sma10,
     'sma20': sma20,
+    'sma30': sma30,
     'sma50': sma50,
+    'sma100': sma100,
     'sma200': sma200,
+    'ema10': ema10,
     'ema20': ema20,
+    'ema30': ema30,
     'ema50': ema50,
+    'ema100': ema100,
     'ema200': ema200,
+
   }
 
-def format_oscillators(prices):
-  rsi14 = calculate_rsi(prices)
+def format_oscillators(prices, opens, highs, lows, volumes, one_year_candles):
+  rsi = calculate_rsi(prices)
+  adx = calculate_adx(highs, lows, prices)
+  stoch = calculate_stochastic_k(one_year_candles)
+  macd = calculate_macd(prices)
+  williamR = calculate_williams_percent_r(highs, lows, prices)
+  mfi = calculate_money_flow_index(highs, lows, prices, volumes)
 
   return {
-    'rsi14': rsi14
+    'rsi': rsi,
+    'adx': adx,
+    'stoch': stoch,
+    'macd': macd,
+    'williamR': williamR,
+    'mfi': mfi
   }
 
 def format_patterns(prices): 
@@ -241,9 +314,15 @@ def format_candlestick(one_year_prices):
   return candlestick
 
 def data_calc(trading_code):
-
+  print(trading_code)
   one_year_prices = get_one_year_prices(trading_code)
+  one_year_candles = get_one_year_candles(trading_code)
+
   prices = one_year_prices['prices']
+  opens = one_year_prices['opens']
+  highs = one_year_prices['highs']
+  lows = one_year_prices['lows']
+  volumes = one_year_prices['volumes']
 
   data = {}
 
@@ -251,13 +330,15 @@ def data_calc(trading_code):
 
   data['movingAverages'] = format_sma_ema(prices)
 
-  print(data['movingAverages'])
-
-  data['oscillators'] = format_oscillators(prices)
+  data['oscillators'] = format_oscillators(prices, opens, highs, lows, volumes, one_year_candles)
 
   data['patterns'] = format_patterns(prices)
 
   data['candlestick'] = format_candlestick(one_year_prices)
+
+  data['pivots'] = calculate_pivot_points(highs[-1], lows[-1], prices[-1])
+
+  print(data)
                                                             
   mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { "$set": { "technicals": data } })
 
@@ -266,20 +347,21 @@ def data_calc(trading_code):
 total_shares = 0
 
 for stock_code in stocks_list:
-  try:
-    data_calc(stock_code)
-    total_shares += 1
-    # print(stock_code, "Success")
-    # success_items.append(stock_code)
-  except Exception as excp:
-    mydb.data_script_errors.insert_one({
-      'script': 'technical-screener-daily',
-      'message': str(excp),
-      'tradingCode': stock_code,
-      'time': datetime.datetime.now()
-    })
-    # print(stock_code, "Error")
-    # error_items.append(stock_code)
+  data_calc(stock_code)
+  # try:
+  #   data_calc(stock_code)
+  #   total_shares += 1
+  #   # print(stock_code, "Success")
+  #   # success_items.append(stock_code)
+  # except Exception as excp:
+  #   mydb.data_script_errors.insert_one({
+  #     'script': 'technical-screener-daily',
+  #     'message': str(excp),
+  #     'tradingCode': stock_code,
+  #     'time': datetime.datetime.now()
+  #   })
+  #   # print(stock_code, "Error")
+  #   # error_items.append(stock_code)
 
 mydb.data_script_logs.insert_one({
     'script': 'technical-screener-daily',
