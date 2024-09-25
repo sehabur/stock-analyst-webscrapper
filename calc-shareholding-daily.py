@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ['APEXFOOT']
+# stocks_list = ['GPHISPAT', 'GP']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -38,7 +38,15 @@ def shareholding_data(stock_code):
         table_data.append(row.text.strip())
 
     category = table_data[3] 
-    print(stock_code, category, market_cap, total_shares)
+
+    table_data = []
+    for row in page_data_array[10].find_all('td')[0:]:
+        table_data.append(row.text.strip())
+  
+    st_loan = float(table_data[5].replace(",", '')) 
+    lt_loan = float(table_data[7].replace(",", ''))
+
+    # print(stock_code, category, market_cap, total_shares)
 
     if category == '-' or market_cap == 0 or total_shares == 0:
         # print(stock_code, ' -> Data error')
@@ -50,7 +58,7 @@ def shareholding_data(stock_code):
         })
     else:
         # SET CATEGORY, TOTAL SHARES & MARKET_CAP #   
-        mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'category': category, 'marketCap': market_cap, "totalShares": total_shares } })
+        mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'category': category, 'marketCap': market_cap, "totalShares": total_shares, 'shortTermLoan': st_loan,  'longTermLoan': lt_loan } })
 
     # SET SHAREHOLDING #
     if 'Share Holding Percentage' in table_data[20].split("\r\n")[0]: 

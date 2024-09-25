@@ -338,7 +338,7 @@ def data_calc(trading_code):
 
   data['pivots'] = calculate_pivot_points(highs[-1], lows[-1], prices[-1])
 
-  print(data)
+  # print(data)
                                                             
   mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { "$set": { "technicals": data } })
 
