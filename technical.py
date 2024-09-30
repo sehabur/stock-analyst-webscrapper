@@ -592,7 +592,8 @@ def is_inverted_hammer(open, high, low, close):
 
 # Function to detect Bullish Harami
 def is_bullish_harami(open1, close1, open2, close2):
-    return close1 < open1 and close2 > open2 and close2 > open1 and open2 < close1
+    # return close1 < open1 and close2 > open2 and close2 > open1 and open2 < close1 # prev
+    return close1 < open1 and close2 > open2 and close2 < open1 and open2 > close1
 
 # Function to detect Bearish Harami
 def is_bearish_harami(open1, close1, open2, close2):
