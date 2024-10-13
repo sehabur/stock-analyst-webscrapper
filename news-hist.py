@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import pymongo, datetime, certifi, requests
 from variables import mongo_string
 
-startDate = '2023-01-01'
+startDate = '2024-07-24'
 # startDate = '2023-11-29'
 endDate = '2023-11-30'
 
