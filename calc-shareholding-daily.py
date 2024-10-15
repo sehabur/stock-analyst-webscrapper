@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from variables import mongo_string
 from data import stocks_list
 
-# stocks_list = ['GPHISPAT', 'GP']
+# stocks_list = ['MARICO']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -34,17 +34,17 @@ def shareholding_data(stock_code):
     total_shares = float(table_data[6].replace(",", ''))     
 
     table_data = []
-    for row in page_data_array[9].find_all('td')[0:]:
-        table_data.append(row.text.strip())
-
-    category = table_data[3] 
-
-    table_data = []
     for row in page_data_array[10].find_all('td')[0:]:
         table_data.append(row.text.strip())
   
     st_loan = float(table_data[5].replace(",", '')) 
     lt_loan = float(table_data[7].replace(",", ''))
+
+    table_data = []
+    for row in page_data_array[9].find_all('td')[0:]:
+        table_data.append(row.text.strip())
+
+    category = table_data[3] 
 
     # print(stock_code, category, market_cap, total_shares)
 
@@ -109,6 +109,7 @@ def shareholding_data(stock_code):
         print(stock_code, 'success: first entry')
 
 total_shares = 0
+
 
 for stock in stocks_list:
     try:

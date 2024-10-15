@@ -14,7 +14,7 @@
 45 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-minute-end.py
 
 */5 3-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/halt-status.py
-0,5,10,15 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/halt-status.py
+0,5,10,15,20 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/halt-status.py
 
 */10 3-8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-alert-schedule.py
 
@@ -31,8 +31,8 @@
 50 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/block-transection-daily.py
 55 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-shareholding-daily.py
 5 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/reserve-surplus-daily.py
-10 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-eps-daily.py
-15 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/screener-daily.py
+20 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-eps-daily.py
+25 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/screener-daily.py
 
 5 2-14 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/news-hourly.py
 10 2-14 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/quarter-news-scraping-hourly.py

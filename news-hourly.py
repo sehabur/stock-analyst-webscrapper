@@ -82,6 +82,12 @@ if len(news_to_insert) > 0:
 if len(screener_news_script_array) > 0:
   mydb.screener_scripts.insert_many(screener_news_script_array)
 
+# mydb.data_script_logs.insert_one({
+#     'script': 'news-hourly',
+#     'message': f"Total news inserted: {len(news_to_insert)}",
+#     'time': datetime.datetime.now()
+# })
+
 server = backend_url_prod
 url = server + "/api/users/scheduleNewsAlert"
 
