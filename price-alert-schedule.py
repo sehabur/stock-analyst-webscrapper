@@ -12,7 +12,7 @@ if data_setting['dataInsertionEnable'] == 0:
     print('exiting script')
     exit()
 
-response  = requests.get(server + "/api/users/schedulePriceAlertNotification")
+response = requests.get(server + "/api/users/schedulePriceAlertNotification")
 
 if response.status_code == 200:
     print('Success')

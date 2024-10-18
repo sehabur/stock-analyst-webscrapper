@@ -24,8 +24,8 @@ def calculate_beta(trading_code):
     stock_prices_cursor = mydb.daily_prices.aggregate([
       {
         '$addFields': {
-          'ltp': {
-            '$cond': [{ '$gt': ["$ltp", 0] }, "$ltp", "$ycp"],
+          'close': {
+            '$cond': [{ '$gt': ["$close", 0] }, "$close", "$ycp"],
           },
         },
       },
@@ -43,7 +43,7 @@ def calculate_beta(trading_code):
         },
       },
       {
-        '$project': { 'date': 1, 'ltp': 1 },
+        '$project': { 'date': 1, 'close': 1 },
       },
     ])
 
@@ -65,7 +65,7 @@ def calculate_beta(trading_code):
         },
       },
       {
-        '$project': { 'date': 1, 'ltp': 1 },
+        '$project': { 'date': 1, 'close': 1 },
       },            
     ])
 
@@ -73,8 +73,8 @@ def calculate_beta(trading_code):
     market_df = pd.DataFrame(market_prices)
     
     # Calculate daily returns
-    stock_returns = stock_df['ltp'].pct_change().dropna()
-    benchmark_returns = market_df['ltp'].pct_change().dropna()
+    stock_returns = stock_df['close'].pct_change().dropna()
+    benchmark_returns = market_df['close'].pct_change().dropna()
     
     # Align the data by date
     returns_data = pd.concat([stock_returns, benchmark_returns], axis=1).dropna()
@@ -113,6 +113,7 @@ def get_one_year_prices(trading_code):
         'high': 1,
         'low': 1,
         'ltp': 1,
+        'close': 1,
         'ycp': 1,
         'volume': 1,
       },
@@ -128,7 +129,7 @@ def get_one_year_prices(trading_code):
 
   for item in daily_price:
     dates.append(item['date'])
-    prices.append(item['ltp'] if item['ltp'] != 0 else item['ycp'])
+    prices.append(item['close'] if item['close'] != 0 else item['ycp'])
     opens.append(item['open'] if item['open'] != 0 else item['ycp'])
     lows.append(item['low'] if item['low'] != 0 else item['ycp'])
     highs.append(item['high'] if item['high'] != 0 else item['ycp'])
@@ -337,8 +338,6 @@ def data_calc(trading_code):
   data['candlestick'] = format_candlestick(one_year_prices)
 
   data['pivots'] = calculate_pivot_points(highs[-1], lows[-1], prices[-1])
-
-  # print(data)
                                                             
   mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { "$set": { "technicals": data } })
 

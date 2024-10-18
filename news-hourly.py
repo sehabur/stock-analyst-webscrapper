@@ -12,7 +12,7 @@ if data_setting['dataInsertionEnable'] == 0:
     print('exiting script')
     exit()
 
-# date = datetime.date(2024, 10, 9).strftime("%Y-%m-%d")
+# date = datetime.date(2024, 10, 11).strftime("%Y-%m-%d")
 date = datetime.date.today().strftime("%Y-%m-%d")
 stock_url  = 'https://www.dsebd.org/old_news.php?startDate=' + date + '&endDate=' + date + '&criteria=4&archive=news'
 

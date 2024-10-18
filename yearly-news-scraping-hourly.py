@@ -374,13 +374,16 @@ for news in temp_data.values():
                 day = 31
                 month = 3
                  
-            daily_prices_list = mydb.daily_prices.find({'tradingCode': trading_code, 'date': { '$lte':  datetime.datetime(int(year), month, day, 0, 0) }}).sort("date", -1).limit(10)
+            daily_prices_list = mydb.daily_prices.find({'tradingCode': trading_code, 
+                                                        'date': { '$lte':  datetime.datetime(int(year), month, day, 0, 0) }}
+                                                        ).sort("date", -1).limit(10)
             
             if len(list(daily_prices_list.clone())) > 0:
                 daily_price = daily_prices_list[0]
                 
-                ltp = daily_price['ltp'] if daily_price['ltp'] != 0 else daily_price['ycp'] 
-                dividend_yield = round(cash_dividend * 100 / (data['faceValue'] * ltp), 2)
+                close_price = daily_price['close'] if daily_price['close'] != 0 else daily_price['ycp'] 
+                
+                dividend_yield = round(cash_dividend * 100 / (data['faceValue'] * close_price), 2)
                             
                 for i in range (len(dividend_yield_y_data)):
                     if dividend_yield_y_data[i]['year'] == year or dividend_yield_y_data[i]['year'] == int(year):

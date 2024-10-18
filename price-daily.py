@@ -17,9 +17,9 @@ def get_daily_data(start=None, end=None, code='All Instrument'):
             'inst': code,
             'archive': 'data'}
     # try:
-    #     r = requests.get(url=vs.DSE_URL+vs.DSE_DEA_URL, params=data)
+    #     r = requests.get(url=vs.DSE_URL+vs.DSE_DEA_URL, params = data)
     #     if r.status_code != 200:
-    #         r = requests.get(url=vs.DSE_ALT_URL+vs.DSE_DEA_URL, params=data)
+    #         r = requests.get(url=vs.DSE_ALT_URL+vs.DSE_DEA_URL, params = data)
     # except Exception as e:
     #         print(e)
 

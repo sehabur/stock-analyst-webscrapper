@@ -12,7 +12,7 @@ if data_setting['dataInsertionEnable'] == 0:
     print('exiting script')
     exit()
 
-# stocks_list = ['BESTHLDNG', 'NRBBANK', 'SICL']
+# stocks_list = ['BESTHLDNG', 'NRBBANK']
 
 def reserve_data(stock_code):
 

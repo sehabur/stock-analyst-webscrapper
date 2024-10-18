@@ -30,16 +30,17 @@ for j in range (len(page_data_array)):
   if '------' == page_data_array [j]:
     m = j
 del page_data_array [m:]
+
 x=0
 for y in range (int(len(page_data_array)/6)):
   data.append({
-      'date': date,
-      'tradingCode' : page_data_array[x],
-      'maxPrice' : float(page_data_array[x+1]),
-      'minPrice' : float(page_data_array[x+2]),
-      'trades' : float(page_data_array[x+3]),
-      'quantity' : float(page_data_array[x+4]),
-      'value' : float(page_data_array[x+5])})
+    'date': date,
+    'tradingCode' : page_data_array[x],
+    'maxPrice' : float(page_data_array[x+1]),
+    'minPrice' : float(page_data_array[x+2]),
+    'trades' : float(page_data_array[x+3]),
+    'quantity' : float(page_data_array[x+4]),
+    'value' : float(page_data_array[x+5])})
   x=x+6
 
 mydb.block_transections.insert_many(data)

@@ -4,7 +4,8 @@ from variables import mongo_string
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
-data = mydb.fundamentals.find({ 'isActive': True, 'type': 'stock' }, {'tradingCode': 1, 'companyName': 1, 'sector': 1, 'yearEnd': 1, 'category': 1, '_id': 0 })
+data = mydb.fundamentals.find({ 'isActive': True, 'type': 'stock' }, 
+                              {'tradingCode': 1, 'companyName': 1, 'sector': 1, 'yearEnd': 1, 'category': 1, '_id': 0 })
 
 stocks_list = []
 stocks_list_details = []

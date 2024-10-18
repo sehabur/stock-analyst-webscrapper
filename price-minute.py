@@ -23,7 +23,6 @@ def get_current_trade_data(symbol=None, retry_count=1, pause=0.001):
             table = soup.find('table', attrs={
                                 'class': 'table table-bordered background-white shares-table fixedHeader'})
 
-            # print(table)
             for row in table.find_all('tr')[1:]:
                 cols = row.find_all('td')
                 quotes.append({'symbol': cols[1].text.strip().replace(",", ""),

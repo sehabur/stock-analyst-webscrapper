@@ -728,54 +728,70 @@ def detect_candlestick_patterns(df):
             patterns.append((df['Date'][i], 'hammer'))
         elif is_inverted_hammer(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
             patterns.append((df['Date'][i], 'inverted_hammer'))
-        elif is_bullish_harami(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bullish_harami'))
-        elif is_bearish_harami(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bearish_harami'))
+
         elif is_bullish_engulfing(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
             patterns.append((df['Date'][i], 'bullish_engulfing'))
         elif is_bearish_engulfing(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
             patterns.append((df['Date'][i], 'bearish_engulfing'))
-        elif is_bullish_pin_bar(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bullish_pin_bar'))
-        elif is_bearish_pin_bar(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bearish_pin_bar'))
+
+        elif is_bullish_harami(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
+            patterns.append((df['Date'][i], 'bullish_harami'))
+        elif is_bearish_harami(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
+            patterns.append((df['Date'][i], 'bearish_harami'))
+
         elif i >= 2 and is_morning_star(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
             patterns.append((df['Date'][i], 'morning_star'))
         elif i >= 2 and is_evening_star(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
             patterns.append((df['Date'][i], 'evening_star'))
         elif is_shooting_star(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
             patterns.append((df['Date'][i], 'shooting_star'))
-        elif i >= 2 and is_three_white_soldiers(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'three_white_soldiers'))
-        elif i >= 2 and is_three_black_crows(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'three_black_crows'))
-        elif i >= 2 and is_three_inside_down(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'three_inside_down'))
-        elif i >= 2 and is_three_outside_up(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'three_outside_up'))
-        elif is_tweezer_top(df['Open'][i-1], df['Close'][i-1], df['High'][i-1], df['Open'][i], df['Close'][i], df['High'][i]):
-            patterns.append((df['Date'][i], 'tweezer_top'))
-        elif is_tweezer_bottom(df['Open'][i-1], df['Close'][i-1], df['Low'][i-1], df['Open'][i], df['Close'][i], df['Low'][i]):
-            patterns.append((df['Date'][i], 'tweezer_bottom'))
-        elif is_bullish_marubozu(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bullish_marubozu'))
-        elif is_bearish_marubozu(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bearish_marubozu'))
+
         elif is_dragonfly_doji(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
             patterns.append((df['Date'][i], 'dragonfly_doji'))
         elif is_gravestone_doji(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
             patterns.append((df['Date'][i], 'gravestone_doji'))
-        elif is_dark_cloud_cover(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i], df['High'][i]):
-            patterns.append((df['Date'][i], 'dark_cloud_cover'))
-        elif is_hanging_man(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'hanging_man'))
-        elif is_mat_hold(df, i):
-            patterns.append((df['Date'][i], 'mat_hold'))
-        elif is_spinning_top(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'spinning_top'))
+
         elif is_falling_three_methods(df, i):
             patterns.append((df['Date'][i], 'falling_three_methods'))
+
+        elif is_bullish_pin_bar(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
+            patterns.append((df['Date'][i], 'bullish_pin_bar'))
+        elif is_bearish_pin_bar(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
+            patterns.append((df['Date'][i], 'bearish_pin_bar'))
+
+        elif is_dark_cloud_cover(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i], df['High'][i]):
+            patterns.append((df['Date'][i], 'dark_cloud_cover'))
+        
+        elif i >= 2 and is_three_black_crows(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
+            patterns.append((df['Date'][i], 'three_black_crows'))
+        
+        elif i >= 2 and is_three_white_soldiers(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
+            patterns.append((df['Date'][i], 'three_white_soldiers'))
+        
+        elif i >= 2 and is_three_inside_down(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
+            patterns.append((df['Date'][i], 'three_inside_down'))
+        elif i >= 2 and is_three_outside_up(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
+            patterns.append((df['Date'][i], 'three_outside_up'))
+        
+        elif is_tweezer_top(df['Open'][i-1], df['Close'][i-1], df['High'][i-1], df['Open'][i], df['Close'][i], df['High'][i]):
+            patterns.append((df['Date'][i], 'tweezer_top'))
+        elif is_tweezer_bottom(df['Open'][i-1], df['Close'][i-1], df['Low'][i-1], df['Open'][i], df['Close'][i], df['Low'][i]):
+            patterns.append((df['Date'][i], 'tweezer_bottom'))
+        
+        elif is_bullish_marubozu(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
+            patterns.append((df['Date'][i], 'bullish_marubozu'))
+        elif is_bearish_marubozu(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
+            patterns.append((df['Date'][i], 'bearish_marubozu'))
+
+        elif is_hanging_man(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
+            patterns.append((df['Date'][i], 'hanging_man'))
+        
+        elif is_mat_hold(df, i):
+            patterns.append((df['Date'][i], 'mat_hold'))
+       
+        elif is_spinning_top(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
+            patterns.append((df['Date'][i], 'spinning_top'))
+
         elif is_piercing_line(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
             patterns.append((df['Date'][i], 'piercing_line'))    
             

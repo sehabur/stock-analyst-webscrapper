@@ -270,12 +270,6 @@ def basic_data_update(trading_code):
     oneMonthBeforeData = before_data['monthly'] if 'monthly' in before_data  else 0
     oneWeekBeforeData = before_data['weekly'] if 'weekly' in before_data  else 0
 
-    # fiveYearBeforeVolume = before_volume['fiveYearly'] if 'fiveYearly' in before_volume  else 0
-    # oneYearBeforeVolume = before_volume['yearly'] if 'yearly' in before_volume  else 0
-    # sixMonthBeforeVolume = before_volume['sixMonthly'] if 'sixMonthly' in before_volume  else 0
-    # oneMonthBeforeVolume = before_volume['monthly'] if 'monthly' in before_volume  else 0
-    # oneWeekBeforeVolume = before_volume['weekly'] if 'weekly' in before_volume  else 0
-
     alltimeHigh = data['alltime'][0]['high'] if len(data['alltime']) > 0 else "-"
     fiveYearHigh = data['fiveYear'][0]['high']  if len(data['fiveYear']) > 0 else "-"
     oneYearHigh = data['oneYear'][0]['high']  if len(data['oneYear']) > 0 else "-"
@@ -313,20 +307,7 @@ def basic_data_update(trading_code):
         "sixMonthBeforeData": sixMonthBeforeData,
         "oneMonthBeforeData": oneMonthBeforeData,
         "oneWeekBeforeData": oneWeekBeforeData,
-
-        # "fiveYearBeforeVolume": fiveYearBeforeVolume,
-        # "oneYearBeforeVolume": oneYearBeforeVolume,
-        # "sixMonthBeforeVolume": sixMonthBeforeVolume,
-        # "oneMonthBeforeVolume": oneMonthBeforeVolume,
-        # "oneWeekBeforeVolume": oneWeekBeforeVolume,
     }
-
-    # index_data = mydb.yesterday_prices.find_one({ 'tradingCode': trading_code }, { "tradingCode": 1})
-
-    # if index_data:
-    #     mydb.yesterday_prices.update_one({ 'tradingCode': trading_code }, { "$set": newvalues })
-    # else:
-    #     mydb.yesterday_prices.insert_one(newvalues)
 
     mydb.yesterday_prices.insert_one(newvalues)
 

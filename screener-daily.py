@@ -4,7 +4,7 @@ import math
 from data import stocks_list
 
 # stocks_list = ['APOLOISPAT']
-# stocks_list = ['PHENIXINS', 'YPL', 'GP', 'RSRMSTEEL', 'EHL']
+# stocks_list = ['PHENIXINS', 'YPL', 'GP', 'RSRMSTEEL']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]

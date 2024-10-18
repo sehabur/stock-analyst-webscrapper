@@ -106,14 +106,6 @@ query_date = {
     'fiveYearly': calculate_query_date('fiveYearly', today),
 }
 
-# query_date = {
-#     'weekly': calculate_query_date('weekly', today) + datetime.timedelta(days = 1),
-#     'monthly': calculate_query_date('monthly', today) + datetime.timedelta(days = 1),
-#     'sixMonthly': calculate_query_date('sixMonthly', today) + datetime.timedelta(days = 1),
-#     'yearly': calculate_query_date('yearly', today) + datetime.timedelta(days = 1),
-#     'fiveYearly': calculate_query_date('fiveYearly', today) + datetime.timedelta(days = 1),
-# }
-
 def basic_data_update(trading_code):    
     initialdata = mydb.daily_prices.aggregate([
         {
@@ -123,10 +115,10 @@ def basic_data_update(trading_code):
         },
         {
             '$addFields': {
-                'ltp': {
+                'close': {
                     '$cond': [
-                        { '$gt': ["$ltp", 0] },
-                        "$ltp",
+                        { '$gt': ["$close", 0] },
+                        "$close",
                         "$ycp",
                     ],
                 },
@@ -284,52 +276,18 @@ def basic_data_update(trading_code):
     ]
 
     before_data = {}
-    # before_value = {}
-    # before_volume = {}
-    # before_trade = {}
 
     for item in rawdata:
         if len(check_element) > 0:
             if item['date'] <= query_date[check_element[0]]:
-                before_data[check_element[0]] = item['ltp'] if item['ltp'] != 0 else item['ycp']
+                before_data[check_element[0]] = item['close'] if item['close'] != 0 else item['ycp']
                 check_element.pop(0)
-
-                # if check_element[0] == 'fiveYearly':
-                #     before_data[check_element[0]] = item['ltp'] if item['ltp'] != 0 else item['ycp']
-                #     before_volume[check_element[0]] = item['volume'] if item['volume'] != 0 else 0.000001
-                #     check_element.pop(0)
-                # else:
-                #     before_data[check_element[0]] = item['ltp'] if item['ltp'] != 0 else item['ycp']
-                #     before_value[check_element[0]] = item['value'] if item['value'] != 0 else 0.000001
-                #     before_volume[check_element[0]] = item['volume'] if item['volume'] != 0 else 0.000001
-                #     before_trade[check_element[0]] = item['trade'] if item['trade'] != 0 else 0.000001
-                #     check_element.pop(0)
 
     fiveYearBeforeData = before_data['fiveYearly'] if 'fiveYearly' in before_data  else 0
     oneYearBeforeData = before_data['yearly'] if 'yearly' in before_data  else 0
     sixMonthBeforeData = before_data['sixMonthly'] if 'sixMonthly' in before_data  else 0
     oneMonthBeforeData = before_data['monthly'] if 'monthly' in before_data  else 0
     oneWeekBeforeData = before_data['weekly'] if 'weekly' in before_data  else 0
-
-    # # fiveYearBeforeValue = before_value['fiveYearly'] if 'fiveYearly' in before_value  else "-"
-    # fiveYearBeforeValue =  None
-    # oneYearBeforeValue = before_value['yearly'] if 'yearly' in before_value  else "-"
-    # sixMonthBeforeValue = before_value['sixMonthly'] if 'sixMonthly' in before_value  else "-"
-    # oneMonthBeforeValue = before_value['monthly'] if 'monthly' in before_value  else "-"
-    # oneWeekBeforeValue = before_value['weekly'] if 'weekly' in before_value  else "-"
-
-    # fiveYearBeforeVolume = before_volume['fiveYearly'] if 'fiveYearly' in before_volume  else "-"
-    # oneYearBeforeVolume = before_volume['yearly'] if 'yearly' in before_volume  else "-"
-    # sixMonthBeforeVolume = before_volume['sixMonthly'] if 'sixMonthly' in before_volume  else "-"
-    # oneMonthBeforeVolume = before_volume['monthly'] if 'monthly' in before_volume  else "-"
-    # oneWeekBeforeVolume = before_volume['weekly'] if 'weekly' in before_volume  else "-"
-
-    # # fiveYearBeforeTrade = before_trade['fiveYearly'] if 'fiveYearly' in before_trade  else "-"
-    # fiveYearBeforeTrade = None
-    # oneYearBeforeTrade = before_trade['yearly'] if 'yearly' in before_trade  else "-"
-    # sixMonthBeforeTrade = before_trade['sixMonthly'] if 'sixMonthly' in before_trade  else "-"
-    # oneMonthBeforeTrade = before_trade['monthly'] if 'monthly' in before_trade  else "-"
-    # oneWeekBeforeTrade = before_trade['weekly'] if 'weekly' in before_trade  else "-"
 
     alltimeHigh = data['alltime'][0]['high'] if len(data['alltime']) > 0 else "-"
     fiveYearHigh = data['fiveYear'][0]['high']  if len(data['fiveYear']) > 0 else "-"
@@ -369,24 +327,6 @@ def basic_data_update(trading_code):
         "oneMonthBeforeData": oneMonthBeforeData,
         "oneWeekBeforeData": oneWeekBeforeData,
 
-        # "fiveYearBeforeValue": fiveYearBeforeValue,
-        # "oneYearBeforeValue": oneYearBeforeValue,
-        # "sixMonthBeforeValue": sixMonthBeforeValue,
-        # "oneMonthBeforeValue": oneMonthBeforeValue,
-        # "oneWeekBeforeValue": oneWeekBeforeValue,
-
-        # "fiveYearBeforeVolume": fiveYearBeforeVolume,
-        # "oneYearBeforeVolume": oneYearBeforeVolume,
-        # "sixMonthBeforeVolume": sixMonthBeforeVolume,
-        # "oneMonthBeforeVolume": oneMonthBeforeVolume,
-        # "oneWeekBeforeVolume": oneWeekBeforeVolume,
-
-        # "fiveYearBeforeTrade": fiveYearBeforeTrade,
-        # "oneYearBeforeTrade": oneYearBeforeTrade,
-        # "sixMonthBeforeTrade": sixMonthBeforeTrade,
-        # "oneMonthBeforeTrade": oneMonthBeforeTrade,
-        # "oneWeekBeforeTrade": oneWeekBeforeTrade,
-
         "fiveYearTotalValue": data['fiveYear'][0]['totalValue'] if len(data['fiveYear']) > 0 else 0,
         "oneYearTotalValue": data['oneYear'][0]['totalValue'] if len(data['oneYear']) > 0 else 0,
         "sixMonthTotalValue": data['sixMonth'][0]['totalValue'] if len(data['sixMonth']) > 0 else 0,
@@ -406,14 +346,7 @@ def basic_data_update(trading_code):
         "oneWeekTotalTrade": data['oneWeek'][0]['totalTrade'] if len(data['oneWeek']) > 0 else 0,
     }
 
-    # stock_data = mydb.yesterday_prices.find_one({ 'tradingCode': trading_code }, { "tradingCode": 1})
-
     mydb.yesterday_prices.insert_one(newvalues)
-
-    # if stock_data:
-    #     mydb.yesterday_prices.update_one({ 'tradingCode': trading_code }, { '$set': newvalues }, { "upsert": True } )
-    # else:
-    #     mydb.yesterday_prices.insert_one(newvalues)
 
 total_shares = 0
 for stock in stocks_list:

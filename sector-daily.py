@@ -21,8 +21,8 @@ data = mydb.daily_prices.aggregate([
     },
     {
       '$addFields': {
-        'ltp': {
-          '$cond': [{ '$gt': ["$ltp", 0] }, "$ltp", "$ycp"],
+        'close': {
+          '$cond': [{ '$gt': ["$close", 0] }, "$close", "$ycp"],
         },
       },
     },
@@ -77,11 +77,6 @@ data = mydb.daily_prices.aggregate([
         "_id": 0, 
         'date': today_date,
         'sector': '$_id',
-        # 'sectorTag': {
-        #   '$toLower': {
-        #     '$arrayElemAt': [{ '$split': ["$sector", " "] }, 0],
-        #   },
-        # },
         'ltp': { '$round': ['$ltp', 2] },
         'ycp': { '$round': ['$ycp', 2] },
         'high': { '$round': ['$high', 2] },

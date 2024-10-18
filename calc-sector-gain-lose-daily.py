@@ -280,7 +280,7 @@ def basic_data_update(trading_code):
     for item in rawdata:
         if len(check_element) > 0:
             if item['date'] <= query_date[check_element[0]]:
-                before_data[check_element[0]] = item['ltp'] if item['ltp'] != 0 else item['ycp']
+                before_data[check_element[0]] = item['close'] if item['close'] != 0 else item['ycp']
                 check_element.pop(0)
                 
     fiveYearBeforeData = before_data['fiveYearly'] if 'fiveYearly' in before_data  else 0

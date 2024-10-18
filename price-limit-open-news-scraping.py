@@ -10,7 +10,7 @@ if data_setting['dataInsertionEnable'] == 0:
     print('exiting script as data insertion disabled')
     exit()
 
-# today_date = datetime.datetime(2024, 10, 9, 0, 0)
+# today_date = datetime.datetime(2024, 10, 11, 0, 0)
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 news_list = mydb.news.find({
