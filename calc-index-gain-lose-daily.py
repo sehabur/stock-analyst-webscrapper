@@ -311,10 +311,13 @@ def basic_data_update(trading_code):
 
     mydb.yesterday_prices.insert_one(newvalues)
 
+total_index = 0
+
 for stock in stocks_list:
     try:
         basic_data_update(stock)
-        print(stock, 'success') 
+        total_index += 1
+        # print(stock, 'success') 
 
     except Exception as excp:
         print("Error: ", excp, ' : ', stock)
@@ -327,7 +330,7 @@ for stock in stocks_list:
 
 mydb.data_script_logs.insert_one({
     'script': 'calc-index-gain-lose-daily',
-    'message': "Status: OK",
+    'message': f"Total items: {total_index}",
     'time': datetime.datetime.now()
 })   
    

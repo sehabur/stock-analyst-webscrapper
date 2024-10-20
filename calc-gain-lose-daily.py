@@ -349,6 +349,7 @@ def basic_data_update(trading_code):
     mydb.yesterday_prices.insert_one(newvalues)
 
 total_shares = 0
+
 for stock in stocks_list:
     try:
         basic_data_update(stock) 

@@ -331,11 +331,14 @@ def basic_data_update(trading_code):
 
     mydb.yesterday_prices.insert_one(newvalues)
 
+total_items = 0
+
 for sector in sector_list:
     stock = sector['name']
     try:
         basic_data_update(stock)
-        print(stock, 'success') 
+        total_items += 1
+        # print(stock, 'success') 
 
     except Exception as excp:
         print("Error: ", excp, ' : ', stock)
@@ -348,7 +351,7 @@ for sector in sector_list:
 
 mydb.data_script_logs.insert_one({
     'script': 'calc-sector-gain-lose-daily',
-    'message': "Status: OK",
+    'message': f"Total items: {total_items}",
     'time': datetime.datetime.now()
 })   
    

@@ -31,7 +31,7 @@ def get_current_trade_data(symbol=None, retry_count=1, pause=0.001):
                        'low': cols[4].text.strip().replace(",", ""),
                        'close': cols[5].text.strip().replace(",", ""),
                        'ycp': cols[6].text.strip().replace(",", ""),
-                       'change': cols[7].text.strip().replace("--", "0"),
+                      #  'change': cols[7].text.strip().replace("--", "0"),
                        'trade': cols[8].text.strip().replace(",", ""),
                        'value': cols[9].text.strip().replace(",", ""),
                        'volume': cols[10].text.strip().replace(",", "")
@@ -60,25 +60,27 @@ share_data_array = []
 
 for x in range(df.shape[0]):
 
-  if (float(df.iloc[x]['ycp']) == 0 or float(df.iloc[x]['ltp']) == 0):
+  if (float(df.iloc[x]['ycp']) == 0 or float(df.iloc[x]['close']) == 0):
+    change = 0
     percent_change = 0
   else:
-    percent_change = round((float(df.loc[x]['ltp'])-float(df.loc[x]['ycp']))/ float(df.loc[x]['ycp']) *100 , 2)
+    change = round(float(df.loc[x]['close']) - float(df.loc[x]['ycp']), 2)
+    percent_change = round((float(df.loc[x]['close']) - float(df.loc[x]['ycp']))/ float(df.loc[x]['ycp']) * 100 , 2)
       
   share_data_array.append({
     'date': today_date, 
     'time': today_time_now, 
     'tradingCode': df.loc[x]['symbol'],
-    'ltp': (float(df.loc[x]['ltp'])),
-    'high': (float(df.loc[x]['high'])),
-    'low': (float(df.loc[x]['low'])),
-    'close': (float(df.loc[x]['close'])),
-    'ycp': (float(df.loc[x]['ycp'])),
-    'change': (float(df.loc[x]['change'])),
+    'ltp': float(df.loc[x]['ltp']),
+    'high': float(df.loc[x]['high']),
+    'low': float(df.loc[x]['low']),
+    'close': float(df.loc[x]['close']),
+    'ycp': float(df.loc[x]['ycp']),
+    'change': change,
     'percentChange': percent_change,
-    'trade': (float(df.loc[x]['trade'])),
-    'value': (float(df.loc[x]['value'])),
-    'volume': (float(df.loc[x]['volume'])),
+    'trade': float(df.loc[x]['trade']),
+    'value': float(df.loc[x]['value']),
+    'volume': float(df.loc[x]['volume']),
   })
 
 # print(share_data_array)
