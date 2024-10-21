@@ -60,12 +60,21 @@ share_data_array = []
 
 for x in range(df.shape[0]):
 
-  if (float(df.iloc[x]['ycp']) == 0 or float(df.iloc[x]['close']) == 0):
+  ycp = float(df.loc[x]['ycp'])  
+
+  if float(df.loc[x]['close']) != 0:
+    close_price = float(df.loc[x]['close'])
+  elif float(df.loc[x]['ltp']) != 0:
+    close_price = float(df.loc[x]['ltp'])
+  else:
+    close_price = ycp
+
+  if ycp == 0:
     change = 0
     percent_change = 0
   else:
-    change = round(float(df.loc[x]['close']) - float(df.loc[x]['ycp']), 2)
-    percent_change = round((float(df.loc[x]['close']) - float(df.loc[x]['ycp']))/ float(df.loc[x]['ycp']) * 100 , 2)
+    change = round(close_price - ycp, 2)
+    percent_change = round((close_price - ycp)/ ycp * 100 , 2)
       
   share_data_array.append({
     'date': today_date, 
@@ -74,8 +83,8 @@ for x in range(df.shape[0]):
     'ltp': float(df.loc[x]['ltp']),
     'high': float(df.loc[x]['high']),
     'low': float(df.loc[x]['low']),
-    'close': float(df.loc[x]['close']),
-    'ycp': float(df.loc[x]['ycp']),
+    'close': close_price,
+    'ycp': ycp,
     'change': change,
     'percentChange': percent_change,
     'trade': float(df.loc[x]['trade']),
