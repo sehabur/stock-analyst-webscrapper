@@ -14,8 +14,8 @@ def is_valid_date(year, month, day):
 
 count = 0
 year_insert = 2024
-for month_insert in range(7, 8):
-  for date_insert in range(24, 25):
+for month_insert in range(4, 8):
+  for date_insert in range(1, 31):
 
     print(f'date -> {date_insert}, month -> {month_insert}')
 
@@ -26,12 +26,42 @@ for month_insert in range(7, 8):
     news_list = mydb.news.find({
         'date': datetime.datetime(year_insert, month_insert, date_insert, 0, 0),
         'title': { '$regex': 'Financials', '$options': 'i' } ,
-        # 'tradingCode': 'BERGERPBL',
+        'tradingCode': 'ORIONPHARM',
         # 'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (EPU) was', '$options': 'i' } 
-        'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS|EPU) was', '$options': 'i' } 
+        'description': { '$regex': '^(\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS|EPU) was)|(\\(Continuation news|\\(Cont. news)', '$options': 'i' } 
     })
+
+    news_list = list(news_list)
+
+    temp_data = {}
+    
+    for news in news_list: 
+      trading_code = news['tradingCode']
+
+      stock_list = [e for e in stocks_list_details if e['tradingCode'] == trading_code]
+
+      if len(stock_list) < 1:
+          print('trading code not found')
+          continue
+
+      id = trading_code + "_" + news['title'].replace(" ", "_") + "_" + news['date'].strftime('%d%m%Y')
+
+      if id in temp_data:
+          if news['description'].startswith("(Q"):
+              temp_data[id]['description'] = news['description'] + " " + temp_data[id]['description']
+          else:
+              temp_data[id]['description'] = temp_data[id]['description'] + " " + news['description']  
+      else:
+          temp_data[id] = {
+              'title': news['title'],
+              'tradingCode': trading_code,
+              'description': news['description'],
+              'date': news['date']
+          }
   
-    for news in news_list:
+    for news in temp_data.values():
+
+      print(news)
 
       try:
         q = news['title'].split()[1].lower()
@@ -100,10 +130,14 @@ for month_insert in range(7, 8):
           nocfps = 0    
 
         # NAV # 
+
+        # print(description)
+
         n=-1
         for i in range (len(description)):
           if "NAV" == description [i] :
             for j in range (i+2, len(description)):
+              # print(description [j])
               if description [j] == 'Tk.':
                 n=j+1
                 break

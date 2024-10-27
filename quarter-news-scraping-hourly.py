@@ -16,7 +16,7 @@ today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microse
 news_list = mydb.news.find({
     'date': today_date,
     'title': { '$regex': 'Financials', '$options': 'i' } ,
-    'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS|EPU) was', '$options': 'i' } 
+    'description': { '$regex': '^(\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS|EPU) was)|(\\(Continuation news|\\(Cont. news)', '$options': 'i' } 
 })
 
 # news_list = mydb.news.find({
@@ -25,12 +25,42 @@ news_list = mydb.news.find({
 #     'date': datetime.datetime(2023, 4, 30, 0, 0),
 #     'title': { '$regex': 'Financials', '$options': 'i' } ,
 #     'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS|EPU) was', '$options': 'i' } 
-# })
-# for a in news_list:
-#     print(a)
-# exit()    
+# })   
 
-for news in news_list:
+news_list = list(news_list)
+
+temp_data = {}
+
+for news in news_list: 
+  trading_code = news['tradingCode']
+  description = news['description']
+
+  stock_list = [e for e in stocks_list_details if e['tradingCode'] == trading_code]
+
+  if len(stock_list) < 1:
+      print('trading code not found')
+      continue
+
+  id = trading_code + "_" + news['title'].replace(" ", "_") + "_" + news['date'].strftime('%d%m%Y')
+
+  if id in temp_data:
+      if description.startswith("(Q"):
+          temp_data[id]['description'] = description + " " + temp_data[id]['description']
+      else:
+          temp_data[id]['description'] = temp_data[id]['description'] + " " + description  
+  else:
+      temp_data[id] = {
+          'title': news['title'],
+          'tradingCode': trading_code,
+          'description': description,
+          'date': news['date']
+      }
+
+for news in temp_data.values():
+  # print(news)
+  if not news['description'].startswith("(Q"):
+    print('Not Q Financial news')
+    continue
 
   q = news['title'].split()[1].lower()
   code = news['title'].split()[0].replace(":", "")

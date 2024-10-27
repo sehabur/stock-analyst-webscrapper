@@ -12,7 +12,6 @@ if data_setting['dataInsertionEnable'] == 0:
     exit()
 
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-
 # tomorrow_date = today_date + datetime.timedelta(days=1)
 
 news_list = mydb.news.find({
@@ -22,45 +21,42 @@ news_list = mydb.news.find({
 
 # news_list = mydb.news.find({
 #     # 'date':   { '$gte':  datetime.datetime(2024, 5, 5, 0, 0) } ,
-#     'date': datetime.datetime(2023, 10, 29, 0, 0),
-#     'tradingCode': 'GENEXIL',
+#     # 'date': datetime.datetime(2023, 10, 29, 0, 0),
+#     'date': today_date,
+#     'tradingCode': 'ADNTEL',
 #     'title': { '$regex': 'Dividend Declaration', '$options': 'i' } ,
 # }).sort("date", 1)
 
-# for a in news_list:
-#     print(a)
-# exit()    
+news_list = list(news_list)
 
 temp_data = {}
 
 for news in news_list: 
     trading_code = news['tradingCode']
 
+    description = news['description']
+
     if trading_code not in stocks_list:
         print('trading code not found')
         continue
 
-    title = news['title'].split()
-    id = trading_code + news['date'].strftime('%d%m%Y')
+    id = trading_code + "_" + news['title'].replace(" ", "_") + "_" + news['date'].strftime('%d%m%Y')
 
     if id in temp_data:
-        if temp_data[id]['description'].startswith("(Continuation news") or temp_data[id]['description'].startswith("(Cont. news"):
-            temp_data[id]['description'] = news['description'] + temp_data[id]['description']
+        if description.startswith("(Continuation news") or description.startswith("(Cont. news"):
+            temp_data[id]['description'] = temp_data[id]['description'] + " " + description
         else:
-            temp_data[id]['description'] = temp_data[id]['description'] + news['description']  
+            temp_data[id]['description'] = description + " " + temp_data[id]['description']
     else:
         temp_data[id] = {
-            'title': news['title'] + ' ' + news['date'].strftime('%d%m%Y'),
+            'title': news['title'],
             'tradingCode': trading_code,
-            'description': news['description'],
+            'description': description,
             'date': news['date']
         }
 
-# for news in temp_data.values():
-#     print(news)
-# exit()        
-
 for news in temp_data.values():
+    # print(news)
     news_date = news['date']
 
     text = news['description']
