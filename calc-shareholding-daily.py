@@ -19,6 +19,8 @@ def shareholding_data(stock_code):
     response = requests.get(stock_url)
     soup = BeautifulSoup(response.text, 'html.parser')
 
+    company_name = soup.find('h2', attrs={'class': 'BodyHead topBodyHead'}).find('i').text.strip()
+
     page_data_array = soup.find_all('table', attrs={'class': 'table table-bordered background-white'})
 
     for item in page_data_array[0]:
@@ -46,19 +48,16 @@ def shareholding_data(stock_code):
 
     category = table_data[3] 
 
-    # print(stock_code, category, market_cap, total_shares)
-
     if category == '-' or market_cap == 0 or total_shares == 0:
-        # print(stock_code, ' -> Data error')
-        mydb.errors.insert_one({
+        mydb.data_script_errors.insert_one({
             'script': 'calc-shareholding-daily',
-            'message': stock_code + ' -> Data error',
+            'message': f"DATA ERROR # category:{category}, market_cap:{market_cap}, total_shares:{total_shares}",
             'tradingCode': stock_code,
-            'createdAt': datetime.datetime.now()
+            'time': datetime.datetime.now()
         })
     else:
         # SET CATEGORY, TOTAL SHARES & MARKET_CAP #   
-        mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'category': category, 'marketCap': market_cap, "totalShares": total_shares, 'shortTermLoan': st_loan,  'longTermLoan': lt_loan } })
+        mydb.fundamentals.update_one({ 'tradingCode': stock_code }, { '$set': { 'companyName': company_name, 'category': category, 'marketCap': market_cap, "totalShares": total_shares, 'shortTermLoan': st_loan,  'longTermLoan': lt_loan } })
 
     # SET SHAREHOLDING #
     if 'Share Holding Percentage' in table_data[20].split("\r\n")[0]: 

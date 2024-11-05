@@ -688,11 +688,13 @@ def detect_candlestick_patterns(df):
     for i in range(2, len(df)):
         if is_hammer(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
             pattern = { "date": df['Date'][i], "value": 'hammer' }
+
         elif is_inverted_hammer(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
             pattern = { "date": df['Date'][i], "value": 'inverted_hammer' }
 
         elif is_bullish_engulfing(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
             pattern = { "date": df['Date'][i], "value": 'bullish_engulfing' }
+            
         elif is_bearish_engulfing(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
             pattern = { "date": df['Date'][i], "value": 'bearish_engulfing' }
 
@@ -717,7 +719,7 @@ def detect_candlestick_patterns(df):
         elif is_common_doji(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
             pattern = { "date": df['Date'][i], "value": 'common_doji' }
 
-        elif is_dark_cloud_cover(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i], df['High'][i]):
+        elif is_dark_cloud_cover(df['Open'][i-1], df['Close'][i-1], df['High'][i-1], df['Open'][i], df['Close'][i], df['High'][i]):
             pattern = { "date": df['Date'][i], "value": 'dark_cloud_cover' }
         
         elif i >= 2 and is_three_black_crows(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
@@ -731,7 +733,7 @@ def detect_candlestick_patterns(df):
         elif i >= 2 and is_three_outside_up(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
             pattern = { "date": df['Date'][i], "value": 'three_outside_up' }
         
-        elif is_piercing_line(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
+        elif is_piercing_line(df['Open'][i-1], df['Close'][i-1], df['Low'][i-1], df['Open'][i], df['Close'][i]):
             pattern = { "date": df['Date'][i], "value": 'piercing_line' } 
 
         elif is_tweezer_top(df['Open'][i-1], df['Close'][i-1], df['High'][i-1], df['Open'][i], df['Close'][i], df['High'][i]):
