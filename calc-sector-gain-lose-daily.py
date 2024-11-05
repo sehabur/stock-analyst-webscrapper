@@ -32,6 +32,12 @@ sector_list = [
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
+def get_valid_date_or_previous(year, month, day):
+    try:
+        return datetime.datetime(year, month, day, 0, 0)
+    except ValueError:
+        return get_valid_date_or_previous(year, month, day-1)
+    
 def calculate_query_date(type, today):
     query_date = {}
     if type == 'monthly':
@@ -112,8 +118,8 @@ def calculate_query_date(type, today):
             'month': month_final,
             'day': day_final
         }   
- 
-    return datetime.datetime(query_date['year'], query_date['month'], query_date['day'], 0, 0)
+    
+    return get_valid_date_or_previous(query_date['year'], query_date['month'], query_date['day'])
 
 today = datetime.date.today()
 

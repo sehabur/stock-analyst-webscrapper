@@ -12,11 +12,11 @@ from technical import calculate_sma, calculate_ema, calculate_rsi, detect_double
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
 
-data_setting = mydb.settings.find_one()
+# data_setting = mydb.settings.find_one()
 
-if data_setting['dataInsertionEnable'] == 0:
-    print('exiting script')
-    exit()
+# if data_setting['dataInsertionEnable'] == 0:
+#     print('exiting script')
+#     exit()
 
 def calculate_beta(trading_code):
     query_start_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(days=365)
@@ -302,20 +302,11 @@ def format_candlestick(one_year_prices):
   }
 
   df = pd.DataFrame(candle_data)
-  patterns = detect_candlestick_patterns(df)
-
-  candlestick = []
-
-  for pattern in patterns:
-    candlestick.append({
-      'date': pattern[0],
-      'value': pattern[1],
-    })
+  candlestick = detect_candlestick_patterns(df)
 
   return candlestick
 
 def data_calc(trading_code):
-  print(trading_code)
   one_year_prices = get_one_year_prices(trading_code)
   one_year_candles = get_one_year_candles(trading_code)
 
@@ -341,17 +332,14 @@ def data_calc(trading_code):
                                                             
   mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { "$set": { "technicals": data } })
 
-# success_items = []
-# error_items = []    
+   
 total_shares = 0
 
 for stock_code in stocks_list:
-  # data_calc(stock_code)
   try:
+    # print(stock_code)
     data_calc(stock_code)
     total_shares += 1
-    # print(stock_code, "Success")
-    # success_items.append(stock_code)
   except Exception as excp:
     mydb.data_script_errors.insert_one({
       'script': 'technical-screener-daily',
@@ -359,8 +347,6 @@ for stock_code in stocks_list:
       'tradingCode': stock_code,
       'time': datetime.datetime.now()
     })
-    # print(stock_code, "Error")
-    # error_items.append(stock_code)
 
 mydb.data_script_logs.insert_one({
     'script': 'technical-screener-daily',

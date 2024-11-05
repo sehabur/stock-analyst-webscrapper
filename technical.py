@@ -576,6 +576,7 @@ def detect_descending_triangle(prices, window=20, tolerance=0.02):
 
     return descending_triangle_patterns
 
+
 # Function to detect Hammer
 def is_hammer(open, high, low, close):
     body_length = abs(close - open)
@@ -589,213 +590,158 @@ def is_inverted_hammer(open, high, low, close):
     upper_shadow = high - max(open, close)
     lower_shadow = min(open, close) - low
     return upper_shadow > 2 * body_length and lower_shadow < body_length
-
-# Function to detect Bullish Harami
+    
+    # Function to detect Bullish Harami
 def is_bullish_harami(open1, close1, open2, close2):
-    # return close1 < open1 and close2 > open2 and close2 > open1 and open2 < close1 # prev
     return close1 < open1 and close2 > open2 and close2 < open1 and open2 > close1
-
-# Function to detect Bearish Harami
+    
+    # Function to detect Bearish Harami
 def is_bearish_harami(open1, close1, open2, close2):
-    return close1 > open1 and close2 < open2 and close2 < open1 and open2 > close1
-
-# Function to detect Bullish Engulfing
+    return close1 > open1 and close2 < open2 and close2 > open1 and open2 < close1
+    
+    # Function to detect Bullish Engulfing
 def is_bullish_engulfing(open1, close1, open2, close2):
     return close1 < open1 and close2 > open2 and open2 < close1 and close2 > open1
-
-# Function to detect Bearish Engulfing
+    
+    # Function to detect Bearish Engulfing
 def is_bearish_engulfing(open1, close1, open2, close2):
     return close1 > open1 and close2 < open2 and open2 > close1 and close2 < open1
-
-# Function to detect Bullish Pin Bar
-def is_bullish_pin_bar(open, high, low, close):
-    body_length = abs(close - open)
-    upper_shadow = high - max(open, close)
-    lower_shadow = min(open, close) - low
-    return lower_shadow > 2 * body_length and upper_shadow < body_length and close > open
-
-# Function to detect Bearish Pin Bar
-def is_bearish_pin_bar(open, high, low, close):
-    body_length = abs(close - open)
-    upper_shadow = high - max(open, close)
-    lower_shadow = min(open, close) - low
-    return upper_shadow > 2 * body_length and lower_shadow < body_length and close < open
-
-# Function to detect Morning Star
+    
+    # Function to detect Morning Star
 def is_morning_star(open1, close1, open2, close2, open3, close3):
-    return close1 < open1 and close2 < open2 and close3 > open3 and open2 < close1 and close3 > (open1 + close1) / 2
-
-# Function to detect Evening Star
+    return close1 < open1 and abs(close2 - open2) < (open1 - close1) * 0.3 and close3 > open3 and open2 < close1 and close3 > (open1 + close1) / 2
+    
+    # Function to detect Evening Star
 def is_evening_star(open1, close1, open2, close2, open3, close3):
-    return close1 > open1 and close2 < open2 and close3 < open3 and open2 > close1 and close3 < (open1 + close1) / 2
-
-# Function to detect Shooting Star
+    return close1 > open1 and abs(close2 - open2) < (close1 - open1) * 0.3 and close3 < open3 and open2 > close1 and close3 < (open1 + close1) / 2
+    
+    # Function to detect Shooting Star
 def is_shooting_star(open, high, low, close):
     body_length = abs(close - open)
     upper_shadow = high - max(open, close)
     lower_shadow = min(open, close) - low
-    return upper_shadow > 2 * body_length and lower_shadow < body_length and close < open
-
-# Function to detect Three White Soldiers
-def is_three_white_soldiers(open1, close1, open2, close2, open3, close3):
-    return close1 > open1 and close2 > open2 and close3 > open3 and open2 > close1 and open3 > close2
-
-# Function to detect Three Black Crows
-def is_three_black_crows(open1, close1, open2, close2, open3, close3):
-    return close1 < open1 and close2 < open2 and close3 < open3 and open2 < close1 and open3 < close2
-
-# Function to detect Three Inside Down
-def is_three_inside_down(open1, close1, open2, close2, open3, close3):
-    return close1 < open1 and close2 > open2 and close3 < open3 and close3 < open2
-
-# Function to detect Three Outside Up
-def is_three_outside_up(open1, close1, open2, close2, open3, close3):
-    return close1 > open1 and close2 < open2 and close3 > open3 and close3 > open2
-
-# Function to detect Tweezer Top
-def is_tweezer_top(open1, close1, high1, open2, close2, high2):
-    return high1 == high2 and close1 < open1 and close2 > open2
-
-# Function to detect Tweezer Bottom
-def is_tweezer_bottom(open1, close1, low1, open2, close2, low2):
-    return low1 == low2 and close1 > open1 and close2 < open2
-
-# Function to detect Bullish Marubozu
-def is_bullish_marubozu(open, high, low, close):
-    return open == low and close == high
-
-# Function to detect Bearish Marubozu
-def is_bearish_marubozu(open, high, low, close):
-    return open == high and close == low
-
-# Function to detect Dragonfly Doji
+    return upper_shadow >= 2 * body_length and lower_shadow <= body_length*0.1 and body_length < upper_shadow
+    
+    # Function to detect Dragonfly Doji
 def is_dragonfly_doji(open, high, low, close):
-    return open == close and open > low and high == open
+    body_length = abs(close - open)
+    upper_shadow = high - max(open, close)
+    lower_shadow = min(open, close) - low
+    return body_length <= (high - low) * 0.1 and lower_shadow >= body_length*2 and upper_shadow <= (high - low) * 0.1
 
 # Function to detect Gravestone Doji
 def is_gravestone_doji(open, high, low, close):
-    return open == close and open < high and low == open
-
-# Function to detect Dark Cloud Cover
-def is_dark_cloud_cover(open1, close1, open2, close2, high2):
-    return close1 > open1 and open2 > close1 and close2 < (open1 + close1) / 2 and close2 > open1
-
-# Function to detect Hanging Man
-def is_hanging_man(open, high, low, close):
     body_length = abs(close - open)
-    lower_shadow = min(open, close) - low
     upper_shadow = high - max(open, close)
-    return lower_shadow > 2 * body_length and upper_shadow < body_length and close < open
+    lower_shadow = min(open, close) - low
+    return body_length <= (high - low) * 0.1 and upper_shadow >= body_length*2 and lower_shadow <= (high - low) * 0.1
 
-# Function to detect Mat Hold
-def is_mat_hold(df, i):
-    if i < 4:
-        return False
-    c1 = df['Close'][i-4] > df['Open'][i-4]
-    c2 = df['Close'][i-3] < df['Open'][i-3]
-    c3 = df['Close'][i-2] < df['Open'][i-2]
-    c4 = df['Close'][i-1] < df['Open'][i-1]
-    c5 = df['Close'][i] > df['Open'][i]
-    return c1 and c2 and c3 and c4 and c5
-
-# Function to detect Spinning Top
-def is_spinning_top(open, high, low, close):
+# Function to detect Longlegged Doji
+def is_longlegged_doji(open, high, low, close):
     body_length = abs(close - open)
-    total_length = high - low
-    return body_length <= 0.2 * total_length
+    upper_shadow = high - max(open, close)
+    lower_shadow = min(open, close) - low
+    return body_length <= (high - low) * 0.1 and upper_shadow >= (high - low) * 0.3 and lower_shadow >= (high - low) * 0.3
 
-# Function to detect Falling Three Methods
-def is_falling_three_methods(df, i):
-    if i < 4:
-        return False
-    c1 = df['Close'][i-4] < df['Open'][i-4]
-    c2 = df['Close'][i-3] > df['Open'][i-3]
-    c3 = df['Close'][i-2] > df['Open'][i-2]
-    c4 = df['Close'][i-1] > df['Open'][i-1]
-    c5 = df['Close'][i] < df['Open'][i]
-    return c1 and c2 and c3 and c4 and c5 and df['Close'][i] < df['Close'][i-4]
+# Function to detect Common Doji
+def is_common_doji(open, high, low, close):
+    body_length = abs(close - open)
+    return body_length <= (high - low) * 0.1
+    
+    # Function to detect Dark Cloud Cover
+def is_dark_cloud_cover(open1, close1, high1, open2, close2, high2):
+    return close1 > open1 and open2 > high1 and close2 < (open1 + close1) / 2 and close2 > open1
+    
+    # Function to detect Three White Soldiers
+def is_three_white_soldiers(open1, close1, open2, close2, open3, close3):
+    return close1 > open1 and close2 > open2 and close3 > open3 and close2 > close1 and close3 > close2
+
+# Function to detect Three Black Crows
+def is_three_black_crows(open1, close1, open2, close2, open3, close3):
+    return close1 < open1 and close2 < open2 and close3 < open3 and close2 < close1 and close3 < close2
+    
+    # Function to detect Three Inside Down
+def is_three_inside_down(open1, close1, open2, close2, open3, close3):
+    return close1 > open1 and close2 < open2 and close3 < open3 and open2 <= close1 and close2 > open1 and close3 < close2
+
+# Function to detect Three Outside Up
+def is_three_outside_up(open1, close1, open2, close2, open3, close3):
+    return close1 < open1 and close2 > open2 and close3 > open3 and open2 >= close1 and close2 < open1 and close3 > close2
 
 # Function to detect Piercing Line
-def is_piercing_line(open1, close1, open2, close2):
-    return close1 < open1 and open2 < close1 and close2 > (open1 + close1) / 2 and close2 < open1
+def is_piercing_line(open1, close1, low1, open2, close2):
+    return close1 < open1 and open2 < low1 and close2 > (open1 + close1) / 2 and close2 < open1
+    
+    # Function to detect Tweezer Top
+def is_tweezer_top(open1, close1, high1, open2, close2, high2):
+    return abs(high1 - high2) < (high1 * 0.01) and close1 > open1 and close2 < open2
 
+# Function to detect Tweezer Bottom
+def is_tweezer_bottom(open1, close1, low1, open2, close2, low2):
+    return abs(low1 - low2) < (low1 * 0.01) and close1 < open1 and close2 > open2
+    
+    
 # Function to detect the patterns
 def detect_candlestick_patterns(df):
-    patterns = []
-
+    pattern = {}
+    
     for i in range(2, len(df)):
         if is_hammer(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'hammer'))
+            pattern = { "date": df['Date'][i], "value": 'hammer' }
         elif is_inverted_hammer(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'inverted_hammer'))
+            pattern = { "date": df['Date'][i], "value": 'inverted_hammer' }
 
         elif is_bullish_engulfing(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bullish_engulfing'))
+            pattern = { "date": df['Date'][i], "value": 'bullish_engulfing' }
         elif is_bearish_engulfing(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bearish_engulfing'))
+            pattern = { "date": df['Date'][i], "value": 'bearish_engulfing' }
 
         elif is_bullish_harami(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bullish_harami'))
+            pattern = { "date": df['Date'][i], "value": 'bullish_harami' }
         elif is_bearish_harami(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bearish_harami'))
+            pattern = { "date": df['Date'][i], "value": 'bearish_harami' }
 
         elif i >= 2 and is_morning_star(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'morning_star'))
+            pattern = { "date": df['Date'][i], "value": 'morning_star' }
         elif i >= 2 and is_evening_star(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'evening_star'))
+            pattern = { "date": df['Date'][i], "value": 'evening_star' }
         elif is_shooting_star(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'shooting_star'))
+            pattern = { "date": df['Date'][i], "value": 'shooting_star' }
 
         elif is_dragonfly_doji(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'dragonfly_doji'))
+            pattern = { "date": df['Date'][i], "value": 'dragonfly_doji' }
         elif is_gravestone_doji(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'gravestone_doji'))
-
-        elif is_falling_three_methods(df, i):
-            patterns.append((df['Date'][i], 'falling_three_methods'))
-
-        elif is_bullish_pin_bar(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bullish_pin_bar'))
-        elif is_bearish_pin_bar(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bearish_pin_bar'))
+            pattern = { "date": df['Date'][i], "value": 'gravestone_doji' }
+        elif is_longlegged_doji(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
+            pattern = { "date": df['Date'][i], "value": 'longlegged_doji' }
+        elif is_common_doji(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
+            pattern = { "date": df['Date'][i], "value": 'common_doji' }
 
         elif is_dark_cloud_cover(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i], df['High'][i]):
-            patterns.append((df['Date'][i], 'dark_cloud_cover'))
+            pattern = { "date": df['Date'][i], "value": 'dark_cloud_cover' }
         
         elif i >= 2 and is_three_black_crows(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'three_black_crows'))
+            pattern = { "date": df['Date'][i], "value": 'three_black_crows' }
         
         elif i >= 2 and is_three_white_soldiers(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'three_white_soldiers'))
+            pattern = { "date": df['Date'][i], "value": 'three_white_soldiers' }
         
         elif i >= 2 and is_three_inside_down(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'three_inside_down'))
+            pattern = { "date": df['Date'][i], "value": 'three_inside_down' }
         elif i >= 2 and is_three_outside_up(df['Open'][i-2], df['Close'][i-2], df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'three_outside_up'))
+            pattern = { "date": df['Date'][i], "value": 'three_outside_up' }
         
-        elif is_tweezer_top(df['Open'][i-1], df['Close'][i-1], df['High'][i-1], df['Open'][i], df['Close'][i], df['High'][i]):
-            patterns.append((df['Date'][i], 'tweezer_top'))
-        elif is_tweezer_bottom(df['Open'][i-1], df['Close'][i-1], df['Low'][i-1], df['Open'][i], df['Close'][i], df['Low'][i]):
-            patterns.append((df['Date'][i], 'tweezer_bottom'))
-        
-        elif is_bullish_marubozu(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bullish_marubozu'))
-        elif is_bearish_marubozu(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'bearish_marubozu'))
-
-        elif is_hanging_man(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'hanging_man'))
-        
-        elif is_mat_hold(df, i):
-            patterns.append((df['Date'][i], 'mat_hold'))
-       
-        elif is_spinning_top(df['Open'][i], df['High'][i], df['Low'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'spinning_top'))
-
         elif is_piercing_line(df['Open'][i-1], df['Close'][i-1], df['Open'][i], df['Close'][i]):
-            patterns.append((df['Date'][i], 'piercing_line'))    
-            
-    return patterns
+            pattern = { "date": df['Date'][i], "value": 'piercing_line' } 
+
+        elif is_tweezer_top(df['Open'][i-1], df['Close'][i-1], df['High'][i-1], df['Open'][i], df['Close'][i], df['High'][i]):
+            pattern = { "date": df['Date'][i], "value": 'tweezer_top' }
+        elif is_tweezer_bottom(df['Open'][i-1], df['Close'][i-1], df['Low'][i-1], df['Open'][i], df['Close'][i], df['Low'][i]):
+            pattern = { "date": df['Date'][i], "value": 'tweezer_bottom' }
+        else:
+            pattern = {}    
+   
+    return pattern
 
 
 
