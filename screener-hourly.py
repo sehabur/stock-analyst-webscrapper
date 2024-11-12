@@ -218,6 +218,8 @@ def format_eps_quarterly_data(init_data, ttmValue):
   
   if q_value_last == None:
     percent_change = None  
+  if q_value_last == 0:
+    percent_change = 100  
   else:
     percent_change = round(((q_value_this - q_value_last) / abs(q_value_last) * 100), 2)
 

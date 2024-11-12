@@ -24,6 +24,18 @@ data = mydb.daily_prices.aggregate([
         'close': {
           '$cond': [{ '$gt': ["$close", 0] }, "$close", "$ycp"],
         },
+        'open': {
+          '$cond': [{ '$gt': ["$open", 0] }, "$open", "$ycp"],
+        },
+        'high': {
+          '$cond': [{ '$gt': ["$high", 0] }, "$high", "$ycp"],
+        },
+        'low': {
+          '$cond': [{ '$gt': ["$low", 0] }, "$low", "$ycp"],
+        },
+        'ltp': {
+          '$cond': [{ '$gt': ["$ltp", 0] }, "$ltp", "$ycp"],
+        },
       },
     },
     {

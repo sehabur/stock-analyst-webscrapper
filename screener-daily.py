@@ -3,8 +3,8 @@ from variables import mongo_string
 import math
 from data import stocks_list
 
-# stocks_list = ['APOLOISPAT']
-# stocks_list = ['PHENIXINS', 'YPL', 'GP', 'RSRMSTEEL']
+# stocks_list = ['ISLAMICFIN']
+# stocks_list = ['PHENIXINS', 'YPL', 'GP', 'RSRMSTEEL', 'AAMRATECH', 'AFTABAUTO']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
 mydb = myclient["stockanalyst"]
@@ -54,8 +54,6 @@ def format_yearly_data(init_data, title, unit='', percentChangeReverse=False):
     }
   
   formatted_value = round((data[0]['value'] / 10000000), 3) if unit == 'Crore BDT' else (0 if  data[0]['value'] == 0 else round(data[0]['value'], 3))
-
-  # print(title, formatted_value)
 
   unit = ' ' + unit if unit != '' else '' 
   
@@ -211,6 +209,8 @@ def format_eps_quarterly_data(init_data, ttmValue):
   
   if q_value_last == None:
     percent_change = None  
+  if q_value_last == 0:
+    percent_change = 100  
   else:
     percent_change = round(((q_value_this - q_value_last) / abs(q_value_last) * 100), 2)
 
@@ -590,6 +590,8 @@ def data_calc(trading_code):
 total_shares = 0
 
 for stock_code in stocks_list:
+  # print(stock_code)
+  # data_calc(stock_code)
   try:
     data_calc(stock_code)
     total_shares += 1
