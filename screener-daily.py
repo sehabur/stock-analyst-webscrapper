@@ -3,7 +3,7 @@ from variables import mongo_string
 import math
 from data import stocks_list
 
-# stocks_list = ['ISLAMICFIN']
+# stocks_list = ['SICL']
 # stocks_list = ['PHENIXINS', 'YPL', 'GP', 'RSRMSTEEL', 'AAMRATECH', 'AFTABAUTO']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
@@ -209,7 +209,7 @@ def format_eps_quarterly_data(init_data, ttmValue):
   
   if q_value_last == None:
     percent_change = None  
-  if q_value_last == 0:
+  elif q_value_last == 0:
     percent_change = 100  
   else:
     percent_change = round(((q_value_this - q_value_last) / abs(q_value_last) * 100), 2)
@@ -584,21 +584,15 @@ def data_calc(trading_code):
   data['dividendPayoutRatio'] = format_dividend_payout_ratio(rawdata['cashDividend'], rawdata['epsYearly'], rawdata['faceValue'], 'Dividend payout ratio') if 'epsYearly' in rawdata and len(rawdata['epsYearly']) > 0 else None                                                   
                                                        
   mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { "$set": { "screener": data } })
-    
-# success_items = []
-# error_items = []    
-total_shares = 0
+     
+success_stocks = 0
 
 for stock_code in stocks_list:
-  # print(stock_code)
   # data_calc(stock_code)
   try:
     data_calc(stock_code)
-    total_shares += 1
-    # success_items.append(stock_code)
+    success_stocks += 1
   except Exception as excp:
-    # print(stock_code, ' -> Error')
-    # error_items.append(stock_code)
     mydb.data_script_errors.insert_one({
         'script': 'screener-daily',
         'message': str(excp),
@@ -606,12 +600,9 @@ for stock_code in stocks_list:
         'time': datetime.datetime.now()
     })  
     
-# print("Success: ", success_items)
-# print("Error: ", error_items)
-
 mydb.data_script_logs.insert_one({
     'script': 'screener-daily',
-    'message': f"Total stocks: {total_shares}",
+    'message': f"Total stocks: {success_stocks}",
     'time': datetime.datetime.now()
 })  
 

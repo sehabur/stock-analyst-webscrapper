@@ -218,7 +218,7 @@ def format_eps_quarterly_data(init_data, ttmValue):
   
   if q_value_last == None:
     percent_change = None  
-  if q_value_last == 0:
+  elif q_value_last == 0:
     percent_change = 100  
   else:
     percent_change = round(((q_value_this - q_value_last) / abs(q_value_last) * 100), 2)
@@ -597,15 +597,19 @@ error_items = []
 for stock_code in stocks_list:
   try:
     data_calc(stock_code)
-    # print(stock_code, "Success")
     success_items.append(stock_code)
   except:
-    # print(stock_code, "Error")
     error_items.append(stock_code)
 
 mydb.screener_scripts.delete_many({ 'date': today_date, 'tradingCode': { '$in': success_items } })
 
-# print("Success: ", success_items)
-# print("Error: ", error_items)
+if len(error_items) > 0:
+  mydb.data_script_errors.insert_one({
+    'script': 'screener-hourly',
+    'message': f"Issue with: {len(error_items)} stocks",
+    'tradingCode': error_items[0],
+    'time': datetime.datetime.now()
+  }) 
+
 
   

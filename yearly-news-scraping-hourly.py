@@ -12,7 +12,6 @@ if data_setting['dataInsertionEnable'] == 0:
     exit()
 
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-# tomorrow_date = today_date + datetime.timedelta(days=1)
 
 news_list = mydb.news.find({
     'date': today_date,
@@ -21,9 +20,9 @@ news_list = mydb.news.find({
 
 # news_list = mydb.news.find({
 #     # 'date':   { '$gte':  datetime.datetime(2024, 5, 5, 0, 0) } ,
-#     # 'date': datetime.datetime(2023, 10, 29, 0, 0),
-#     'date': today_date,
-#     'tradingCode': 'ADNTEL',
+#     'date': datetime.datetime(2024, 10, 1, 0, 0),
+#     # 'date': today_date,
+#     'tradingCode': 'APEXFOOT',
 #     'title': { '$regex': 'Dividend Declaration', '$options': 'i' } ,
 # }).sort("date", 1)
 
@@ -64,8 +63,6 @@ for news in temp_data.values():
     description = re.split(" |,", cleaned_text)
 
     trading_code = news['tradingCode']
-    # print(trading_code, 'start', description)
-    # exit()
     
     # YEAR 
     n = -1
@@ -223,6 +220,7 @@ for news in temp_data.values():
         nav = 'n/a'
  
     # print(news_date, trading_code, year, agm_date, record_date, eps, nav, nocfps, cash_dividend, stock_dividend)  
+    # exit()
     
     data = mydb.fundamentals.find_one({ 'tradingCode': trading_code })  
 
@@ -412,7 +410,6 @@ for news in temp_data.values():
         'recordDate': record_date,
         # 'declarationDate': tomorrow_date,
     }
-    # print(newvalues)
-    # exit()
+
     mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { '$set': newvalues })
     
