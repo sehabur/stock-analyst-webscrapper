@@ -16,17 +16,10 @@ def get_daily_data(start=None, end=None, code='All Instrument'):
             'endDate': end,
             'inst': code,
             'archive': 'data'}
-    # try:
-    #     r = requests.get(url=vs.DSE_URL+vs.DSE_DEA_URL, params = data)
-    #     if r.status_code != 200:
-    #         r = requests.get(url=vs.DSE_ALT_URL+vs.DSE_DEA_URL, params = data)
-    # except Exception as e:
-    #         print(e)
 
     r = requests.get("https://www.dsebd.org/day_end_archive.php", params=data)
 
     soup = BeautifulSoup(r.text, 'html.parser')
-    # soup = BeautifulSoup(r.content, 'html5lib')
 
     quotes = []
 
@@ -65,6 +58,11 @@ if data_setting['dataInsertionEnable'] == 0:
     print('exiting script')
     exit()
 
+fundamental_data = mydb.fundamentals.find({ 'isActive': True, 'type': 'stock' }, 
+                              {'tradingCode': 1, 'recordDate': 1, '_id': 0 })
+
+fundamental_data = list(fundamental_data)
+
 # today_date = datetime.datetime(2024, 7, 16, 0, 0)  // debug purpose //
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
@@ -74,8 +72,17 @@ df = get_daily_data(formatted_date, formatted_date)
  
 share_data_array = []
 
+def get_record_date(symbol):
+  for stock_data in fundamental_data:
+    if stock_data['tradingCode'] == symbol:
+      return stock_data['recordDate'] if 'recordDate' in stock_data else None
+  return None  
+
 for x in range(df.shape[0]): 
 
+  if today_date == get_record_date(df.iloc[x]['symbol']):
+    continue   
+ 
   ycp = float(df.iloc[x]['ycp'])
   open = float(df.iloc[x]['open']) if float(df.iloc[x]['open']) != 0 else ycp
   low = float(df.iloc[x]['low']) if float(df.iloc[x]['low']) != 0 else ycp
