@@ -1,10 +1,10 @@
 import pymongo, datetime, certifi
-from variables import mongo_string
+from variables import mongo_string, db_name
 import math
 # from data import stocks_list
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+mydb = myclient[db_name]
 
 data_setting = mydb.settings.find_one()
 

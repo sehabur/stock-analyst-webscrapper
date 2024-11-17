@@ -1,12 +1,9 @@
-import pymongo, datetime, certifi, requests
-from bs4 import BeautifulSoup
-from variables import mongo_string
+import pymongo, datetime, certifi
+from variables import mongo_string, db_name
 # from data import stocks_list
 
-# stocks_list = ['BESTHLDNG', 'NRBBANK', 'SICL', 'GP']
-
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+mydb = myclient[db_name]
 
 data_setting = mydb.settings.find_one()
 

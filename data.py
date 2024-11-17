@@ -1,8 +1,8 @@
-import pymongo, certifi, datetime
-from variables import mongo_string
+import pymongo, certifi
+from variables import mongo_string, db_name
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+mydb = myclient[db_name]
 
 data = mydb.fundamentals.find({ 'isActive': True, 'type': 'stock' }, 
                               {'tradingCode': 1, 'companyName': 1, 'sector': 1, 'yearEnd': 1, 'category': 1, '_id': 0 })

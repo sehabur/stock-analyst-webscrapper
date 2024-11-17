@@ -1,5 +1,5 @@
 import pymongo, datetime, certifi
-from variables import mongo_string
+from variables import mongo_string, db_name
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -57,7 +57,7 @@ def get_daily_data(start=None, end=None, code='All Instrument'):
     return df
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+mydb = myclient[db_name]
 
 data_setting = mydb.settings.find_one()
 

@@ -1,5 +1,5 @@
 import pymongo, certifi, datetime
-from variables import mongo_string
+from variables import mongo_string, db_name
 from data import stocks_list
 
 # stocks_list = ["RNSPIN"]
@@ -10,7 +10,7 @@ from data import stocks_list
 """
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+mydb = myclient[db_name]
 
 def get_valid_date_or_previous(year, month, day):
     try:

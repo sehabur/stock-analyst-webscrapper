@@ -1,5 +1,5 @@
 import pymongo, datetime, certifi
-from variables import mongo_string
+from variables import mongo_string, db_name
 from data import stocks_list
 import pandas as pd
 from scipy.stats import linregress
@@ -10,7 +10,7 @@ from technical import calculate_sma, calculate_ema, calculate_rsi, detect_double
 # stocks_list = ['DBH']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+mydb = myclient[db_name]
 
 # data_setting = mydb.settings.find_one()
 

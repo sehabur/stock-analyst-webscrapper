@@ -1,10 +1,10 @@
 import requests, pymongo, certifi
-from variables import backend_url_dev, backend_url_prod, mongo_string
+from variables import backend_url_dev, backend_url_prod, mongo_string, db_name
 
 server = backend_url_prod
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+mydb = myclient[db_name]
 
 data_setting = mydb.settings.find_one()
 

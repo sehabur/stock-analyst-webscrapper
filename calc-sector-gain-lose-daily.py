@@ -1,5 +1,5 @@
 import pymongo, certifi, datetime
-from variables import mongo_string
+from variables import mongo_string, db_name
 
 """
     This script will run everyday regardless 
@@ -30,7 +30,7 @@ sector_list = [
 ]
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+mydb = myclient[db_name]
 
 def get_valid_date_or_previous(year, month, day):
     try:

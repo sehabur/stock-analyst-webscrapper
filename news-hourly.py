@@ -1,10 +1,10 @@
 import pymongo, datetime, certifi, requests, re
 from bs4 import BeautifulSoup
 from pytz import timezone
-from variables import backend_url_dev, backend_url_prod, mongo_string
+from variables import backend_url_dev, backend_url_prod, mongo_string, db_name
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+mydb = myclient[db_name]
 
 data_setting = mydb.settings.find_one()
 

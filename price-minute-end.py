@@ -2,7 +2,7 @@ from pytz import timezone
 import pandas as pd
 import requests, datetime, pymongo, certifi
 from bs4 import BeautifulSoup
-from variables import mongo_string
+from variables import mongo_string, db_name
 
 def get_current_trade_data(symbol=None, retry_count=1, pause=0.001):
     """
@@ -45,7 +45,7 @@ def get_current_trade_data(symbol=None, retry_count=1, pause=0.001):
                 return df
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+mydb = myclient[db_name]
 
 doc_count = mydb.latest_prices.count_documents({})
 
