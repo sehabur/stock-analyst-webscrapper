@@ -57,7 +57,6 @@ for news in news_list:
       }
 
 for news in temp_data.values():
-  # print(news)
   if not news['description'].startswith("(Q"):
     print('Not Q Financial news')
     continue

@@ -1,9 +1,9 @@
 import pymongo, certifi, datetime, re
 from data import stocks_list
-from variables import mongo_string
+from variables import mongo_string, db_name
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+mydb = myclient[db_name]
 
 def is_valid_date(year, month, day):
     try:
@@ -14,7 +14,7 @@ def is_valid_date(year, month, day):
 
 count = 0   
 year_insert = 2024
-for month_insert in range(1, 9):
+for month_insert in range(1, 13):
     for date_insert in range(1, 32):
 
         print(f'date -> {date_insert}, month -> {month_insert}')
@@ -24,11 +24,10 @@ for month_insert in range(1, 9):
             continue
       
         news_list = mydb.news.find({
-            # 'date':   { '$gte':  datetime.datetime(2024, 5, 5, 0, 0) } ,
-            # 'tradingCode': 'GENEXIL',
             'date': datetime.datetime(year_insert, month_insert, date_insert, 0, 0),
-            'title': { '$regex': 'Dividend Declaration', '$options': 'i' } ,
-            'description': { '$regex': 'EPU', '$options': 'i' } ,
+            'title': { '$regex': 'Dividend Declaration', '$options': 'i' },
+            # 'tradingCode': 'CITYBANK',
+            # 'description': { '$regex': 'EPU', '$options': 'i' } ,
         }).sort("date", 1)
 
         # for a in news_list:
@@ -48,7 +47,7 @@ for month_insert in range(1, 9):
             id = trading_code + news['date'].strftime('%d%m%Y')
 
             if id in temp_data:
-                if temp_data[id]['description'].startswith("(Continuation news") or temp_data[id]['description'].startswith("(Cont. news"):
+                if temp_data[id]['description'].startswith("(Continuation") or temp_data[id]['description'].startswith("(Cont."):
                     temp_data[id]['description'] = news['description'] + temp_data[id]['description']
                 else:
                     temp_data[id]['description'] = temp_data[id]['description'] + news['description']  
@@ -66,7 +65,6 @@ for month_insert in range(1, 9):
 
         for news in temp_data.values():
             news_date = news['date']
-
             text = news['description']
             cleaned_text = " ".join(text.split())
             description = re.split(" |,", cleaned_text)
@@ -88,20 +86,17 @@ for month_insert in range(1, 9):
                 year = (description[n]).replace(".", '').replace(";", '').replace(",", '')[:4]
             else:
                 year = 'n/a'    
-                            
+                   
             # Stock Dividend
             n = -1
             for i in range (len(description)):
                 if description[i].lower() == 'recommended' or description[i].lower() == 'declared' or description[i].lower() == 'approved':
                     for j in range (i+1,len(description)):
-                        if "dividend" == description [j].lower() :
-                            for k in range (j,0,-1):
-                                if "stock" == description[k].lower():                   
-                                    for l in range (k,0,-1):
-                                        if '%' == description[l][-1:] :
-                                            n = l
-                                            break
-                                    break
+                        if "stock" == description[j].lower() and "dividend" == description[j+1].lower() :                 
+                            for l in range (j,0,-1):
+                                if '%' == description[l][-1:] :
+                                    n = l
+                                    break   
                             break
                     break    
 
@@ -113,11 +108,11 @@ for month_insert in range(1, 9):
             # Cash Dividend 
             n = -1 
             for i in range (len(description)):
-                if description[i].lower() == 'recommended' or description[i].lower() == 'declared' or description[i].lower() == 'approved':
+                if (description[i].lower() == 'recommended' or description[i].lower() == 'declared' or description[i].lower() == 'approved'):
                     for j in range (i+1,len(description)):
                         if "dividend" == description[j].lower() :
                             for k in range (j,1,-1):
-                                if "cash" == description[k].lower():                 
+                                if "cash" == description[k].lower(): 
                                     for l in range (k,1,-1):
                                         if '%' == description[l].lower()[-1:] :
                                             n = l
@@ -138,6 +133,8 @@ for month_insert in range(1, 9):
                     cash_dividend = 0   
             else:
                 cash_dividend = 'n/a'   
+
+                
                     
             # AGM Date
             n=-1
@@ -194,7 +191,7 @@ for month_insert in range(1, 9):
             # NOCFPS #
             n=-1
             for i in range (len(description)):
-                if ("NOCFPS" == description [i] or "NOCFPU" == description [i]) and 'of' == description [i+1] :
+                if ("NOCFPS" == description [i] or "NOCFPU" == description [i]):
                     for j in range (i+2, len(description)):
                         if description [j] == 'Tk.':
                             n=j+1

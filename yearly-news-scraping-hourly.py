@@ -20,9 +20,9 @@ news_list = mydb.news.find({
 
 # news_list = mydb.news.find({
 #     # 'date':   { '$gte':  datetime.datetime(2024, 5, 5, 0, 0) } ,
-#     'date': datetime.datetime(2024, 10, 1, 0, 0),
+#     'date': datetime.datetime(2024, 9, 1, 0, 0),
 #     # 'date': today_date,
-#     'tradingCode': 'APEXFOOT',
+#     'tradingCode': 'CAPMIBBLMF',
 #     'title': { '$regex': 'Dividend Declaration', '$options': 'i' } ,
 # }).sort("date", 1)
 
@@ -42,7 +42,7 @@ for news in news_list:
     id = trading_code + "_" + news['title'].replace(" ", "_") + "_" + news['date'].strftime('%d%m%Y')
 
     if id in temp_data:
-        if description.startswith("(Continuation news") or description.startswith("(Cont. news"):
+        if description.startswith("(Continuation") or description.startswith("(Cont."):
             temp_data[id]['description'] = temp_data[id]['description'] + " " + description
         else:
             temp_data[id]['description'] = description + " " + temp_data[id]['description']
@@ -83,16 +83,13 @@ for news in temp_data.values():
     for i in range (len(description)):
         if description[i].lower() == 'recommended' or description[i].lower() == 'declared' or description[i].lower() == 'approved':
             for j in range (i+1,len(description)):
-                if "dividend" == description [j].lower() :
-                    for k in range (j,0,-1):
-                        if "stock" == description[k].lower():                   
-                            for l in range (k,0,-1):
-                                if '%' == description[l][-1:] :
-                                    n = l
-                                    break
-                            break
+                if "stock" == description[j].lower() and "dividend" == description[j+1].lower() :                 
+                    for l in range (j,0,-1):
+                        if '%' == description[l][-1:] :
+                            n = l
+                            break   
                     break
-            break    
+            break     
 
     if n != -1:       
         stock_dividend = float((description[n]).replace("%", ""))  
@@ -164,7 +161,7 @@ for news in temp_data.values():
     # EPS
     n=-1
     for i in range (len(description)):
-        if "EPS" == description [i] :
+        if "EPS" == description [i] or "EPU" == description [i] :
             for j in range (i+2, len(description)):
                 if description [j] == 'Tk.':
                     n=j+1
@@ -183,7 +180,7 @@ for news in temp_data.values():
     # NOCFPS #
     n=-1
     for i in range (len(description)):
-        if "NOCFPS" == description [i] and 'of' == description [i+1] :
+        if "NOCFPS" == description [i] or "NOCFPU" == description [i] :
             for j in range (i+2, len(description)):
                 if description [j] == 'Tk.':
                     n=j+1
@@ -410,6 +407,9 @@ for news in temp_data.values():
         'recordDate': record_date,
         # 'declarationDate': tomorrow_date,
     }
+
+    # print(newvalues)
+    # exit()
 
     mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { '$set': newvalues })
     

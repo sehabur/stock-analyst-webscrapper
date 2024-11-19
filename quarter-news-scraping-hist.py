@@ -1,9 +1,9 @@
 import pymongo, certifi, datetime, re
 from data import stocks_list_details
-from variables import mongo_string
+from variables import mongo_string, db_name
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
-mydb = myclient["stockanalyst"]
+mydb = myclient[db_name]
 
 def is_valid_date(year, month, day):
     try:
@@ -14,8 +14,8 @@ def is_valid_date(year, month, day):
 
 count = 0
 year_insert = 2024
-for month_insert in range(4, 8):
-  for date_insert in range(1, 31):
+for month_insert in range(1, 12):
+  for date_insert in range(1, 32):
 
     print(f'date -> {date_insert}, month -> {month_insert}')
 
@@ -26,7 +26,7 @@ for month_insert in range(4, 8):
     news_list = mydb.news.find({
         'date': datetime.datetime(year_insert, month_insert, date_insert, 0, 0),
         'title': { '$regex': 'Financials', '$options': 'i' } ,
-        'tradingCode': 'ORIONPHARM',
+        # 'tradingCode': 'ORIONPHARM',
         # 'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (EPU) was', '$options': 'i' } 
         'description': { '$regex': '^(\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS|EPU) was)|(\\(Continuation news|\\(Cont. news)', '$options': 'i' } 
     })
@@ -60,9 +60,6 @@ for month_insert in range(4, 8):
           }
   
     for news in temp_data.values():
-
-      print(news)
-
       try:
         q = news['title'].split()[1].lower()
         code = news['title'].split()[0].replace(":", "")
@@ -210,7 +207,7 @@ for month_insert in range(4, 8):
         }
 
         mydb.fundamentals.update_one({ 'tradingCode': code }, { '$set': newvalues })
-        print('# insert success', newvalues)
+        print('# insert success')
 
         count += 1
         print("Count: ", count)
