@@ -14,7 +14,7 @@ def is_valid_date(year, month, day):
 
 count = 0
 year_insert = 2024
-for month_insert in range(1, 12):
+for month_insert in range(1, 13):
   for date_insert in range(1, 32):
 
     print(f'date -> {date_insert}, month -> {month_insert}')
@@ -26,9 +26,9 @@ for month_insert in range(1, 12):
     news_list = mydb.news.find({
         'date': datetime.datetime(year_insert, month_insert, date_insert, 0, 0),
         'title': { '$regex': 'Financials', '$options': 'i' } ,
-        # 'tradingCode': 'ORIONPHARM',
+        'tradingCode': 'MBL1STMF',
         # 'description': { '$regex': '^\\(Q[0-9] (Un-audited|Audited)\\): (EPU) was', '$options': 'i' } 
-        'description': { '$regex': '^(\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Basic EPS|EPS|EPU) was)|(\\(Continuation news|\\(Cont. news)', '$options': 'i' } 
+        'description': { '$regex': '^(\\(Q[0-9] (Un-audited|Audited)\\): (Diluted EPS|Consolidated EPS|Diluted Consolidated EPS|Basic EPS|EPS|EPU) was)|(\\(Continuation news|\\(Cont. news)', '$options': 'i' } 
     })
 
     news_list = list(news_list)
@@ -102,6 +102,11 @@ for month_insert in range(1, 12):
                 year = str(int(year_string) + 1)
               else:
                 year = year_string
+            elif (yearEnd == '31-Mar'):  
+              if (q == 'q1' or q == 'q2' or q == 'q3'):
+                year = str(int(year_string) + 1)
+              else:
+                year = year_string
             else:
               year = year_string
             break      
@@ -127,8 +132,6 @@ for month_insert in range(1, 12):
           nocfps = 0    
 
         # NAV # 
-
-        # print(description)
 
         n=-1
         for i in range (len(description)):

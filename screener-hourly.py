@@ -323,10 +323,10 @@ def format_dividend_payout_ratio(cash_div_raw_data, eps_yearly_raw_data, face_va
       if cash_div_data[i]['year'] == year:
         cash_div_value = cash_div_data[i]['value']
     
-    if cash_div_value == 0:
+    if cash_div_value == 0 or eps_value == 0 or face_value == 0:
       dividend_payout_ratio = 0
     else:
-      dividend_payout_ratio = round((cash_div_value * 100 / (face_value * eps_value)), 3) if eps_value != 0 else 0 
+      dividend_payout_ratio = round((cash_div_value * 100 / (face_value * eps_value)), 3)
       
     data.append({
       'year': year,

@@ -16,6 +16,9 @@ def basic_data(stock_code):
     data['companyName'] = soup.find('h2', attrs={'class': 'BodyHead topBodyHead'}).find('i').text.strip()
     data['lastAgm'] = soup.find('h2', attrs={'class': "BodyHead topBodyHead row"}).find('i').text.strip()
 
+    reserve_table_head = soup.find('div',attrs={'class':"col-sm-6 pull-right"}).text
+    reserve_year_end_text = reserve_table_head.replace("For the year ended:",'').strip()
+
     page_data_array = soup.find_all('table', attrs={'class': 'table table-bordered background-white'})
 
     for item in page_data_array[0]:
@@ -43,6 +46,7 @@ def basic_data(stock_code):
 
     data['rightIssue'] = table_data[2]
     data['yearEnd'] = table_data[3]
+    data['reserveSurplus'] = [{ "date": reserve_year_end_text, "value": float(table_data[4].replace(",", '')) }]
     data['oci'] = float(table_data[5].replace(",", ''))
     
     table_data = []

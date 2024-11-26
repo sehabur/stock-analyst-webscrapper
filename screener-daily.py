@@ -3,7 +3,7 @@ from variables import mongo_string, db_name
 import math
 from data import stocks_list
 
-# stocks_list = ['SICL']
+# stocks_list = ['EASTLAND']
 # stocks_list = ['PHENIXINS', 'YPL', 'GP', 'RSRMSTEEL', 'AAMRATECH', 'AFTABAUTO']
 
 myclient = pymongo.MongoClient(mongo_string, tlsCAFile=certifi.where())
@@ -313,10 +313,10 @@ def format_dividend_payout_ratio(cash_div_raw_data, eps_yearly_raw_data, face_va
       if cash_div_data[i]['year'] == year:
         cash_div_value = cash_div_data[i]['value']
     
-    if cash_div_value == 0:
+    if cash_div_value == 0 or eps_value == 0 or face_value == 0:
       dividend_payout_ratio = 0
     else:
-      dividend_payout_ratio = round((cash_div_value * 100 / (face_value * eps_value)), 3) if eps_value != 0 else 0 
+      dividend_payout_ratio = round((cash_div_value * 100 / (face_value * eps_value)), 3) 
       
     data.append({
       'year': year,
@@ -584,6 +584,7 @@ def data_calc(trading_code):
   data['dividendPayoutRatio'] = format_dividend_payout_ratio(rawdata['cashDividend'], rawdata['epsYearly'], rawdata['faceValue'], 'Dividend payout ratio') if 'epsYearly' in rawdata and len(rawdata['epsYearly']) > 0 else None                                                   
                                                        
   mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { "$set": { "screener": data } })
+  # print(trading_code, " : Success")
      
 success_stocks = 0
 

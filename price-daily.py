@@ -63,7 +63,7 @@ fundamental_data = mydb.fundamentals.find({ 'isActive': True, 'type': 'stock' },
 
 fundamental_data = list(fundamental_data)
 
-# today_date = datetime.datetime(2024, 7, 16, 0, 0)  // debug purpose //
+# today_date = datetime.datetime(2024, 11, 21, 0, 0)  # debug purpose #
 today_date = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 
 formatted_date = today_date.strftime("%Y-%m-%d")
@@ -80,8 +80,8 @@ def get_record_date(symbol):
 
 for x in range(df.shape[0]): 
 
-  if today_date == get_record_date(df.iloc[x]['symbol']):
-    continue   
+  # if today_date == get_record_date(df.iloc[x]['symbol']):
+  #   continue   
  
   ycp = float(df.iloc[x]['ycp'])
   open = float(df.iloc[x]['open']) if float(df.iloc[x]['open']) != 0 else ycp
@@ -103,7 +103,7 @@ for x in range(df.shape[0]):
     change = round(close - ycp, 2)
     percent_change = round((close - ycp) / ycp * 100 , 2)
 
-  share_data_array.append({
+  share_data = {
     'date': datetime.datetime.strptime(df.index[x] , '%Y-%m-%d'),
     'tradingCode': df.iloc[x]['symbol'],
     'ltp': ltp,
@@ -117,7 +117,12 @@ for x in range(df.shape[0]):
     'trade': float(df.iloc[x]['trade']),
     'value': float(df.iloc[x]['value']),
     'volume': float(df.iloc[x]['volume']),
-  })
+  }
+
+  if today_date == get_record_date(df.iloc[x]['symbol']):
+    share_data['isRecordDate'] = True
+
+  share_data_array.append(share_data)
 
 index_value = mydb.index_daily_values.find_one({ 'date': today_date })
 

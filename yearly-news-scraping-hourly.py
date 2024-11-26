@@ -20,9 +20,9 @@ news_list = mydb.news.find({
 
 # news_list = mydb.news.find({
 #     # 'date':   { '$gte':  datetime.datetime(2024, 5, 5, 0, 0) } ,
-#     'date': datetime.datetime(2024, 9, 1, 0, 0),
+#     'date': datetime.datetime(2024, 1, 8, 0, 0),
 #     # 'date': today_date,
-#     'tradingCode': 'CAPMIBBLMF',
+#     'tradingCode': 'AOL',
 #     'title': { '$regex': 'Dividend Declaration', '$options': 'i' } ,
 # }).sort("date", 1)
 
@@ -413,3 +413,4 @@ for news in temp_data.values():
 
     mydb.fundamentals.update_one({ 'tradingCode': trading_code }, { '$set': newvalues })
     
+myclient.close()

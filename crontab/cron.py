@@ -52,6 +52,60 @@
 
 
 
+"""
+        #  Crontab schedule for  
+        #  python scripts 
+        #  Proposed Version for new server (26 Nov)
+
+* 3-5 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/market-start.py
+
+* 3-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-minute.py
+0-31 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-minute.py
+32-35 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-minute-end.py
+
+* 3-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-minute.py
+0-31 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-minute.py
+45 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-minute-end.py
+
+*/5 3-7 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/halt-status.py
+0,5,10,15,21 8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/halt-status.py
+
+*/10 3-8 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-alert-schedule.py
+
+15 2 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-gain-lose-daily.py
+30 2 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-index-gain-lose-daily.py
+35 2 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-sector-gain-lose-daily.py
+45 2 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/db-parse-daily.py
+
+15 4 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-limit-open-news-scraping.py
+55 4 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-shareholding-daily.py 
+5 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/index-daily.py  
+10 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/price-daily.py
+15 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/sector-daily.py
+20 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/technical-screener-daily.py
+50 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/block-transection-daily.py
+55 9 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-shareholding-daily.py
+5 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/reserve-surplus-daily.py
+20 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-eps-daily.py
+25 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/screener-daily.py
+
+5 2-10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/news-hourly.py
+10 2-10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/quarter-news-scraping-hourly.py
+15 2-10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/yearly-news-scraping-hourly.py
+20 2-10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-eps-hourly.py
+25 2-10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/screener-hourly.py
+
+30 2-10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/news-hourly.py
+35 2-10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/quarter-news-scraping-hourly.py
+40 2-10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/yearly-news-scraping-hourly.py
+45 2-10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/calc-eps-hourly.py
+50 2-10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/screener-hourly.py
+
+55 10 * * 0-4 /usr/bin/python3 /home/ubuntu/dse_scrapper/market-end.py
+
+"""
+
+
 
 """
         #  Crontab schedule for  
