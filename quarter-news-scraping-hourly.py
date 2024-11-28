@@ -102,6 +102,16 @@ for news in temp_data.values():
           year = str(int(year_string) + 1)
         else:
           year = year_string
+      elif (yearEnd == '31-Mar'):  
+        if (q == 'q1' or q == 'q2' or q == 'q3'):
+          year = str(int(year_string) + 1)
+        else:
+          year = year_string    
+      elif (yearEnd == '30-Sep'):  
+        if (q == 'q1'):
+          year = str(int(year_string) + 1)
+        else:
+          year = year_string    
       else:
         year = year_string
       break      
